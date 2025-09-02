@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 import { useQuiz } from '../../contexts/QuizContext';
 import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Input } from '../ui/Input';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
 import { Label } from '../ui/Label';
 import { Textarea } from '../ui/Textarea';
 import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
@@ -432,20 +432,58 @@ const QuizCreator: React.FC = () => {
             <AnimatePresence>
               {isGenerating && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-4"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="p-8 text-center space-y-6"
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 bg-primary rounded-full animate-pulse"></div>
-                      <div className="w-4 h-4 bg-primary rounded-full animate-pulse delay-100"></div>
-                      <div className="w-4 h-4 bg-primary rounded-full animate-pulse delay-200"></div>
+                  <div className="space-y-4">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex items-center justify-center"
+                    >
+                      <div className="w-16 h-16 bg-gradient-to-r from-primary to-blue-600 rounded-full flex items-center justify-center">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'linear'
+                          }}
+                          className="text-white"
+                        >
+                          <Sparkles className="w-8 h-8" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                    
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-semibold">Generating Your Quiz</h3>
+                      <p className="text-muted-foreground">
+                        AI is creating personalized questions based on your preferences...
+                      </p>
                     </div>
-                    <p className="text-muted-foreground">
-                      AI is creating your personalized quiz...
-                    </p>
+                    
+                    <div className="flex justify-center space-x-1">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-2 h-2 bg-primary rounded-full"
+                          animate={{
+                            scale: [1, 1.5, 1],
+                            opacity: [0.3, 1, 0.3]
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            delay: i * 0.2,
+                            ease: 'easeInOut'
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}

@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { Question, QuizDifficulty, QuizLanguage } from '../types/quiz';
+import type { Question, QuizDifficulty, QuizLanguage } from '../types/quiz.types';
 
 // Note: In a real application, this should be handled by a secure backend API
 // Never expose your OpenAI API key in the frontend
@@ -15,20 +14,10 @@ interface QuizGenerationParams {
   timeLimit?: number;
 }
 
-interface OpenAIResponse {
-  choices: Array<{
-    message: {
-      content: string;
-    };
-  }>;
-}
-
 // Mock OpenAI API service for demonstration
 // In production, replace this with actual OpenAI API calls through your backend
 export class OpenAIService {
   private static instance: OpenAIService;
-  private readonly baseURL = 'https://api.openai.com/v1';
-  private readonly apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   private constructor() {}
 
@@ -39,105 +28,11 @@ export class OpenAIService {
     return OpenAIService.instance;
   }
 
-  private buildPrompt(params: QuizGenerationParams): string {
-    const languageInstructions = {
-      english: 'in English',
-      bengali: 'in Bengali (বাংলা)',
-      hindi: 'in Hindi (हिंदी)'
-    };
-
-    const difficultyInstructions = {
-      easy: 'beginner-friendly with basic concepts',
-      medium: 'moderate difficulty with some challenging concepts',
-      hard: 'advanced level with complex concepts and critical thinking'
-    };
-
-    return `
-Create a ${params.questionCount}-question quiz about ${params.topic} in ${params.subject} for ${params.academicLevel} students.
-
-Requirements:
-- Language: Generate all content ${languageInstructions[params.language]}
-- Difficulty: ${difficultyInstructions[params.difficulty]}
-- Question types: ${params.questionTypes.join(', ')}
-- Academic level: ${params.academicLevel}
-- Subject focus: ${params.subject} - ${params.topic}
-
-For each question, provide:
-1. Question text
-2. Question type (mcq, true-false, short-answer, or multiple-select)
-3. For MCQ/multiple-select: 4 options labeled A, B, C, D
-4. Correct answer(s)
-5. Brief explanation (2-3 sentences)
-6. Points (based on difficulty: easy=5, medium=10, hard=15)
-
-Format the response as a valid JSON array with this structure:
-[
-  {
-    "id": "unique_id",
-    "question": "Question text",
-    "type": "mcq|true-false|short-answer|multiple-select",
-    "options": ["Option A", "Option B", "Option C", "Option D"], // only for mcq/multiple-select
-    "correctAnswer": "correct_answer_or_array_for_multiple_select",
-    "explanation": "Brief explanation",
-    "points": 10,
-    "difficulty": "${params.difficulty}"
-  }
-]
-
-Ensure questions are educationally valuable, accurate, and appropriate for the specified academic level.
-`;
-  }
-
   public async generateQuiz(params: QuizGenerationParams): Promise<Question[]> {
     // For demo purposes, return mock data instead of making actual API call
     // In production, uncomment the actual API call below
     
     return this.generateMockQuiz(params);
-
-    /*
-    // Actual OpenAI API implementation:
-    if (!this.apiKey) {
-      throw new Error('OpenAI API key not configured. Please set REACT_APP_OPENAI_API_KEY environment variable.');
-    }
-
-    try {
-      const prompt = this.buildPrompt(params);
-      
-      const response = await axios.post<OpenAIResponse>(
-        `${this.baseURL}/chat/completions`,
-        {
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert educator and quiz creator. Generate high-quality educational quizzes based on the given requirements.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 2000
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      const content = response.data.choices[0].message.content;
-      const questions = JSON.parse(content) as Question[];
-      
-      // Validate and sanitize the generated questions
-      return this.validateAndSanitizeQuestions(questions);
-    } catch (error) {
-      console.error('Error generating quiz with OpenAI:', error);
-      throw new Error('Failed to generate quiz. Please try again.');
-    }
-    */
   }
 
   private generateMockQuiz(params: QuizGenerationParams): Question[] {
@@ -173,7 +68,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
   }
 
   private generateMockMCQ(params: QuizGenerationParams, questionNumber: number): Question {
-    const questions = {
+    const questions: Record<QuizLanguage, Record<string, string>> = {
       english: {
         mathematics: `What is the value of x in the equation 2x + 5 = ${3 + questionNumber * 2}?`,
         physics: `What is the SI unit of ${questionNumber % 2 === 0 ? 'force' : 'energy'}?`,
@@ -197,7 +92,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
       }
     };
 
-    const options = {
+    const options: Record<string, string[]> = {
       mathematics: ['1', '2', '3', '4'],
       physics: ['Newton', 'Joule', 'Watt', 'Pascal'],
       chemistry: ['Sodium', 'Potassium', 'Nitrogen', 'Oxygen'],
@@ -207,7 +102,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
 
     return {
       id: `mock_q_${questionNumber}`,
-      question: questions[params.language][params.subject.toLowerCase()] || questions.english.mathematics,
+      question: questions[params.language]?.[params.subject.toLowerCase()] || questions.english.mathematics,
       type: 'mcq',
       options: options[params.subject.toLowerCase()] || options.mathematics,
       correctAnswer: options[params.subject.toLowerCase()]?.[0] || '2',
@@ -218,7 +113,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
   }
 
   private generateMockTrueFalse(params: QuizGenerationParams, questionNumber: number): Question {
-    const statements = {
+    const statements: Record<QuizLanguage, Record<string, string>> = {
       english: {
         mathematics: `The square root of ${questionNumber * 4} is ${questionNumber * 2}.`,
         physics: 'Light travels faster than sound.',
@@ -244,7 +139,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
 
     return {
       id: `mock_tf_${questionNumber}`,
-      question: statements[params.language][params.subject.toLowerCase()] || statements.english.mathematics,
+      question: statements[params.language]?.[params.subject.toLowerCase()] || statements.english.mathematics,
       type: 'true-false',
       correctAnswer: 'True',
       explanation: 'This statement is true based on established facts.',
@@ -254,7 +149,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
   }
 
   private generateMockShortAnswer(params: QuizGenerationParams, questionNumber: number): Question {
-    const questions = {
+    const questions: Record<QuizLanguage, Record<string, string>> = {
       english: {
         mathematics: 'Explain the concept of prime numbers and give three examples.',
         physics: 'Describe Newton\'s first law of motion in your own words.',
@@ -280,7 +175,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
 
     return {
       id: `mock_sa_${questionNumber}`,
-      question: questions[params.language][params.subject.toLowerCase()] || questions.english.mathematics,
+      question: questions[params.language]?.[params.subject.toLowerCase()] || questions.english.mathematics,
       type: 'short-answer',
       correctAnswer: 'A comprehensive answer explaining the concept with relevant examples.',
       explanation: 'This question tests understanding of fundamental concepts.',
@@ -290,7 +185,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
   }
 
   private generateMockMultipleSelect(params: QuizGenerationParams, questionNumber: number): Question {
-    const questions = {
+    const questions: Record<string, Record<string, string>> = {
       english: {
         mathematics: 'Which of the following are prime numbers?',
         physics: 'Which of these are units of energy?',
@@ -300,7 +195,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
       }
     };
 
-    const options = {
+    const options: Record<string, string[]> = {
       mathematics: ['2', '4', '7', '9'],
       physics: ['Joule', 'Newton', 'Calorie', 'Watt'],
       chemistry: ['Helium', 'Oxygen', 'Neon', 'Nitrogen'],
@@ -308,7 +203,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
       english: ['Metaphor', 'Noun', 'Alliteration', 'Verb']
     };
 
-    const correctAnswers = {
+    const correctAnswers: Record<string, string[]> = {
       mathematics: ['2', '7'],
       physics: ['Joule', 'Calorie'],
       chemistry: ['Helium', 'Neon'],
@@ -318,7 +213,7 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
 
     return {
       id: `mock_ms_${questionNumber}`,
-      question: questions.english[params.subject.toLowerCase()] || questions.english.mathematics,
+      question: questions.english?.[params.subject.toLowerCase()] || questions.english.mathematics,
       type: 'multiple-select',
       options: options[params.subject.toLowerCase()] || options.mathematics,
       correctAnswer: correctAnswers[params.subject.toLowerCase()] || correctAnswers.mathematics,
@@ -326,15 +221,6 @@ Ensure questions are educationally valuable, accurate, and appropriate for the s
       points: params.difficulty === 'easy' ? 10 : params.difficulty === 'medium' ? 15 : 20,
       difficulty: params.difficulty
     };
-  }
-
-  private validateAndSanitizeQuestions(questions: Question[]): Question[] {
-    return questions.map((question, index) => ({
-      ...question,
-      id: question.id || `q_${Date.now()}_${index}`,
-      points: question.points || 10,
-      difficulty: question.difficulty || 'medium'
-    }));
   }
 
   public async validateAPIKey(): Promise<boolean> {

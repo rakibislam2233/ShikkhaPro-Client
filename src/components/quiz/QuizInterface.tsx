@@ -174,6 +174,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               onNext={handleNextQuestion}
               canGoNext={currentQuestionIndex < currentQuiz.questions.length - 1}
               canGoPrevious={currentQuestionIndex > 0}
+              currentAnswer={currentQuiz.userAnswers?.[currentQuestion.id]}
+              requireAnswer={true}
             />
           </div>
 

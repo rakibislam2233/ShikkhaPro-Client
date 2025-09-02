@@ -1,19 +1,21 @@
 export type AcademicLevel = 'class-1' | 'class-2' | 'class-3' | 'class-4' | 'class-5' | 
   'class-6' | 'class-7' | 'class-8' | 'class-9' | 'class-10' | 'jsc' | 'ssc' | 'hsc' | 'bsc' | 'msc';
 
-export type QuestionType = 'mcq' | 'short-answer' | 'true-false' | 'mixed';
+export type QuestionType = 'mcq' | 'short-answer' | 'true-false' | 'multiple-select' | 'mixed';
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type QuizDifficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = QuizDifficulty;
 
-export type Language = 'english' | 'bengali' | 'hindi';
+export type QuizLanguage = 'english' | 'bengali' | 'hindi';
+export type Language = QuizLanguage;
 
 export interface QuizConfig {
   academicLevel: AcademicLevel;
   subject: string;
   topic: string;
-  language: Language;
+  language: QuizLanguage;
   questionType: QuestionType;
-  difficulty: Difficulty;
+  difficulty: QuizDifficulty;
   questionCount: number;
   timeLimit?: number; // in minutes
   instructions?: string;
@@ -24,7 +26,8 @@ export interface Question {
   question: string;
   type: QuestionType;
   options?: string[]; // For MCQ questions
-  correct_answer: string;
+  correctAnswer: string | string[]; // string for single answers, string[] for multiple-select
+  correct_answer?: string; // Legacy compatibility
   explanation: string;
   difficulty: Difficulty;
   points: number;
@@ -36,25 +39,37 @@ export interface Quiz {
   id: string;
   title: string;
   description?: string;
-  config: QuizConfig;
+  subject: string;
+  topic: string;
+  academicLevel: AcademicLevel;
+  difficulty: QuizDifficulty;
+  language: QuizLanguage;
   questions: Question[];
+  timeLimit?: number;
   createdAt: string;
   updatedAt: string;
   createdBy: string;
   isPublic: boolean;
   tags: string[];
-  attempts: number;
-  averageScore: number;
+  estimatedTime?: number;
+  totalPoints?: number;
+  instructions?: string;
+  userAnswers?: { [questionId: string]: string | string[] };
+  // Legacy compatibility
+  config?: QuizConfig;
+  attempts?: number;
+  averageScore?: number;
 }
 
 export interface QuizAttempt {
   id: string;
   quizId: string;
   userId: string;
-  answers: { [questionId: string]: string };
+  answers: { [questionId: string]: string | string[] };
   startedAt: string;
   completedAt?: string;
   score?: number;
+  totalScore?: number;
   totalQuestions: number;
   correctAnswers: number;
   timeSpent?: number; // in seconds

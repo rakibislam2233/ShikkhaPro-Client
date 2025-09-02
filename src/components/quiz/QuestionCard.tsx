@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { Card } from '../ui/Card';
-import type { Question } from '@/types/quiz.types';
+import type { Question } from '../../types/quiz.types';
 
 interface QuestionCardProps {
   question: Question;
@@ -44,9 +44,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             }
           } else {
             if (isSelected) {
-              buttonClass += "border-primary bg-primary/5 text-foreground";
+              buttonClass += "border-primary bg-primary/10 text-foreground shadow-sm ring-1 ring-primary/20";
             } else {
-              buttonClass += "border-border hover:border-muted-foreground/50 hover:bg-muted/50";
+              buttonClass += "border-border hover:border-primary/30 hover:bg-muted/50 hover:shadow-sm";
             }
           }
           
@@ -107,9 +107,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             }
           } else {
             if (isSelected) {
-              buttonClass += "border-primary bg-primary/5 text-foreground";
+              buttonClass += "border-primary bg-primary/10 text-foreground shadow-sm ring-1 ring-primary/20";
             } else {
-              buttonClass += "border-border hover:border-muted-foreground/50 hover:bg-muted/50";
+              buttonClass += "border-border hover:border-primary/30 hover:bg-muted/50 hover:shadow-sm";
             }
           }
           
@@ -191,9 +191,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             }
           } else {
             if (isSelected) {
-              buttonClass += "border-primary bg-primary/5 text-foreground";
+              buttonClass += "border-primary bg-primary/10 text-foreground shadow-sm ring-1 ring-primary/20";
             } else {
-              buttonClass += "border-border hover:border-muted-foreground/50 hover:bg-muted/50";
+              buttonClass += "border-border hover:border-primary/30 hover:bg-muted/50 hover:shadow-sm";
             }
           }
           

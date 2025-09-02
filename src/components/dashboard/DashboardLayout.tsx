@@ -1,199 +1,354 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Menu, 
-  X, 
-  Home, 
-  PlusCircle, 
-  FileText, 
-  BarChart3, 
-  Settings, 
+import { useState } from "react";
+import {
+  Menu,
+  Home,
+  PlusCircle,
+  FileText,
+  BarChart3,
+  Settings,
+  BookOpen,
+  X,
+  Bell,
+  Search,
   User,
   LogOut,
-  Bell,
-  Search
-} from 'lucide-react';
-import { Button } from '../ui/Button';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import ThemeToggle from '../ui/ThemeToggle';
+  HelpCircle,
+  Sparkles,
+  Trophy,
+  Target,
+  Clock,
+} from "lucide-react";
+import { Outlet } from "react-router-dom";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}
-
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  children,
-  activeTab,
-  onTabChange,
-}) => {
+const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const { theme } = useTheme();
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  // Mock user data
+  const user = {
+    name: "Ahmed Rahman",
+    email: "ahmed@email.com",
+    avatar: "AR",
+    level: "HSC Student",
+  };
 
   const navigation = [
-    { id: 'overview', name: 'Overview', icon: Home },
-    { id: 'create-quiz', name: 'Create Quiz', icon: PlusCircle },
-    { id: 'my-quizzes', name: 'My Quizzes', icon: FileText },
-    { id: 'analytics', name: 'Analytics', icon: BarChart3 },
-    { id: 'settings', name: 'Settings', icon: Settings },
+    {
+      id: "overview",
+      name: "Dashboard",
+      icon: Home,
+      href: "/",
+      description: "Your learning overview",
+    },
+    {
+      id: "create-quiz",
+      name: "Create Quiz",
+      icon: PlusCircle,
+      href: "/dashboard/create-quiz",
+      description: "Generate new questions",
+    },
+    {
+      id: "my-quizzes",
+      name: "My Quizzes",
+      icon: FileText,
+      description: "Your saved quizzes",
+    },
+    {
+      id: "analytics",
+      name: "Analytics",
+      icon: BarChart3,
+      description: "Performance insights",
+    },
+    {
+      id: "settings",
+      name: "Settings",
+      icon: Settings,
+      description: "Account preferences",
+    },
   ];
 
+  const quickStats = [
+    {
+      label: "Quizzes Taken",
+      value: "24",
+      icon: Target,
+      color: "text-blue-600",
+    },
+    {
+      label: "Score Average",
+      value: "87%",
+      icon: Trophy,
+      color: "text-emerald-600",
+    },
+    {
+      label: "Study Time",
+      value: "15h",
+      icon: Clock,
+      color: "text-purple-600",
+    },
+  ];
+
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile sidebar backdrop */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <motion.div
-        initial={false}
-        animate={{
-          x: sidebarOpen ? 0 : '-100%',
-        }}
-        transition={{ type: 'tween', duration: 0.3 }}
-        className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border lg:translate-x-0 lg:static lg:inset-0"
-      >
-        <div className="flex h-full flex-col">
-          {/* Sidebar header */}
-          <div className="flex h-16 shrink-0 items-center justify-between px-4">
-            <h1 className="text-xl font-bold text-primary">QuizGen</h1>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 space-y-1 px-2 py-4">
-            {navigation.map((item) => {
-              const isActive = activeTab === item.id;
-              return (
-                <motion.button
-                  key={item.id}
-                  onClick={() => {
-                    onTabChange(item.id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`
-                    group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors
-                    ${isActive 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }
-                  `}
-                  whileHover={{ x: isActive ? 0 : 4 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <item.icon
-                    className={`
-                      mr-3 h-5 w-5 transition-colors
-                      ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'}
-                    `}
-                  />
-                  {item.name}
-                </motion.button>
-              );
-            })}
-          </nav>
-
-          {/* User section */}
-          <div className="border-t border-border p-4">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="h-8 w-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">
-                {user?.name?.charAt(0) || 'U'}
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <div
+          className={`
+            fixed lg:static lg:translate-x-0 inset-y-0 left-0 z-50
+            w-64 lg:w-80 transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          `}
+        >
+          <div className="flex h-full flex-col bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-r border-gray-200 shadow-xl">
+            {/* Sidebar Header */}
+            <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 border-b border-gray-200">
+              <div className="flex items-center space-x-2 lg:space-x-3">
+                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg">
+                  <BookOpen className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg lg:text-xl font-bold text-primary">
+                    ShikkhaPro
+                  </h1>
+                  <p className="text-xs text-gray-500 hidden lg:block">
+                    AI Learning Platform
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {user?.name || 'User'}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user?.email || 'user@example.com'}
-                </p>
-              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={logout}
-              className="w-full justify-start text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </motion.div>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
-        {/* Top bar */}
-        <div className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-border bg-card/95 backdrop-blur px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-
-          <div className="h-6 w-px bg-border lg:hidden" aria-hidden="true" />
-
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            {/* Search */}
-            <div className="relative flex flex-1 max-w-md">
-              <Search className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-muted-foreground pl-3" />
-              <input
-                className="block h-full w-full border-0 bg-transparent py-0 pl-10 pr-0 text-foreground placeholder:text-muted-foreground focus:ring-0 sm:text-sm"
-                placeholder="Search quizzes..."
-                type="search"
-                name="search"
-              />
-            </div>
-            
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
-              {/* Notifications */}
-              <Button variant="ghost" size="sm" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full" />
-              </Button>
-
-              {/* Theme toggle */}
-              <ThemeToggle />
-
-              {/* Profile dropdown trigger */}
-              <div className="relative">
-                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                  <div className="h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">
-                    {user?.name?.charAt(0) || 'U'}
+            {/* User Profile Card */}
+            <div className="p-4 lg:p-6">
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-blue-200">
+                <div className="flex items-center space-x-2 lg:space-x-3">
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm lg:text-lg shadow-lg">
+                    {user.avatar}
                   </div>
-                  <span className="hidden sm:block text-sm font-medium">
-                    {user?.name || 'User'}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {user.level}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Sparkles className="w-3 h-3 lg:w-4 lg:h-4 text-yellow-500" />
+                    <span className="text-xs font-medium text-yellow-600">
+                      Pro
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats - Hidden on small screens, shown on larger */}
+            <div className="px-4 lg:px-6 mb-4 lg:mb-6 hidden md:block">
+              <h3 className="text-xs lg:text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 lg:mb-3">
+                Quick Stats
+              </h3>
+              <div className="grid grid-cols-3 gap-2 lg:gap-3">
+                {quickStats.map((stat, index) => {
+                  const IconComponent = stat.icon;
+                  return (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg lg:rounded-xl p-2 lg:p-3 border border-gray-100 hover:shadow-md transition-all duration-200"
+                    >
+                      <div className="flex flex-col items-center text-center space-y-1">
+                        <IconComponent
+                          className={`w-3 h-3 lg:w-4 lg:h-4 ${stat.color}`}
+                        />
+                        <span className="text-sm lg:text-lg font-bold text-gray-900">
+                          {stat.value}
+                        </span>
+                        <span className="text-xs text-gray-500 leading-tight">
+                          {stat.label}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 px-4 lg:px-6 pb-4 lg:pb-6">
+              <ul className="space-y-1 lg:space-y-2">
+                {navigation.map((item) => {
+                  const IconComponent = item.icon;
+                  const isActive = true;
+                  return (
+                    <li key={item.id}>
+                      <button
+                        className={`
+                        w-full group flex items-center justify-between rounded-lg lg:rounded-xl px-3 lg:px-4 py-2 lg:py-3 text-sm font-medium transition-all duration-200
+                        ${
+                          isActive
+                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                            : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        }
+                      `}
+                      >
+                        <div className="flex items-center space-x-2 lg:space-x-3">
+                          <IconComponent
+                            className={`w-4 h-4 lg:w-5 lg:h-5 ${
+                              isActive
+                                ? "text-white"
+                                : "text-gray-400 group-hover:text-gray-600"
+                            }`}
+                          />
+                          <div className="text-left">
+                            <div className="font-medium text-sm lg:text-base">
+                              {item.name}
+                            </div>
+                            <div
+                              className={`text-xs hidden lg:block ${
+                                isActive ? "text-blue-100" : "text-gray-500"
+                              }`}
+                            >
+                              {item.description}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            {/* Sidebar Footer - Hidden on mobile */}
+            <div className="p-4 lg:p-6 border-t border-gray-200 hidden md:block">
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 lg:p-4 border border-emerald-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Trophy className="w-3 h-3 lg:w-4 lg:h-4 text-emerald-600" />
+                  <span className="text-xs lg:text-sm font-semibold text-emerald-800">
+                    Upgrade to Pro
                   </span>
-                </Button>
+                </div>
+                <p className="text-xs text-emerald-700 mb-2 lg:mb-3">
+                  Unlock unlimited quizzes and advanced analytics
+                </p>
+                <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs lg:text-sm font-medium py-2 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-sm">
+                  Upgrade Now
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main content area */}
-        <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+          {/* Top Navigation Bar */}
+          <header className="sticky top-0 z-40 bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-b border-gray-200">
+            <div className="flex h-14 lg:h-16 items-center justify-between px-4 lg:px-8">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Menu className="w-5 h-5 lg:w-6 lg:h-6 text-gray-700" />
+              </button>
+
+              {/* Logo for mobile (when sidebar is closed) */}
+              <div className="lg:hidden flex items-center space-x-2">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-lg font-bold text-primary">
+                  ShikkhaPro
+                </span>
+              </div>
+
+              {/* Search Bar */}
+              <div className="flex-1 max-w-xs lg:max-w-lg mx-2 lg:mx-4">
+                <div className="relative">
+                  <Search className="absolute left-2 lg:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full pl-8 lg:pl-10 pr-3 lg:pr-4 py-1.5 lg:py-2 bg-gray-50 border border-gray-200 rounded-lg lg:rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              {/* Top Navigation Actions */}
+              <div className="flex items-center space-x-1 lg:space-x-3">
+                {/* Notifications */}
+                <button className="relative p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors">
+                  <Bell className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
+                  <span className="absolute top-0.5 lg:top-1 right-0.5 lg:right-1 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full"></span>
+                </button>
+
+                {/* Help - Hidden on small screens */}
+                <button className="hidden sm:block p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors">
+                  <HelpCircle className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
+                </button>
+
+                {/* Profile Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+                      {user.avatar}
+                    </div>
+                    <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">
+                      {user.name.split(" ")[0]}
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {profileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 lg:w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">
+                          {user.name}
+                        </p>
+                        <p className="text-xs text-gray-500">{user.email}</p>
+                      </div>
+                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <User className="w-4 h-4" />
+                        <span>Profile Settings</span>
+                      </button>
+                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </header>
+          {/* Page Content */}
+          <Outlet />
+        </div>
       </div>
+
+      {/* Click outside to close profile dropdown */}
+      {profileDropdownOpen && (
+        <div
+          className="fixed inset-0 z-30"
+          onClick={() => setProfileDropdownOpen(false)}
+        />
+      )}
     </div>
   );
 };

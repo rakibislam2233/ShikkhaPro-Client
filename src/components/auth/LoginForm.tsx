@@ -19,11 +19,7 @@ import {
 } from "../ui/card";
 import { Input } from "../ui/input";
 
-interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
+import type { LoginFormData } from "../../types/auth.types";
 
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +31,7 @@ const LoginForm: React.FC = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(loginSchema) as any,
     defaultValues: {
       email: "",
       password: "",
@@ -86,7 +82,7 @@ const LoginForm: React.FC = () => {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
               {error && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}

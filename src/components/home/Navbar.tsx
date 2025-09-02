@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(true);
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
 

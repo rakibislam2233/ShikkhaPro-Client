@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, SkipForward, SkipBack, Flag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SkipForward, SkipBack, Flag, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface NavigationControlsProps {
@@ -16,6 +16,8 @@ interface NavigationControlsProps {
   showQuestionNumber?: boolean;
   onMarkForReview?: () => void;
   isMarkedForReview?: boolean;
+  currentAnswer?: string | string[];
+  requireAnswer?: boolean;
 }
 
 const NavigationControls: React.FC<NavigationControlsProps> = ({
@@ -31,7 +33,20 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
   showQuestionNumber = true,
   onMarkForReview,
   isMarkedForReview = false,
+  currentAnswer,
+  requireAnswer = true,
 }) => {
+  
+  // Check if current question has an answer
+  const hasAnswer = () => {
+    if (!currentAnswer) return false;
+    if (Array.isArray(currentAnswer)) {
+      return currentAnswer.length > 0;
+    }
+    return currentAnswer.toString().trim().length > 0;
+  };
+
+  const canProceedNext = canGoNext && (!requireAnswer || hasAnswer());
   return (
     <div className="flex items-center justify-between p-4 bg-card rounded-lg border">
       {/* Left Section - Previous Navigation */}
@@ -73,6 +88,19 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
           </div>
         )}
 
+        {/* Answer Required Warning */}
+        {requireAnswer && !hasAnswer() && canGoNext && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center space-x-2 text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full text-xs font-medium"
+          >
+            <AlertTriangle className="h-3 w-3" />
+            <span className="hidden sm:inline">Answer required to proceed</span>
+            <span className="sm:hidden">Answer required</span>
+          </motion.div>
+        )}
+
         {onMarkForReview && (
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -96,14 +124,16 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
       {/* Right Section - Next Navigation */}
       <div className="flex items-center space-x-2">
         <motion.div
-          whileHover={{ scale: canGoNext ? 1.05 : 1 }}
-          whileTap={{ scale: canGoNext ? 0.95 : 1 }}
+          whileHover={{ scale: canProceedNext ? 1.05 : 1 }}
+          whileTap={{ scale: canProceedNext ? 0.95 : 1 }}
         >
           <Button
-            variant={canGoNext ? "default" : "outline"}
+            variant={canProceedNext ? "default" : "outline"}
             onClick={onNext}
-            disabled={!canGoNext}
-            className="flex items-center space-x-2 px-4"
+            disabled={!canProceedNext}
+            className={`flex items-center space-x-2 px-4 ${
+              !canProceedNext && canGoNext ? 'opacity-60 cursor-not-allowed' : ''
+            }`}
           >
             <span className="hidden sm:inline">
               {currentIndex === totalQuestions - 1 ? 'Finish' : 'Next'}

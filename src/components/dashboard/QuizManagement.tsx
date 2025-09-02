@@ -17,7 +17,7 @@ import {
   Tag
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import { Card } from '../ui/card';
 import type { Quiz } from '@/types/quiz.types';
 
 interface QuizManagementProps {
@@ -30,78 +30,28 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
   const [sortBy, setSortBy] = useState('recent');
   const [selectedQuizzes, setSelectedQuizzes] = useState<string[]>([]);
 
-  // Mock data for demonstration
-  const quizzes: (Quiz & { 
-    attempts: number; 
-    avgScore: number; 
-    status: 'active' | 'draft' | 'archived';
-    lastAttempt: string;
-  })[] = [
-    {
-      id: '1',
-      title: 'Mathematics - Algebra Basics',
-      subject: 'Mathematics',
-      academicLevel: 'Class 9',
-      difficulty: 'medium',
-      language: 'english',
-      questions: [],
-      timeLimit: 30,
-      createdAt: '2024-01-15T10:00:00Z',
-      updatedAt: '2024-01-15T10:00:00Z',
-      attempts: 23,
-      avgScore: 78,
-      status: 'active',
-      lastAttempt: '2024-01-20T15:30:00Z'
-    },
-    {
-      id: '2',
-      title: 'Physics - Motion and Forces',
-      subject: 'Physics',
-      academicLevel: 'Class 10',
-      difficulty: 'hard',
-      language: 'english',
-      questions: [],
-      timeLimit: 45,
-      createdAt: '2024-01-12T14:00:00Z',
-      updatedAt: '2024-01-12T14:00:00Z',
-      attempts: 18,
-      avgScore: 82,
-      status: 'active',
-      lastAttempt: '2024-01-19T11:20:00Z'
-    },
-    {
-      id: '3',
-      title: 'Chemistry - Periodic Table',
-      subject: 'Chemistry',
-      academicLevel: 'Class 8',
-      difficulty: 'easy',
-      language: 'bengali',
-      questions: [],
-      timeLimit: 20,
-      createdAt: '2024-01-10T09:00:00Z',
-      updatedAt: '2024-01-10T09:00:00Z',
-      attempts: 31,
-      avgScore: 91,
-      status: 'archived',
-      lastAttempt: '2024-01-18T16:45:00Z'
-    },
-    {
-      id: '4',
-      title: 'English Literature - Poetry Analysis',
-      subject: 'English',
-      academicLevel: 'HSC',
-      difficulty: 'medium',
-      language: 'english',
-      questions: [],
-      timeLimit: 60,
-      createdAt: '2024-01-08T11:30:00Z',
-      updatedAt: '2024-01-08T11:30:00Z',
-      attempts: 0,
-      avgScore: 0,
-      status: 'draft',
-      lastAttempt: ''
-    },
-  ];
+  // Get demo data from localStorage
+  const savedQuizzes = JSON.parse(localStorage.getItem('saved-quizzes') || '[]');
+  const quizAttempts = JSON.parse(localStorage.getItem('quiz-attempts') || '[]');
+
+  // Transform the data to include additional info
+  const quizzes = savedQuizzes.map((quiz: Quiz) => {
+    const attempts = quizAttempts.filter((attempt: any) => attempt.quizId === quiz.id);
+    const avgScore = attempts.length > 0 
+      ? Math.round(attempts.reduce((sum: number, attempt: any) => sum + (attempt.score / attempt.totalScore) * 100, 0) / attempts.length)
+      : 0;
+    const lastAttempt = attempts.length > 0 
+      ? attempts.sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0].completedAt
+      : '';
+
+    return {
+      ...quiz,
+      attempts: attempts.length,
+      avgScore,
+      status: quiz.isPublic ? 'active' : 'draft' as 'active' | 'draft' | 'archived',
+      lastAttempt
+    };
+  });
 
   const filteredQuizzes = quizzes.filter(quiz => {
     const matchesSearch = quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

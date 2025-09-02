@@ -1,4 +1,4 @@
-import type { QuizConfig } from '@/types/quiz.types';
+import type { QuizConfig } from '../types/quiz.types';
 import * as yup from 'yup';
 
 // Validation schemas for forms
@@ -32,6 +32,10 @@ export const registerSchema = yup.object({
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     )
     .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords must match')
+    .required('Please confirm your password'),
   agreeToTerms: yup
     .boolean()
     .oneOf([true], 'You must agree to the terms and conditions'),
@@ -96,7 +100,7 @@ export const quizConfigSchema = yup.object({
     .required('Language is required'),
   questionType: yup
     .string()
-    .oneOf(['mcq', 'short-answer', 'true-false', 'mixed'])
+    .oneOf(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'])
     .required('Question type is required'),
   difficulty: yup
     .string()

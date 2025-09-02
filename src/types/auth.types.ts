@@ -70,3 +70,22 @@ export interface AuthContextType extends AuthState {
   updateProfile: (userData: Partial<User>) => Promise<void>;
   clearError: () => void;
 }
+
+// Form data types for react-hook-form
+export interface LoginFormData {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+export interface RegisterFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
+
+export interface ForgotPasswordFormData {
+  email: string;
+}

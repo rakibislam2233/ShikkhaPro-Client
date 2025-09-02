@@ -17,9 +17,7 @@ import {
 } from "../ui/card";
 import { forgotPasswordSchema } from "../../utils/validation.utils";
 
-interface ForgotPasswordFormData {
-  email: string;
-}
+import type { ForgotPasswordFormData } from "../../types/auth.types";
 
 const ForgotPasswordForm: React.FC = () => {
   const [emailSent, setEmailSent] = React.useState(false);

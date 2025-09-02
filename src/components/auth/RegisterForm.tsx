@@ -27,21 +27,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Separator } from "../ui/Separator";
 import { registerSchema } from "../../utils/validation.utils";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
-interface RegisterFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agreeToTerms: boolean;
-}
+import type { RegisterFormData } from "../../types/auth.types";
 
 const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const { register: registerUser, isLoading, error } = useAuth();
   const navigate = useNavigate();
@@ -52,7 +44,7 @@ const RegisterForm: React.FC = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
-    resolver: yupResolver(registerSchema),
+    resolver: yupResolver(registerSchema) as any,
     defaultValues: {
       name: "",
       email: "",
@@ -120,7 +112,7 @@ const RegisterForm: React.FC = () => {
     try {
       await registerUser(data);
       navigate("/dashboard");
-    } catch (err) {
+    } catch{
       // Error handled by context
     }
   };
