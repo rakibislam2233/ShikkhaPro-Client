@@ -116,8 +116,8 @@ const DashboardOverview = () => {
                   {stats.totalQuizzes}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <FileText className="h-6 w-6 text-primary" />
               </div>
             </div>
           </Card>
@@ -164,8 +164,8 @@ const DashboardOverview = () => {
                   {stats.completionRate}%
                 </p>
               </div>
-              <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Target className="h-6 w-6 text-primary" />
               </div>
             </div>
           </Card>
@@ -286,13 +286,13 @@ const DashboardOverview = () => {
                     className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       activity.type === "quiz_completed"
                         ? "bg-green-100 dark:bg-green-900/30"
-                        : "bg-blue-100 dark:bg-blue-900/30"
+                        : "bg-primary/10"
                     }`}
                   >
                     {activity.type === "quiz_completed" ? (
                       <Trophy className="h-4 w-4 text-green-600 dark:text-green-400" />
                     ) : (
-                      <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <FileText className="h-4 w-4 text-primary" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

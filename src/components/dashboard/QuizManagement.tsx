@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
   Plus,
   Search,
   MoreHorizontal,
@@ -14,91 +14,109 @@ import {
   Calendar,
   Clock,
   BookOpen,
-  Tag
-} from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import type { Quiz } from '@/types/quiz.types';
+  Tag,
+} from "lucide-react";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import type { Quiz } from "@/types/quiz.types";
+import { Link } from "react-router-dom";
 
-interface QuizManagementProps {
-  onCreateQuiz: () => void;
-}
-
-const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterBy, setFilterBy] = useState('all');
-  const [sortBy, setSortBy] = useState('recent');
+const QuizManagement = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterBy, setFilterBy] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
   const [selectedQuizzes, setSelectedQuizzes] = useState<string[]>([]);
 
   // Get demo data from localStorage
-  const savedQuizzes = JSON.parse(localStorage.getItem('saved-quizzes') || '[]');
-  const quizAttempts = JSON.parse(localStorage.getItem('quiz-attempts') || '[]');
+  const savedQuizzes = JSON.parse(
+    localStorage.getItem("saved-quizzes") || "[]"
+  );
+  const quizAttempts = JSON.parse(
+    localStorage.getItem("quiz-attempts") || "[]"
+  );
 
   // Transform the data to include additional info
   const quizzes = savedQuizzes.map((quiz: Quiz) => {
-    const attempts = quizAttempts.filter((attempt: any) => attempt.quizId === quiz.id);
-    const avgScore = attempts.length > 0 
-      ? Math.round(attempts.reduce((sum: number, attempt: any) => sum + (attempt.score / attempt.totalScore) * 100, 0) / attempts.length)
-      : 0;
-    const lastAttempt = attempts.length > 0 
-      ? attempts.sort((a: any, b: any) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0].completedAt
-      : '';
+    const attempts = quizAttempts.filter(
+      (attempt: any) => attempt.quizId === quiz.id
+    );
+    const avgScore =
+      attempts.length > 0
+        ? Math.round(
+            attempts.reduce(
+              (sum: number, attempt: any) =>
+                sum + (attempt.score / attempt.totalScore) * 100,
+              0
+            ) / attempts.length
+          )
+        : 0;
+    const lastAttempt =
+      attempts.length > 0
+        ? attempts.sort(
+            (a: any, b: any) =>
+              new Date(b.completedAt).getTime() -
+              new Date(a.completedAt).getTime()
+          )[0].completedAt
+        : "";
 
     return {
       ...quiz,
       attempts: attempts.length,
       avgScore,
-      status: quiz.isPublic ? 'active' : 'draft' as 'active' | 'draft' | 'archived',
-      lastAttempt
+      status: quiz.isPublic
+        ? "active"
+        : ("draft" as "active" | "draft" | "archived"),
+      lastAttempt,
     };
   });
 
   const filteredQuizzes = quizzes.filter((quiz: any) => {
-    const matchesSearch = quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         quiz.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterBy === 'all' || quiz.status === filterBy;
+    const matchesSearch =
+      quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quiz.subject.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterBy === "all" || quiz.status === filterBy;
     return matchesSearch && matchesFilter;
   });
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'Never';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    if (!dateString) return "Never";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'archived':
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+      case "active":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      case "draft":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "archived":
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
       default:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
     }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy':
-        return 'text-green-600 dark:text-green-400';
-      case 'medium':
-        return 'text-yellow-600 dark:text-yellow-400';
-      case 'hard':
-        return 'text-red-600 dark:text-red-400';
+      case "easy":
+        return "text-green-600 dark:text-green-400";
+      case "medium":
+        return "text-yellow-600 dark:text-yellow-400";
+      case "hard":
+        return "text-red-600 dark:text-red-400";
       default:
-        return 'text-gray-600 dark:text-gray-400';
+        return "text-gray-600 dark:text-gray-400";
     }
   };
 
   const handleQuizSelect = (quizId: string) => {
-    setSelectedQuizzes(prev => 
-      prev.includes(quizId) 
-        ? prev.filter(id => id !== quizId)
+    setSelectedQuizzes((prev) =>
+      prev.includes(quizId)
+        ? prev.filter((id) => id !== quizId)
         : [...prev, quizId]
     );
   };
@@ -112,17 +130,22 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Quiz Management</h1>
-          <p className="text-muted-foreground mt-1">
-            Create, edit, and manage your quiz collection
+        {/* Page Header */}
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+            My Quizzes
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your created quizzes, track performance, and analyze results.
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
-          <Button onClick={onCreateQuiz} className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Create Quiz</span>
-          </Button>
+          <Link to="/dashboard/create-quiz">
+            <Button className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>Create Quiz</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -140,7 +163,7 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
                 className="pl-10 pr-4 py-2 w-full border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
               />
             </div>
-            
+
             <select
               value={filterBy}
               onChange={(e) => setFilterBy(e.target.value)}
@@ -172,14 +195,14 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkAction('archive')}
+                onClick={() => handleBulkAction("archive")}
               >
                 Archive
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkAction('delete')}
+                onClick={() => handleBulkAction("delete")}
                 className="text-red-600 hover:text-red-700"
               >
                 Delete
@@ -206,38 +229,48 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
                   onChange={() => handleQuizSelect(quiz.id)}
                   className="mt-1 h-4 w-4 text-primary border-border rounded focus:ring-primary"
                 />
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-foreground mb-2">
                         {quiz.title}
                       </h3>
-                      
+
                       <div className="flex flex-wrap items-center gap-4 mb-3">
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <BookOpen className="h-4 w-4" />
                           <span>{quiz.subject}</span>
                         </div>
-                        
+
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Tag className="h-4 w-4" />
                           <span>{quiz.academicLevel}</span>
                         </div>
-                        
+
                         <div className="flex items-center space-x-1 text-sm">
-                          <span className="text-muted-foreground">Difficulty:</span>
-                          <span className={`font-medium ${getDifficultyColor(quiz.difficulty)}`}>
+                          <span className="text-muted-foreground">
+                            Difficulty:
+                          </span>
+                          <span
+                            className={`font-medium ${getDifficultyColor(
+                              quiz.difficulty
+                            )}`}
+                          >
                             {quiz.difficulty}
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Clock className="h-4 w-4" />
                           <span>{quiz.timeLimit} min</span>
                         </div>
-                        
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(quiz.status)}`}>
+
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            quiz.status
+                          )}`}
+                        >
                           {quiz.status}
                         </span>
                       </div>
@@ -246,38 +279,48 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
                         <div className="flex items-center space-x-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <div className="text-sm font-medium">{quiz.attempts}</div>
-                            <div className="text-xs text-muted-foreground">Attempts</div>
+                            <div className="text-sm font-medium">
+                              {quiz.attempts}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Attempts
+                            </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <BarChart3 className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <div className="text-sm font-medium">
-                              {quiz.attempts > 0 ? `${quiz.avgScore}%` : 'N/A'}
+                              {quiz.attempts > 0 ? `${quiz.avgScore}%` : "N/A"}
                             </div>
-                            <div className="text-xs text-muted-foreground">Avg Score</div>
+                            <div className="text-xs text-muted-foreground">
+                              Avg Score
+                            </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <div className="text-sm font-medium">
                               {formatDate(quiz.createdAt)}
                             </div>
-                            <div className="text-xs text-muted-foreground">Created</div>
+                            <div className="text-xs text-muted-foreground">
+                              Created
+                            </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <div className="text-sm font-medium">
                               {formatDate(quiz.lastAttempt)}
                             </div>
-                            <div className="text-xs text-muted-foreground">Last Attempt</div>
+                            <div className="text-xs text-muted-foreground">
+                              Last Attempt
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -287,23 +330,31 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
                       <Button variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Copy className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Share2 className="h-4 w-4" />
                       </Button>
-                      
-                      <Button 
-                        variant="outline" 
+
+                      <Button
+                        variant="outline"
                         size="sm"
-                        className={quiz.status === 'active' ? 'text-orange-600' : 'text-green-600'}
+                        className={
+                          quiz.status === "active"
+                            ? "text-orange-600"
+                            : "text-green-600"
+                        }
                       >
-                        {quiz.status === 'active' ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        {quiz.status === "active" ? (
+                          <Pause className="h-4 w-4" />
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -318,14 +369,15 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
         {filteredQuizzes.length === 0 && (
           <Card className="p-12 text-center">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No quizzes found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No quizzes found
+            </h3>
             <p className="text-muted-foreground mb-6">
-              {searchTerm || filterBy !== 'all' 
-                ? 'Try adjusting your search or filters'
-                : 'Get started by creating your first quiz'
-              }
+              {searchTerm || filterBy !== "all"
+                ? "Try adjusting your search or filters"
+                : "Get started by creating your first quiz"}
             </p>
-            {!searchTerm && filterBy === 'all' && (
+            {!searchTerm && filterBy === "all" && (
               <Button onClick={onCreateQuiz}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Quiz

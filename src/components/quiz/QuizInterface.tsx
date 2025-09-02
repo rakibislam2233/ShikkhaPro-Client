@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -14,6 +15,7 @@ interface QuizInterfaceProps {
 
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const { currentQuiz, submitQuiz, saveAnswer, startQuiz } = useQuiz();
+  const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,14 +64,12 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     }
   };
 
-  const handleQuestionJump = (index: number) => {
-    setCurrentQuestionIndex(index);
-  };
-
   const handleSubmitQuiz = async () => {
     setIsSubmitting(true);
     try {
       await submitQuiz(quizId);
+      // Navigate to results page after successful submission
+      // navigate(`/dashboard/quiz/results/${quizId}`);
     } catch (error) {
       console.error('Failed to submit quiz:', error);
     } finally {
@@ -150,9 +150,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="space-y-6">
           {/* Main Quiz Area */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="space-y-6">
             {/* Progress */}
             <ProgressBar
               current={currentQuestionIndex + 1}
@@ -182,74 +182,11 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               totalQuestions={currentQuiz.questions.length}
               onPrevious={handlePreviousQuestion}
               onNext={handleNextQuestion}
-              canGoNext={currentQuestionIndex < currentQuiz.questions.length - 1}
+              canGoNext={true}
               canGoPrevious={currentQuestionIndex > 0}
               currentAnswer={currentQuiz.userAnswers?.[currentQuestion.id]}
               requireAnswer={true}
             />
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Question Overview */}
-            <Card className="p-4">
-              <h3 className="font-semibold mb-3">Questions Overview</h3>
-              <div className="grid grid-cols-5 gap-2">
-                {currentQuiz.questions.map((_, index) => {
-                  const isAnswered = currentQuiz.userAnswers && currentQuiz.userAnswers[currentQuiz.questions[index].id];
-                  const isCurrent = index === currentQuestionIndex;
-                  
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => handleQuestionJump(index)}
-                      className={`
-                        h-8 w-8 text-xs font-medium rounded transition-colors
-                        ${isCurrent 
-                          ? 'bg-primary text-primary-foreground' 
-                          : isAnswered 
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                        }
-                      `}
-                    >
-                      {index + 1}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="mt-4 text-sm text-muted-foreground">
-                <div className="flex justify-between">
-                  <span>Answered:</span>
-                  <span>{getAnsweredQuestions()}/{currentQuiz.questions.length}</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Quiz Info */}
-            <Card className="p-4">
-              <h3 className="font-semibold mb-3">Quiz Information</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Questions:</span>
-                  <span>{currentQuiz.questions.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Difficulty:</span>
-                  <span className="capitalize">{currentQuiz.difficulty}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Language:</span>
-                  <span className="capitalize">{currentQuiz.language}</span>
-                </div>
-                {currentQuiz.timeLimit && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Time Limit:</span>
-                    <span>{currentQuiz.timeLimit} min</span>
-                  </div>
-                )}
-              </div>
-            </Card>
           </div>
         </div>
       </div>

@@ -1,62 +1,62 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate } from 'react-router-dom';
-import { 
-  BookOpen, 
-  Brain, 
-  Target, 
-  ArrowRight, 
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
+import {
+  BookOpen,
+  Brain,
+  Target,
+  ArrowRight,
   ArrowLeft,
   Sparkles,
   FileText,
-  CheckCircle
-} from 'lucide-react';
-import { useQuiz } from '../../contexts/QuizContext';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Input } from '../ui/Input';
-import { Label } from '../ui/Label';
-import { Textarea } from '../ui/Textarea';
-import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
-import { Badge } from '../ui/Badge';
-import { Progress } from '../ui/Progress';
-import { 
-  ACADEMIC_LEVELS, 
-  QUESTION_TYPES, 
-  DIFFICULTY_LEVELS, 
+  CheckCircle,
+} from "lucide-react";
+import { useQuiz } from "../../contexts/QuizContext";
+import { Button } from "../ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
+import { Textarea } from "../ui/Textarea";
+import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
+import { Badge } from "../ui/Badge";
+import { Progress } from "../ui/Progress";
+import {
+  ACADEMIC_LEVELS,
+  QUESTION_TYPES,
+  DIFFICULTY_LEVELS,
   LANGUAGES,
   QUESTION_COUNT_OPTIONS,
-  SUBJECT_SUGGESTIONS
-} from '../../utils/constants';
-import { quizConfigSchema } from '../../utils/validation.utils';
-import { cn } from '@/lib/utils';
-import type { QuizConfig } from '@/types/quiz.types';
+  SUBJECT_SUGGESTIONS,
+} from "../../utils/constants";
+import { quizConfigSchema } from "../../utils/validation.utils";
+import { cn } from "@/lib/utils";
+import type { QuizConfig } from "@/types/quiz.types";
 
 const steps = [
   {
     id: 1,
-    title: 'Academic Level',
-    description: 'Select your academic level',
+    title: "Academic Level",
+    description: "Select your academic level",
     icon: BookOpen,
   },
   {
     id: 2,
-    title: 'Subject & Topic',
-    description: 'What do you want to study?',
+    title: "Subject & Topic",
+    description: "What do you want to study?",
     icon: Brain,
   },
   {
     id: 3,
-    title: 'Quiz Preferences',
-    description: 'Customize your quiz',
+    title: "Quiz Preferences",
+    description: "Customize your quiz",
     icon: Target,
   },
   {
     id: 4,
-    title: 'Generate Quiz',
-    description: 'Let AI create your quiz',
+    title: "Generate Quiz",
+    description: "Let AI create your quiz",
     icon: Sparkles,
   },
 ];
@@ -77,15 +77,15 @@ const QuizCreator: React.FC = () => {
   } = useForm<QuizConfig>({
     resolver: yupResolver(quizConfigSchema),
     defaultValues: {
-      academicLevel: 'class-10',
-      subject: '',
-      topic: '',
-      language: 'english',
-      questionType: 'mcq',
-      difficulty: 'medium',
+      academicLevel: "class-10",
+      subject: "",
+      topic: "",
+      language: "english",
+      questionType: "mcq",
+      difficulty: "medium",
       questionCount: 10,
       timeLimit: 30,
-      instructions: '',
+      instructions: "",
     },
   });
 
@@ -93,31 +93,32 @@ const QuizCreator: React.FC = () => {
 
   const nextStep = async () => {
     const fieldsToValidate = {
-      1: ['academicLevel'],
-      2: ['subject', 'topic'],
-      3: ['language', 'questionType', 'difficulty', 'questionCount'],
+      1: ["academicLevel"],
+      2: ["subject", "topic"],
+      3: ["language", "questionType", "difficulty", "questionCount"],
     };
 
-    const currentFields = fieldsToValidate[currentStep as keyof typeof fieldsToValidate];
+    const currentFields =
+      fieldsToValidate[currentStep as keyof typeof fieldsToValidate];
     if (currentFields) {
       const isValid = await trigger(currentFields as any);
       if (!isValid) return;
     }
 
-    setCurrentStep(prev => Math.min(prev + 1, 4));
+    setCurrentStep((prev) => Math.min(prev + 1, 4));
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const onSubmit = async (data: QuizConfig) => {
     setIsGenerating(true);
     try {
       await generateQuiz(data);
-      navigate('/dashboard/quiz/current');
+      navigate("/dashboard/quiz/current");
     } catch (error) {
-      console.error('Failed to generate quiz:', error);
+      console.error("Failed to generate quiz:", error);
       setIsGenerating(false);
     }
   };
@@ -150,12 +151,13 @@ const QuizCreator: React.FC = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Card 
+                  <Card
                     className={cn(
                       "cursor-pointer transition-all duration-200 hover:shadow-md",
-                      watchedValues.academicLevel === level.value && "ring-2 ring-primary"
+                      watchedValues.academicLevel === level.value &&
+                        "ring-2 ring-primary"
                     )}
-                    onClick={() => setValue('academicLevel', level.value)}
+                    onClick={() => setValue("academicLevel", level.value)}
                   >
                     <CardContent className="p-4 text-center">
                       <div className="text-lg font-semibold">{level.label}</div>
@@ -197,24 +199,28 @@ const QuizCreator: React.FC = () => {
                 <Input
                   id="subject"
                   placeholder="e.g., Mathematics, Physics, History"
-                  {...register('subject')}
+                  {...register("subject")}
                 />
                 {errors.subject && (
-                  <p className="text-destructive text-sm">{errors.subject.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.subject.message}
+                  </p>
                 )}
-                
+
                 {/* Subject Suggestions */}
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {getSubjectSuggestions().slice(0, 6).map((suggestion) => (
-                    <Badge
-                      key={suggestion}
-                      variant="outline"
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                      onClick={() => setValue('subject', suggestion)}
-                    >
-                      {suggestion}
-                    </Badge>
-                  ))}
+                  {getSubjectSuggestions()
+                    .slice(0, 6)
+                    .map((suggestion) => (
+                      <Badge
+                        key={suggestion}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                        onClick={() => setValue("subject", suggestion)}
+                      >
+                        {suggestion}
+                      </Badge>
+                    ))}
                 </div>
               </div>
 
@@ -223,10 +229,12 @@ const QuizCreator: React.FC = () => {
                 <Input
                   id="topic"
                   placeholder="e.g., Quadratic Equations, Photosynthesis, World War II"
-                  {...register('topic')}
+                  {...register("topic")}
                 />
                 {errors.topic && (
-                  <p className="text-destructive text-sm">{errors.topic.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.topic.message}
+                  </p>
                 )}
                 <p className="text-xs text-muted-foreground">
                   Be specific to get more targeted questions
@@ -234,12 +242,14 @@ const QuizCreator: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="instructions">Additional Instructions (Optional)</Label>
+                <Label htmlFor="instructions">
+                  Additional Instructions (Optional)
+                </Label>
                 <Textarea
                   id="instructions"
                   placeholder="Any specific requirements or focus areas..."
                   rows={3}
-                  {...register('instructions')}
+                  {...register("instructions")}
                 />
               </div>
             </div>
@@ -267,15 +277,23 @@ const QuizCreator: React.FC = () => {
                 <Label>Language</Label>
                 <RadioGroup
                   value={watchedValues.language}
-                  onValueChange={(value) => setValue('language', value as any)}
+                  onValueChange={(value) => setValue("language", value as any)}
                 >
                   {LANGUAGES.map((lang) => (
-                    <div key={lang.value} className="flex items-center space-x-2">
+                    <div
+                      key={lang.value}
+                      className="flex items-center space-x-2"
+                    >
                       <RadioGroupItem value={lang.value} id={lang.value} />
-                      <Label htmlFor={lang.value} className="flex items-center space-x-2 cursor-pointer">
+                      <Label
+                        htmlFor={lang.value}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
                         <span>{lang.flag}</span>
                         <span>{lang.label}</span>
-                        <span className="text-muted-foreground">({lang.nativeName})</span>
+                        <span className="text-muted-foreground">
+                          ({lang.nativeName})
+                        </span>
                       </Label>
                     </div>
                   ))}
@@ -287,16 +305,26 @@ const QuizCreator: React.FC = () => {
                 <Label>Question Type</Label>
                 <RadioGroup
                   value={watchedValues.questionType}
-                  onValueChange={(value) => setValue('questionType', value as any)}
+                  onValueChange={(value) =>
+                    setValue("questionType", value as any)
+                  }
                 >
                   {QUESTION_TYPES.map((type) => (
-                    <div key={type.value} className="flex items-center space-x-2">
+                    <div
+                      key={type.value}
+                      className="flex items-center space-x-2"
+                    >
                       <RadioGroupItem value={type.value} id={type.value} />
-                      <Label htmlFor={type.value} className="flex items-center space-x-2 cursor-pointer">
+                      <Label
+                        htmlFor={type.value}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
                         <span>{type.icon}</span>
                         <div>
                           <div>{type.label}</div>
-                          <div className="text-xs text-muted-foreground">{type.description}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {type.description}
+                          </div>
                         </div>
                       </Label>
                     </div>
@@ -309,16 +337,23 @@ const QuizCreator: React.FC = () => {
                 <Label>Difficulty Level</Label>
                 <RadioGroup
                   value={watchedValues.difficulty}
-                  onValueChange={(value) => setValue('difficulty', value as any)}
+                  onValueChange={(value) =>
+                    setValue("difficulty", value as any)
+                  }
                 >
                   {DIFFICULTY_LEVELS.map((level) => (
-                    <div key={level.value} className="flex items-center space-x-2">
+                    <div
+                      key={level.value}
+                      className="flex items-center space-x-2"
+                    >
                       <RadioGroupItem value={level.value} id={level.value} />
                       <Label htmlFor={level.value} className="cursor-pointer">
                         <span className={cn("font-medium", level.color)}>
                           {level.label}
                         </span>
-                        <div className="text-xs text-muted-foreground">{level.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {level.description}
+                        </div>
                       </Label>
                     </div>
                   ))}
@@ -332,9 +367,13 @@ const QuizCreator: React.FC = () => {
                   {QUESTION_COUNT_OPTIONS.map((count) => (
                     <Badge
                       key={count}
-                      variant={watchedValues.questionCount === count ? "default" : "outline"}
+                      variant={
+                        watchedValues.questionCount === count
+                          ? "default"
+                          : "outline"
+                      }
                       className="cursor-pointer"
-                      onClick={() => setValue('questionCount', count)}
+                      onClick={() => setValue("questionCount", count)}
                     >
                       {count}
                     </Badge>
@@ -351,7 +390,7 @@ const QuizCreator: React.FC = () => {
                 type="number"
                 min="0"
                 max="180"
-                {...register('timeLimit')}
+                {...register("timeLimit")}
               />
               <p className="text-xs text-muted-foreground">
                 Set to 0 for no time limit
@@ -380,7 +419,8 @@ const QuizCreator: React.FC = () => {
               <div>
                 <h2 className="text-2xl font-bold">Ready to Generate!</h2>
                 <p className="text-muted-foreground mt-2">
-                  Review your quiz settings and let AI create your personalized quiz
+                  Review your quiz settings and let AI create your personalized
+                  quiz
                 </p>
               </div>
             </div>
@@ -398,7 +438,11 @@ const QuizCreator: React.FC = () => {
                   <div>
                     <span className="text-muted-foreground">Level:</span>
                     <div className="font-medium">
-                      {ACADEMIC_LEVELS.find(l => l.value === watchedValues.academicLevel)?.label}
+                      {
+                        ACADEMIC_LEVELS.find(
+                          (l) => l.value === watchedValues.academicLevel
+                        )?.label
+                      }
                     </div>
                   </div>
                   <div>
@@ -412,17 +456,27 @@ const QuizCreator: React.FC = () => {
                   <div>
                     <span className="text-muted-foreground">Language:</span>
                     <div className="font-medium">
-                      {LANGUAGES.find(l => l.value === watchedValues.language)?.label}
+                      {
+                        LANGUAGES.find(
+                          (l) => l.value === watchedValues.language
+                        )?.label
+                      }
                     </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Questions:</span>
-                    <div className="font-medium">{watchedValues.questionCount}</div>
+                    <div className="font-medium">
+                      {watchedValues.questionCount}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Type:</span>
                     <div className="font-medium">
-                      {QUESTION_TYPES.find(t => t.value === watchedValues.questionType)?.label}
+                      {
+                        QUESTION_TYPES.find(
+                          (t) => t.value === watchedValues.questionType
+                        )?.label
+                      }
                     </div>
                   </div>
                 </div>
@@ -450,7 +504,7 @@ const QuizCreator: React.FC = () => {
                           transition={{
                             duration: 2,
                             repeat: Infinity,
-                            ease: 'linear'
+                            ease: "linear",
                           }}
                           className="text-white"
                         >
@@ -458,14 +512,17 @@ const QuizCreator: React.FC = () => {
                         </motion.div>
                       </div>
                     </motion.div>
-                    
+
                     <div className="space-y-2">
-                      <h3 className="text-xl font-semibold">Generating Your Quiz</h3>
+                      <h3 className="text-xl font-semibold">
+                        Generating Your Quiz
+                      </h3>
                       <p className="text-muted-foreground">
-                        AI is creating personalized questions based on your preferences...
+                        AI is creating personalized questions based on your
+                        preferences...
                       </p>
                     </div>
-                    
+
                     <div className="flex justify-center space-x-1">
                       {[0, 1, 2, 3, 4].map((i) => (
                         <motion.div
@@ -473,13 +530,13 @@ const QuizCreator: React.FC = () => {
                           className="w-2 h-2 bg-primary rounded-full"
                           animate={{
                             scale: [1, 1.5, 1],
-                            opacity: [0.3, 1, 0.3]
+                            opacity: [0.3, 1, 0.3],
                           }}
                           transition={{
                             duration: 1.5,
                             repeat: Infinity,
                             delay: i * 0.2,
-                            ease: 'easeInOut'
+                            ease: "easeInOut",
                           }}
                         />
                       ))}
@@ -497,7 +554,17 @@ const QuizCreator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="mb-6 lg:mb-8">
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+          Create a Quiz
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Create a personalized quiz based on your academic level, subject, topic,
+          language, and question type.
+        </p>
+      </div>
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Progress Header */}
         <div className="mb-8">
@@ -515,8 +582,10 @@ const QuizCreator: React.FC = () => {
                 <div
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2",
-                    step.id < currentStep && "bg-primary border-primary text-primary-foreground",
-                    step.id === currentStep && "border-primary text-primary bg-primary/10",
+                    step.id < currentStep &&
+                      "bg-primary border-primary text-primary-foreground",
+                    step.id === currentStep &&
+                      "border-primary text-primary bg-primary/10",
                     step.id > currentStep && "border-muted-foreground/30"
                   )}
                 >
@@ -528,12 +597,14 @@ const QuizCreator: React.FC = () => {
                 </div>
                 <div className="hidden sm:block">
                   <div className="font-medium text-sm">{step.title}</div>
-                  <div className="text-xs text-muted-foreground">{step.description}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {step.description}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-          
+
           <Progress value={(currentStep / 4) * 100} className="h-2" />
         </div>
 
@@ -541,9 +612,7 @@ const QuizCreator: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
             <CardContent className="p-8">
-              <AnimatePresence mode="wait">
-                {renderStep()}
-              </AnimatePresence>
+              <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
             </CardContent>
 
             {/* Navigation */}
@@ -565,13 +634,13 @@ const QuizCreator: React.FC = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
-                <Button 
-                  type="submit" 
-                  variant="gradient" 
+                <Button
+                  type="submit"
+                  variant="gradient"
                   loading={isGenerating}
                   disabled={isGenerating}
                 >
-                  {isGenerating ? 'Generating...' : 'Generate Quiz'}
+                  {isGenerating ? "Generating..." : "Generate Quiz"}
                   {!isGenerating && <Sparkles className="w-4 h-4 ml-2" />}
                 </Button>
               )}

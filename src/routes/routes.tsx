@@ -9,6 +9,9 @@ import HomePage from "@/pages/HomePage";
 import QuizGeneratorPage from "@/pages/QuizGeneratorPage";
 import QuizTakingPage from "@/pages/QuizTakingPage";
 import ResultsPage from "@/pages/ResultsPage";
+import MyQuizzesPage from "@/pages/MyQuizzesPage";
+import AnalyticsPage from "@/pages/AnalyticsPage";
+import SettingsPage from "@/pages/SettingsPage";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -51,22 +54,22 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/my-quizzes",
-        element: <DashboardPage />,
+        element: <MyQuizzesPage />,
       },
       {
         path: "/dashboard/analytics",
-        element: <DashboardPage />,
+        element: <AnalyticsPage />,
       },
       {
         path: "/dashboard/settings",
-        element: <DashboardPage />,
+        element: <SettingsPage />,
       },
       {
         path: "/dashboard/quiz/:quizId",
         element: <QuizTakingPage />,
       },
       {
-        path: "/dashboard/quiz/:quizId/results",
+        path: "/dashboard/quiz/results/:quizId",
         element: <ResultsPage />,
       },
     ],
