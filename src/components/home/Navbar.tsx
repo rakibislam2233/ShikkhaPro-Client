@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
     { href: '/', label: 'Home' },
     { href: '/about', label: 'About'},
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
-    { href: '/create-quiz', label: 'Create Quiz', authRequired: true },
+    { href: '/dashboard/create-quiz', label: 'Create Quiz', authRequired: true },
   ];
 
   const isActiveLink = (href: string) => {

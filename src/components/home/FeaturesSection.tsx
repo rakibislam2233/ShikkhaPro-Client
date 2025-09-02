@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   BarChart3,
   Brain,
@@ -90,7 +91,13 @@ const FeaturesSection = () => {
     <section className="relative py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-gray-50 to-white overflow-hidden">
       <div className="relative max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-16">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
           <h2 className="text-3xl sm:text-4xl md:text-5xl text-gray-800 font-semibold mb-2 leading-tight">
             Why Choose <span className="text-primary">Shikkha Pro?</span>
           </h2>
@@ -99,14 +106,21 @@ const FeaturesSection = () => {
             Experience the next generation of intelligent learning with our
             revolutionary platform.
           </p>
-        </div>
+        </motion.div>
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-20">
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
-              <div key={index} className="group relative cursor-pointer">
+              <motion.div 
+                key={index} 
+                className="group relative cursor-pointer"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
                 {/* Card */}
                 <div className="relative h-80 bg-white rounded-xl p-8 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1 border border-gray-200 overflow-hidden">
                   {/* Glow Effect */}
@@ -140,7 +154,7 @@ const FeaturesSection = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

@@ -1,12 +1,14 @@
+import Footer from "@/components/home/Footer";
+import Navbar from "@/components/home/Navbar";
 import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   return (
-    <div className="w-full h-full flex ">
-      <section className="w-full h-full">
-        <Outlet />
-      </section>
-    </div>
+    <section className="w-full h-full">
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </section>
   );
 };
 

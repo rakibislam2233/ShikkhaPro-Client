@@ -22,13 +22,11 @@ const HomePage: React.FC = () => {
       </Helmet>
       
       <div className="min-h-screen">
-      <Navbar />
       <main>
         <HeroSection />
         <FeaturesSection />
         <HowItWorks />
       </main>
-      <Footer />
     </div>
     </>
   );

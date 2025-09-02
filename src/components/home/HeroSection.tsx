@@ -10,7 +10,7 @@ const HeroSection: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/30 to-white">
+    <section className="relative pt-24 md:pt-28 lg:pt-32 xl:pt-40 flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/30 to-white">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -113,7 +113,7 @@ const HeroSection: React.FC = () => {
           >
             {isAuthenticated ? (
               <>
-                <Link to="/create-quiz">
+                <Link to="/dashboard/create-quiz">
                   <Button
                     size="xl"
                     variant="gradient"
@@ -192,7 +192,7 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Floating Elements */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="hidden md:absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute top-20 left-10 text-primary/20 text-6xl"
           animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}

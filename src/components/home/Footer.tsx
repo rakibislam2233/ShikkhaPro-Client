@@ -10,34 +10,22 @@ const Footer: React.FC = () => {
       links: [
         { label: 'Features', href: '/#features' },
         { label: 'How it Works', href: '/#how-it-works' },
-        { label: 'Create Quiz', href: '/create-quiz' },
+        { label: 'Create Quiz', href: '/dashboard/create-quiz' },
         { label: 'Dashboard', href: '/dashboard' },
-      ],
-    },
-    {
-      title: 'Academic Levels',
-      links: [
-        { label: 'Primary (Class 1-5)', href: '/levels/primary' },
-        { label: 'Secondary (Class 6-10)', href: '/levels/secondary' },
-        { label: 'Higher Secondary (JSC/SSC/HSC)', href: '/levels/higher-secondary' },
-        { label: 'University (BSC/MSC)', href: '/levels/university' },
       ],
     },
     {
       title: 'Support',
       links: [
-        { label: 'Help Center', href: '/help' },
-        { label: 'Contact Us', href: '/contact' },
-        { label: 'Documentation', href: '/docs' },
-        { label: 'Community', href: '/community' },
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Analytics', href: '/dashboard/analytics' },
+        { label: 'Quiz Generator', href: '/dashboard/create-quiz' },
       ],
     },
     {
       title: 'Company',
       links: [
         { label: 'About Us', href: '/about' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'Careers', href: '/careers' },
         { label: 'Privacy Policy', href: '/privacy' },
         { label: 'Terms of Service', href: '/terms' },
       ],
@@ -185,10 +173,6 @@ const Footer: React.FC = () => {
             <span>•</span>
             <Link to="/terms" className="hover:text-white transition-colors">
               Terms
-            </Link>
-            <span>•</span>
-            <Link to="/cookies" className="hover:text-white transition-colors">
-              Cookies
             </Link>
           </div>
         </motion.div>

@@ -12,13 +12,34 @@ import ResultsPage from "@/pages/ResultsPage";
 import MyQuizzesPage from "@/pages/MyQuizzesPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import SettingsPage from "@/pages/SettingsPage";
+import AboutPage from "@/pages/AboutPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import { createBrowserRouter } from "react-router-dom";
+import MainLayout from "@/layout/MainLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
-    children: [],
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "/about",
+        element: <AboutPage />,
+      },
+      {
+        path: "/privacy",
+        element: <PrivacyPolicyPage />,
+      },
+      {
+        path: "/terms",
+        element: <TermsOfServicePage />,
+      },
+    ],
   },
   {
     path: "/login",

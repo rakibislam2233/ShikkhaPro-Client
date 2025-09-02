@@ -82,8 +82,9 @@ const HowItWorks: React.FC = () => {
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
               className="w-full h-72  dark:border-gray-700 rounded-xl cursor-pointer hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1 border border-gray-200 p-5 text-center group relative overflow-hidden"
             >
               {/* Step number */}
