@@ -13,11 +13,18 @@ interface QuizInterfaceProps {
 }
 
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
-  const { currentQuiz, submitQuiz, saveAnswer } = useQuiz();
+  const { currentQuiz, submitQuiz, saveAnswer, startQuiz } = useQuiz();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+
+  // Load quiz when component mounts
+  useEffect(() => {
+    if (quizId && !currentQuiz) {
+      startQuiz(quizId).catch(console.error);
+    }
+  }, [quizId, currentQuiz, startQuiz]);
 
   useEffect(() => {
     if (currentQuiz?.timeLimit) {
@@ -43,6 +50,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const handleNextQuestion = () => {
     if (currentQuestionIndex < (currentQuiz?.questions.length || 0) - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      // If it's the last question, show submit dialog
+      setShowSubmitDialog(true);
     }
   };
 

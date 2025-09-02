@@ -6,6 +6,10 @@ import router from "./routes/routes.tsx";
 import { ThemeProvider } from "./contexts/ThemeContext.tsx";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { QuizProvider } from "./contexts/QuizContext.tsx";
+import { initializeDemoData } from "./utils/demoData.ts";
+
+// Initialize demo data
+initializeDemoData();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

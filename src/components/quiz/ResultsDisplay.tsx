@@ -66,14 +66,18 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     }
   };
 
-  const percentage = Math.round((attempt.score / attempt.totalScore) * 100);
+  const percentage = Math.round(((attempt.score || 0) / (attempt.totalScore || 1)) * 100);
   const scoreBadge = getScoreBadge(percentage);
 
-  const correctAnswers = questions.filter(q => 
-    attempt.answers[q.id] === q.correctAnswer ||
-    (Array.isArray(q.correctAnswer) && Array.isArray(attempt.answers[q.id]) && 
-     JSON.stringify(q.correctAnswer.sort()) === JSON.stringify(attempt.answers[q.id].sort()))
-  ).length;
+  const correctAnswers = questions.filter(q => {
+    const userAnswer = attempt.answers[q.id];
+    const correctAnswer = q.correctAnswer;
+    
+    if (Array.isArray(correctAnswer) && Array.isArray(userAnswer)) {
+      return JSON.stringify([...correctAnswer].sort()) === JSON.stringify([...userAnswer].sort());
+    }
+    return userAnswer === correctAnswer;
+  }).length;
 
   const incorrectAnswers = questions.length - correctAnswers - 
     questions.filter(q => !attempt.answers[q.id]).length;
@@ -135,7 +139,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-blue-600">
-                    {formatDuration(attempt.timeSpent)}
+                    {formatDuration(attempt.timeSpent || 0)}
                   </div>
                   <div className="text-sm text-muted-foreground">Time Taken</div>
                 </div>
@@ -170,7 +174,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <h3 className="font-semibold">Average Time</h3>
             </div>
             <div className="text-2xl font-bold text-blue-600 mb-2">
-              {Math.round(attempt.timeSpent / questions.length)}s
+              {Math.round((attempt.timeSpent || 0) / questions.length)}s
             </div>
             <p className="text-sm text-muted-foreground">Per question</p>
           </Card>

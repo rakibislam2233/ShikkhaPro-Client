@@ -15,11 +15,12 @@ import {
   HelpCircle,
   Sparkles,
 } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const location = useLocation();
   // Mock user data
   const user = {
     name: "Ahmed Rahman",
@@ -33,7 +34,7 @@ const DashboardLayout = () => {
       id: "overview",
       name: "Dashboard",
       icon: Home,
-      href: "/",
+      href: "/dashboard",
       description: "Your learning overview",
     },
     {
@@ -47,18 +48,21 @@ const DashboardLayout = () => {
       id: "my-quizzes",
       name: "My Quizzes",
       icon: FileText,
+      href: "/dashboard/my-quizzes",
       description: "Your saved quizzes",
     },
     {
       id: "analytics",
       name: "Analytics",
       icon: BarChart3,
+      href: "/dashboard/analytics",
       description: "Performance insights",
     },
     {
       id: "settings",
       name: "Settings",
       icon: Settings,
+      href: "/dashboard/settings",
       description: "Account preferences",
     },
   ];
@@ -77,12 +81,13 @@ const DashboardLayout = () => {
         {/* Sidebar */}
         <div
           className={`
-            fixed lg:static lg:translate-x-0 inset-y-0 left-0 z-50
+            fixed inset-y-0 left-0 z-50
             w-64 lg:w-80 transform transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            lg:translate-x-0
           `}
         >
-          <div className="flex h-full flex-col bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-r border-gray-200 shadow-xl">
+          <div className="flex h-full flex-col bg-white border-r border-gray-200 shadow-xl overflow-hidden">
             {/* Sidebar Header */}
             <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 border-b border-gray-200">
               <Link to="/">
@@ -110,7 +115,7 @@ const DashboardLayout = () => {
 
             {/* User Profile Card */}
             <div className="p-4 lg:p-6">
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-blue-200">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-primary/20">
                 <div className="flex items-center space-x-2 lg:space-x-3">
                   <div className="w-10 h-10 lg:w-12 lg:h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm lg:text-lg shadow-lg">
                     {user.avatar}
@@ -137,18 +142,21 @@ const DashboardLayout = () => {
               <ul className="space-y-1 lg:space-y-2">
                 {navigation.map((item) => {
                   const IconComponent = item.icon;
-                  const isActive = true;
+                  const isActive = location.pathname === item.href || 
+                    (item.href === '/dashboard' && location.pathname === '/dashboard');
                   return (
                     <li key={item.id}>
-                      <button
+                      <Link
+                        to={item.href}
                         className={`
                         w-full group flex items-center justify-between rounded-lg lg:rounded-xl px-3 lg:px-4 py-2 lg:py-3 text-sm font-medium transition-all duration-200
                         ${
                           isActive
-                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                            ? "bg-primary text-primary-foreground shadow-lg"
                             : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                         }
                       `}
+                        onClick={() => setSidebarOpen(false)}
                       >
                         <div className="flex items-center space-x-2 lg:space-x-3">
                           <IconComponent
@@ -164,14 +172,14 @@ const DashboardLayout = () => {
                             </div>
                             <div
                               className={`text-xs hidden lg:block ${
-                                isActive ? "text-blue-100" : "text-gray-500"
+                                isActive ? "text-primary-foreground/80" : "text-gray-500"
                               }`}
                             >
                               {item.description}
                             </div>
                           </div>
                         </div>
-                      </button>
+                      </Link>
                     </li>
                   );
                 })}
@@ -181,7 +189,7 @@ const DashboardLayout = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+        <div className="flex-1 flex flex-col min-h-screen lg:ml-80">
           {/* Top Navigation Bar */}
           <header className="sticky top-0 z-40 bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-b border-gray-200">
             <div className="flex h-14 lg:h-16 items-center justify-between px-4 lg:px-8">
@@ -234,7 +242,7 @@ const DashboardLayout = () => {
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors"
                   >
-                    <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
                       {user.avatar}
                     </div>
                     <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">

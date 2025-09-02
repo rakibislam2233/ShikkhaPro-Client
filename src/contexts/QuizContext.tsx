@@ -14,7 +14,8 @@ type QuizAction =
   | { type: "GENERATION_SUCCESS"; payload: Quiz }
   | { type: "GENERATION_ERROR"; payload: string }
   | { type: "START_QUIZ"; payload: { quiz: Quiz; attempt: QuizAttempt } }
-  | { type: "SUBMIT_ANSWER"; payload: { questionId: string; answer: string } }
+  | { type: "SUBMIT_ANSWER"; payload: { questionId: string; answer: string | string[] } }
+  | { type: "SAVE_ANSWER"; payload: { questionId: string; answer: string | string[] } }
   | { type: "FLAG_QUESTION"; payload: string }
   | { type: "COMPLETE_QUIZ"; payload: QuizResult }
   | { type: "SAVE_QUIZ_SUCCESS" }
@@ -63,8 +64,18 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
         currentAttempt: action.payload.attempt,
       };
     case "SUBMIT_ANSWER":
+    case "SAVE_ANSWER":
       return {
         ...state,
+        currentQuiz: state.currentQuiz
+          ? {
+              ...state.currentQuiz,
+              userAnswers: {
+                ...state.currentQuiz.userAnswers,
+                [action.payload.questionId]: action.payload.answer,
+              },
+            }
+          : null,
         currentAttempt: state.currentAttempt
           ? {
               ...state.currentAttempt,
@@ -151,7 +162,14 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
   const startQuiz = async (quizId: string): Promise<void> => {
     try {
-      const quiz = savedQuizzes.find((q) => q.id === quizId);
+      let quiz = savedQuizzes.find((q) => q.id === quizId);
+      
+      // If not found in saved quizzes, check if it's in localStorage
+      if (!quiz) {
+        const localQuizzes = JSON.parse(localStorage.getItem('saved-quizzes') || '[]');
+        quiz = localQuizzes.find((q: Quiz) => q.id === quizId);
+      }
+      
       if (!quiz) {
         throw new Error("Quiz not found");
       }
@@ -184,9 +202,16 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const submitAnswer = (questionId: string, answer: string): void => {
+  const submitAnswer = (questionId: string, answer: string | string[]): void => {
     dispatch({
       type: "SUBMIT_ANSWER",
+      payload: { questionId, answer },
+    });
+  };
+
+  const saveAnswer = (questionId: string, answer: string | string[]): void => {
+    dispatch({
+      type: "SAVE_ANSWER",
       payload: { questionId, answer },
     });
   };
@@ -205,15 +230,23 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     // Calculate results
     const detailedResults = currentQuiz.questions.map((question) => {
       const userAnswer = currentAttempt.answers[question.id] || "";
-      const isCorrect =
-        userAnswer.toLowerCase().trim() ===
-        question.correct_answer.toLowerCase().trim();
+      const correctAnswer = question.correctAnswer || question.correct_answer || "";
+      
+      let isCorrect = false;
+      if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+        // Multiple select questions
+        isCorrect = userAnswer.length === correctAnswer.length &&
+                   userAnswer.every(ans => correctAnswer.includes(ans));
+      } else if (typeof userAnswer === 'string' && typeof correctAnswer === 'string') {
+        // Single answer questions
+        isCorrect = userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
+      }
 
       return {
         questionId: question.id,
         question: question.question,
-        userAnswer,
-        correctAnswer: question.correct_answer,
+        userAnswer: Array.isArray(userAnswer) ? userAnswer.join(', ') : userAnswer,
+        correctAnswer: Array.isArray(correctAnswer) ? correctAnswer.join(', ') : correctAnswer,
         isCorrect,
         points: isCorrect ? question.points : 0,
         explanation: question.explanation,
@@ -324,11 +357,24 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLEAR_ERROR" });
   };
 
+  const submitQuiz = async (quizId: string): Promise<void> => {
+    try {
+      await completeQuiz();
+    } catch (error) {
+      dispatch({
+        type: "GENERATION_ERROR",
+        payload: error instanceof Error ? error.message : "Failed to submit quiz",
+      });
+    }
+  };
+
   const value: QuizContextType = {
     ...state,
     generateQuiz,
     startQuiz,
     submitAnswer,
+    saveAnswer,
+    submitQuiz,
     flagQuestion,
     completeQuiz,
     saveQuiz,

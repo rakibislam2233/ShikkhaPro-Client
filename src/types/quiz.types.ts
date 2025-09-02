@@ -128,7 +128,9 @@ export interface QuizContextType {
   error: string | null;
   generateQuiz: (config: QuizConfig) => Promise<void>;
   startQuiz: (quizId: string) => Promise<void>;
-  submitAnswer: (questionId: string, answer: string) => void;
+  submitAnswer: (questionId: string, answer: string | string[]) => void;
+  saveAnswer: (questionId: string, answer: string | string[]) => void;
+  submitQuiz: (quizId: string) => Promise<void>;
   flagQuestion: (questionId: string) => void;
   completeQuiz: () => Promise<QuizResult>;
   saveQuiz: (quiz: Quiz) => Promise<void>;

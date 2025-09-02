@@ -11,8 +11,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/card";
-import { getDemoStats } from "../../utils/demoData";
+import { Card } from "../ui/Card";
+import { getDemoStats, demoQuizzes } from "../../utils/demoData";
 import { Link } from "react-router-dom";
 const DashboardOverview = () => {
   const demoStats = getDemoStats();
@@ -26,35 +26,15 @@ const DashboardOverview = () => {
     activeQuizzes: demoStats.activeQuizzes,
   };
 
-  const recentQuizzes = [
-    {
-      id: "1",
-      title: "Mathematics - Algebra Basics",
-      subject: "Mathematics",
-      attempts: 23,
-      avgScore: 78,
-      createdAt: "2024-01-15",
-      status: "active",
-    },
-    {
-      id: "2",
-      title: "Physics - Motion and Forces",
-      subject: "Physics",
-      attempts: 18,
-      avgScore: 82,
-      createdAt: "2024-01-12",
-      status: "active",
-    },
-    {
-      id: "3",
-      title: "Chemistry - Periodic Table",
-      subject: "Chemistry",
-      attempts: 31,
-      avgScore: 91,
-      createdAt: "2024-01-10",
-      status: "completed",
-    },
-  ];
+  const recentQuizzes = demoQuizzes.map((quiz) => ({
+    id: quiz.id,
+    title: quiz.title,
+    subject: quiz.subject,
+    attempts: Math.floor(Math.random() * 20) + 5,
+    avgScore: Math.floor(Math.random() * 20) + 70,
+    createdAt: quiz.createdAt,
+    status: quiz.isPublic ? "active" : "draft",
+  })).slice(0, 3);
 
   const recentActivity = [
     {
@@ -257,9 +237,10 @@ const DashboardOverview = () => {
             </div>
             <div className="space-y-4">
               {recentQuizzes.map((quiz) => (
-                <div
+                <Link
                   key={quiz.id}
-                  className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
+                  to={`/dashboard/quiz/${quiz.id}`}
+                  className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
                 >
                   <div className="flex-1">
                     <h4 className="font-medium">{quiz.title}</h4>
@@ -271,16 +252,19 @@ const DashboardOverview = () => {
                       <span>{quiz.avgScore}% avg</span>
                     </div>
                   </div>
-                  <div
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      quiz.status === "active"
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
-                    }`}
-                  >
-                    {quiz.status}
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        quiz.status === "active"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                      }`}
+                    >
+                      {quiz.status}
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </Card>

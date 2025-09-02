@@ -17,7 +17,7 @@ import {
   Tag
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/card';
+import { Card } from '../ui/Card';
 import type { Quiz } from '@/types/quiz.types';
 
 interface QuizManagementProps {
@@ -53,7 +53,7 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
     };
   });
 
-  const filteredQuizzes = quizzes.filter(quiz => {
+  const filteredQuizzes = quizzes.filter((quiz: any) => {
     const matchesSearch = quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          quiz.subject.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterBy === 'all' || quiz.status === filterBy;
@@ -191,7 +191,7 @@ const QuizManagement: React.FC<QuizManagementProps> = ({ onCreateQuiz }) => {
 
       {/* Quiz List */}
       <div className="space-y-4">
-        {filteredQuizzes.map((quiz, index) => (
+        {filteredQuizzes.map((quiz: any, index: number) => (
           <motion.div
             key={quiz.id}
             initial={{ opacity: 0, y: 20 }}

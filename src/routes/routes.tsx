@@ -1,6 +1,8 @@
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
+import VerifyOtpForm from "@/components/auth/VerifyOtpForm";
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import DashboardLayout from "@/layout/DashboardLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import HomePage from "@/pages/HomePage";
@@ -29,11 +31,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/reset-password",
-    element: <ForgotPasswordForm />,
+    element: <ResetPasswordForm />,
   },
   {
-    path: "/otp",
-    element: <ForgotPasswordForm />,
+    path: "/verify-otp",
+    element: <VerifyOtpForm />,
   },
   {
     path: "/dashboard",

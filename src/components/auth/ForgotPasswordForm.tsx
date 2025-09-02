@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail, ArrowRight, ArrowLeft, CheckCircle, BookOpen } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/input";
+import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import {
   Card,
@@ -14,7 +14,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "../ui/Card";
 import { forgotPasswordSchema } from "../../utils/validation.utils";
 
 import type { ForgotPasswordFormData } from "../../types/auth.types";

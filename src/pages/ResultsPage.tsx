@@ -6,7 +6,7 @@ import { useQuiz } from '../contexts/QuizContext';
 const ResultsPage: React.FC = () => {
   const { attemptId } = useParams<{ attemptId: string }>();
   const navigate = useNavigate();
-  const { getQuizAttempt, getQuizById } = useQuiz();
+  // const { getQuizAttempt, getQuizById } = useQuiz();
 
   // if (!attemptId) {
   //   return (
@@ -25,13 +25,18 @@ const ResultsPage: React.FC = () => {
 
   // Mock data for demonstration
   const mockAttempt = {
-    id: attemptId,
+    id: attemptId || 'attempt-1',
     quizId: 'quiz-1',
     userId: 'user-1',
     score: 85,
     totalScore: 100,
     timeSpent: 1800, // 30 minutes in seconds
     completedAt: new Date().toISOString(),
+    startedAt: new Date(Date.now() - 1800000).toISOString(),
+    totalQuestions: 3,
+    correctAnswers: 2,
+    isCompleted: true,
+    flaggedQuestions: [],
     answers: {
       'q1': 'Option A',
       'q2': 'Option B',

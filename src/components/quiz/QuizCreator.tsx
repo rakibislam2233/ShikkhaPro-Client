@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 import { useQuiz } from '../../contexts/QuizContext';
 import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Input } from '../ui/Input';
 import { Label } from '../ui/Label';
 import { Textarea } from '../ui/Textarea';
 import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/input";
+import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
 import {
@@ -26,7 +26,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "../ui/Card";
 import { registerSchema } from "../../utils/validation.utils";
 import { cn } from "../../lib/utils";
 
