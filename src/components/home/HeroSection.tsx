@@ -35,7 +35,20 @@ const HeroSection: React.FC = () => {
               variant="outline"
               className="px-6 py-2 text-base font-medium border-primary/20 bg-primary/5"
             >
-              <Sparkles className="w-4 h-4 mr-2 text-primary" />
+              <motion.span
+                initial={{ scale: 1,rotate:0 }}
+                animate={{
+                  scale: [1, 1.3, 1], 
+                  rotate: [0, 10, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 3,
+                  ease: "easeInOut",
+                }}
+              >
+                <Sparkles className="w-4 h-4 mr-2 text-primary " />
+              </motion.span>
               AI-Powered Learning Revolution
             </Badge>
           </motion.div>

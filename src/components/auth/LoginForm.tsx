@@ -8,7 +8,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
-import { Separator } from "../ui/Separator";
 import { loginSchema } from "../../utils/validation.utils";
 import {
   Card,
