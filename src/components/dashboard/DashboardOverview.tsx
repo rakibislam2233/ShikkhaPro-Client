@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -14,6 +13,7 @@ import {
 import { Button } from "../ui/Button";
 import { Card } from "../ui/card";
 import { getDemoStats } from "../../utils/demoData";
+import { Link } from "react-router-dom";
 const DashboardOverview = () => {
   const demoStats = getDemoStats();
 
@@ -194,21 +194,23 @@ const DashboardOverview = () => {
 
       {/* Quick Actions */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Plus className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+          <Link to="/dashboard/create-quiz">
+            <Card className="p-6 cursor-pointer border-0 hover:shadow-lg transition-shadow ">
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Plus className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Create Quiz</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Generate AI-powered quizzes
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">Create Quiz</h3>
-                <p className="text-sm text-muted-foreground">
-                  Generate AI-powered quizzes
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </Card>
+            </Card>
+          </Link>
 
           <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
             <div className="flex items-center space-x-4">
@@ -225,9 +227,7 @@ const DashboardOverview = () => {
             </div>
           </Card>
 
-          <Card
-            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
-          >
+          <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
             <div className="flex items-center space-x-4">
               <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-orange-600 dark:text-orange-400" />

@@ -8,20 +8,20 @@ const ResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const { getQuizAttempt, getQuizById } = useQuiz();
 
-  if (!attemptId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
-            Results Not Found
-          </h1>
-          <p className="text-muted-foreground">
-            The requested quiz results could not be found.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (!attemptId) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="text-center">
+  //         <h1 className="text-2xl font-bold text-foreground mb-4">
+  //           Results Not Found
+  //         </h1>
+  //         <p className="text-muted-foreground">
+  //           The requested quiz results could not be found.
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Mock data for demonstration
   const mockAttempt = {
@@ -73,7 +73,7 @@ const ResultsPage: React.FC = () => {
   ];
 
   const handleRetakeQuiz = () => {
-    navigate(`/quiz/${mockAttempt.quizId}`);
+    navigate(`/dashboard/quiz/${mockAttempt.quizId}`);
   };
 
   const handleShareResults = () => {

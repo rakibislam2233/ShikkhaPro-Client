@@ -14,11 +14,8 @@ import {
   LogOut,
   HelpCircle,
   Sparkles,
-  Trophy,
-  Target,
-  Clock,
 } from "lucide-react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -66,28 +63,6 @@ const DashboardLayout = () => {
     },
   ];
 
-  const quickStats = [
-    {
-      label: "Quizzes Taken",
-      value: "24",
-      icon: Target,
-      color: "text-blue-600",
-    },
-    {
-      label: "Score Average",
-      value: "87%",
-      icon: Trophy,
-      color: "text-emerald-600",
-    },
-    {
-      label: "Study Time",
-      value: "15h",
-      icon: Clock,
-      color: "text-purple-600",
-    },
-  ];
-
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar overlay */}
@@ -110,6 +85,7 @@ const DashboardLayout = () => {
           <div className="flex h-full flex-col bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-r border-gray-200 shadow-xl">
             {/* Sidebar Header */}
             <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 border-b border-gray-200">
+              <Link to="/">
               <div className="flex items-center space-x-2 lg:space-x-3">
                 <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg">
                   <BookOpen className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
@@ -123,6 +99,7 @@ const DashboardLayout = () => {
                   </p>
                 </div>
               </div>
+              </Link>
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -155,37 +132,6 @@ const DashboardLayout = () => {
                 </div>
               </div>
             </div>
-
-            {/* Quick Stats - Hidden on small screens, shown on larger */}
-            <div className="px-4 lg:px-6 mb-4 lg:mb-6 hidden md:block">
-              <h3 className="text-xs lg:text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 lg:mb-3">
-                Quick Stats
-              </h3>
-              <div className="grid grid-cols-3 gap-2 lg:gap-3">
-                {quickStats.map((stat, index) => {
-                  const IconComponent = stat.icon;
-                  return (
-                    <div
-                      key={index}
-                      className="bg-white rounded-lg lg:rounded-xl p-2 lg:p-3 border border-gray-100 hover:shadow-md transition-all duration-200"
-                    >
-                      <div className="flex flex-col items-center text-center space-y-1">
-                        <IconComponent
-                          className={`w-3 h-3 lg:w-4 lg:h-4 ${stat.color}`}
-                        />
-                        <span className="text-sm lg:text-lg font-bold text-gray-900">
-                          {stat.value}
-                        </span>
-                        <span className="text-xs text-gray-500 leading-tight">
-                          {stat.label}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Navigation */}
             <nav className="flex-1 px-4 lg:px-6 pb-4 lg:pb-6">
               <ul className="space-y-1 lg:space-y-2">
@@ -231,24 +177,6 @@ const DashboardLayout = () => {
                 })}
               </ul>
             </nav>
-
-            {/* Sidebar Footer - Hidden on mobile */}
-            <div className="p-4 lg:p-6 border-t border-gray-200 hidden md:block">
-              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 lg:p-4 border border-emerald-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Trophy className="w-3 h-3 lg:w-4 lg:h-4 text-emerald-600" />
-                  <span className="text-xs lg:text-sm font-semibold text-emerald-800">
-                    Upgrade to Pro
-                  </span>
-                </div>
-                <p className="text-xs text-emerald-700 mb-2 lg:mb-3">
-                  Unlock unlimited quizzes and advanced analytics
-                </p>
-                <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs lg:text-sm font-medium py-2 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-sm">
-                  Upgrade Now
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 

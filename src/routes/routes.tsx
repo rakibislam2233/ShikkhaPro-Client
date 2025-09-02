@@ -39,10 +39,10 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
-        {
-          index: true,
-          element: <DashboardPage />,  
-        },
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
       {
         path: "/dashboard/create-quiz",
         element: <QuizGeneratorPage />,
@@ -54,7 +54,19 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/analytics",
         element: <DashboardPage />,
-      }
+      },
+      {
+        path: "/dashboard/settings",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/dashboard/quiz/:quizId",
+        element: <QuizTakingPage />,
+      },
+      {
+        path: "/dashboard/quiz/:quizId/results",
+        element: <ResultsPage />,
+      },
     ],
   },
 ]);

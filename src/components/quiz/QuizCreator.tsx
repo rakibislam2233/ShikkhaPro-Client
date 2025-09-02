@@ -115,7 +115,7 @@ const QuizCreator: React.FC = () => {
     setIsGenerating(true);
     try {
       await generateQuiz(data);
-      navigate('/quiz/current');
+      navigate('/dashboard/quiz/current');
     } catch (error) {
       console.error('Failed to generate quiz:', error);
       setIsGenerating(false);
