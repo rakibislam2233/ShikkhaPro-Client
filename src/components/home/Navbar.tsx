@@ -24,6 +24,7 @@ const Navbar: React.FC = () => {
 
   const navLinks = [
     { href: '/', label: 'Home' },
+    { href: '/about', label: 'About'},
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
     { href: '/create-quiz', label: 'Create Quiz', authRequired: true },
   ];
@@ -66,12 +67,12 @@ const Navbar: React.FC = () => {
               className="flex items-center space-x-2 text-xl font-bold"
             >
               <BookOpen className="w-8 h-8 text-primary" />
-              <span className="gradient-text">QuizAI</span>
+              <span className={`gradient-text font-semibold ${isScrolled ? 'text-primary' : 'text-gray-800'}`}>ShikkhaPro</span>
             </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-5">
             {navLinks.map((link, index) => {
               if (link.authRequired && !isAuthenticated) return null;
               
@@ -85,21 +86,21 @@ const Navbar: React.FC = () => {
                   <Link
                     to={link.href}
                     className={cn(
-                      'relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                      'relative block px-5 py-2 rounded-md text-sm font-medium transition-all duration-200',
                       {
-                        'text-primary bg-primary/10': isActiveLink(link.href),
-                        'text-foreground hover:text-primary hover:bg-accent': !isActiveLink(link.href),
+                        'bg-primary text-white': isActiveLink(link.href),
+                        'text-primary hover:bg-accent': !isActiveLink(link.href),
                       }
                     )}
                   >
                     {isActiveLink(link.href) && (
                       <motion.div
-                        className="absolute inset-0 bg-primary/10 rounded-lg"
+                        className="absolute inset-0 bg-primary/10 rounded-md"
                         layoutId="activeNavLink"
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                       />
                     )}
-                    <span className="relative z-10">{link.label}</span>
+                    <span className="relative z-10 text-base">{link.label}</span>
                   </Link>
                 </motion.div>
               );
@@ -124,7 +125,7 @@ const Navbar: React.FC = () => {
                 
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="lg"
                   onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4 mr-2" />

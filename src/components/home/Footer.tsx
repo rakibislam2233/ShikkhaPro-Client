@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
               <Link to="/" className="flex items-center space-x-2">
                 <BookOpen className="w-8 h-8 text-primary" />
                 <span className="text-2xl font-bold text-primary">
-                  QuizAI
+                 ShikkhaPro
                 </span>
               </Link>
               

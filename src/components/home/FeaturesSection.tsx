@@ -92,7 +92,7 @@ const FeaturesSection = () => {
         {/* Header Section */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl text-gray-800 font-semibold mb-2 leading-tight">
-            Why Choose <span className="text-primary">ExamAI Pro?</span>
+            Why Choose <span className="text-primary">Shikkha Pro?</span>
           </h2>
 
           <p className="text-base sm:text-lg text-gray-600 max-w-5xl mx-auto leading-relaxed font-light">

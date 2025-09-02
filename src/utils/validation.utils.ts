@@ -32,10 +32,6 @@ export const registerSchema = yup.object({
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     )
     .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .required('Please confirm your password'),
   agreeToTerms: yup
     .boolean()
     .oneOf([true], 'You must agree to the terms and conditions'),
@@ -163,7 +159,7 @@ export function validatePassword(password: string): {
     errors.push('Password must contain at least one number');
   }
   
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+if (!/[!@#$%^&*()_+\-=\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('Password should contain at least one special character');
   }
   
