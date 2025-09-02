@@ -1,7 +1,7 @@
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import DashboardLayout from "@/layout/DashboardLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import HomePage from "@/pages/HomePage";
 import QuizGeneratorPage from "@/pages/QuizGeneratorPage";
@@ -39,6 +39,10 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
+        {
+          index: true,
+          element: <DashboardPage />,  
+        },
       {
         path: "/dashboard/create-quiz",
         element: <QuizGeneratorPage />,

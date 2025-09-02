@@ -1,137 +1,17 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
-import DashboardOverview from "../components/dashboard/DashboardOverview";
-import QuizManagement from "../components/dashboard/QuizManagement";
-import AnalyticsDashboard from "../components/dashboard/AnalyticsDashboard";
-import SettingsPanel from "../components/dashboard/SettingsPanel";
-import QuizCreator from "../components/quiz/QuizCreator";
+import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import {
-  BarChart3,
-  Clock,
-  FileText,
   Home,
-  PlusCircle,
   Sparkles,
   Trophy,
 } from "lucide-react";
 
 const DashboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const handleCreateQuiz = () => {
-    setActiveTab("create-quiz");
-  };
-
-  const handleViewQuizzes = () => {
-    setActiveTab("my-quizzes");
-  };
-
-  const handleViewAnalytics = () => {
-    setActiveTab("analytics");
-  };
-
-  const renderTabContent = () => {
-    const pageVariants = {
-      initial: { opacity: 0, x: 20 },
-      in: { opacity: 1, x: 0 },
-      out: { opacity: 0, x: -20 },
-    };
-
-    const pageTransition = {
-      type: "tween",
-      ease: "anticipate",
-      duration: 0.3,
-    };
-
-    switch (activeTab) {
-      case "overview":
-        return (
-          <motion.div
-            key="overview"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <DashboardOverview
-              onCreateQuiz={handleCreateQuiz}
-              onViewQuizzes={handleViewQuizzes}
-              onViewAnalytics={handleViewAnalytics}
-            />
-          </motion.div>
-        );
-      case "create-quiz":
-        return (
-          <motion.div
-            key="create-quiz"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <QuizCreator />
-          </motion.div>
-        );
-      case "my-quizzes":
-        return (
-          <motion.div
-            key="my-quizzes"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <QuizManagement onCreateQuiz={handleCreateQuiz} />
-          </motion.div>
-        );
-      case "analytics":
-        return (
-          <motion.div
-            key="analytics"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <AnalyticsDashboard />
-          </motion.div>
-        );
-      case "settings":
-        return (
-          <motion.div
-            key="settings"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <SettingsPanel />
-          </motion.div>
-        );
-      default:
-        return (
-          <motion.div
-            key="default"
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-          >
-            <DashboardOverview
-              onCreateQuiz={handleCreateQuiz}
-              onViewQuizzes={handleViewQuizzes}
-              onViewAnalytics={handleViewAnalytics}
-            />
-          </motion.div>
-        );
-    }
+  // Mock user data
+  const user = {
+    name: "Ahmed Rahman",
+    email: "ahmed@email.com",
+    avatar: "AR",
+    level: "HSC Student",
   };
 
   return (
@@ -203,106 +83,8 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div className="mb-6 lg:mb-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-          {[
-            {
-              title: "Create Quiz",
-              desc: "Generate questions",
-              icon: PlusCircle,
-              color: "from-blue-500 to-cyan-500",
-            },
-            {
-              title: "Analytics",
-              desc: "Track progress",
-              icon: BarChart3,
-              color: "from-emerald-500 to-teal-500",
-            },
-            {
-              title: "My Quizzes",
-              desc: "Saved quizzes",
-              icon: FileText,
-              color: "from-purple-500 to-violet-500",
-            },
-            {
-              title: "Schedule",
-              desc: "Plan sessions",
-              icon: Clock,
-              color: "from-orange-500 to-red-500",
-            },
-          ].map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <button
-                key={index}
-                className="group bg-white rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left"
-              >
-                <div
-                  className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-r ${action.color} rounded-lg lg:rounded-xl flex items-center justify-center mb-2 lg:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                >
-                  <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-                  {action.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  {action.desc}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Quick Stats for Mobile - Only visible on mobile */}
-      <div className="mb-6 md:hidden">
-        <h3 className="text-sm font-semibold text-gray-900 mb-3 px-1">
-          Your Progress
-        </h3>
-        <div className="grid grid-cols-3 gap-3">
-          {quickStats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            return (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-3 border border-gray-200 text-center"
-              >
-                <IconComponent
-                  className={`w-4 h-4 ${stat.color} mx-auto mb-1`}
-                />
-                <div className="text-lg font-bold text-gray-900">
-                  {stat.value}
-                </div>
-                <div className="text-xs text-gray-500">{stat.label}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="bg-white rounded-2xl lg:rounded-3xl shadow-lg border border-gray-200 min-h-96 flex-1">
-        <DashboardOverview />
-      </div>
-
-      {/* Mobile Upgrade Banner - Only visible on mobile */}
-      <div className="mt-4 md:hidden">
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Trophy className="w-4 h-4 text-emerald-600" />
-              <span className="text-sm font-semibold text-emerald-800">
-                Upgrade to Pro
-              </span>
-            </div>
-            <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg">
-              Upgrade
-            </button>
-          </div>
-        </div>
-      </div>
+      <DashboardOverview />
     </main>
   );
 };
