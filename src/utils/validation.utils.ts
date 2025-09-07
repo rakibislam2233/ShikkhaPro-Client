@@ -218,20 +218,6 @@ export function sanitizeQuizConfig(config: QuizConfig): QuizConfig {
   };
 }
 
-// Form error helpers
-export function getFieldError(
-  errors: Record<string, any>,
-  fieldName: string
-): string | undefined {
-  return errors[fieldName]?.message;
-}
-
-export function hasFieldError(
-  errors: Record<string, any>,
-  fieldName: string
-): boolean {
-  return Boolean(errors[fieldName]);
-}
 
 export function formatValidationError(
   error: z.ZodError

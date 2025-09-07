@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, BookOpen, LogOut } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/Avatar";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { removeAuthTokens } from "@/utils/cookies";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-
-  const isAuthenticated = true;
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "https://via.placeholder.com/150",
-  };
+  const navigate = useNavigate();
+  
+  const { isAuthenticated, user, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +46,15 @@ const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsMenuOpen(false);
+    try {
+      removeAuthTokens();
+      toast.success("Logged out successfully!");
+      navigate("/");
+      setIsMenuOpen(false);
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err.data.message || "Error logging out");
+    }
   };
 
   return (
@@ -88,7 +96,7 @@ const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
             {navLinks.map((link, index) => {
-              if (link.authRequired) return null;
+              if (link.authRequired && !isAuthenticated) return null;
 
               return (
                 <motion.div
@@ -131,16 +139,23 @@ const Navbar: React.FC = () => {
 
           {/* Right side items */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                <span className="text-sm text-muted-foreground">Loading...</span>
+              </div>
+            ) : isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.avatar} alt={user?.name} />
+                    <AvatarImage src={user?.profile?.avatar} alt={user?.profile?.fullName || user?.email} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user?.name?.charAt(0).toUpperCase()}
+                      {(user?.profile?.fullName || user?.email)?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-foreground">{user?.name}</span>
+                  <span className="text-sm text-foreground">
+                    {user?.profile?.fullName || user?.email?.split('@')[0]}
+                  </span>
                 </div>
 
                 <Button variant="ghost" size="lg" onClick={handleLogout}>
@@ -156,7 +171,7 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="gradient" size="lg">
+                  <Button variant="default" size="lg">
                     Get Started
                   </Button>
                 </Link>
@@ -215,14 +230,14 @@ const Navbar: React.FC = () => {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarImage src={user?.profile?.avatar} alt={user?.profile?.fullName || user?.email} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {user?.name?.charAt(0).toUpperCase()}
+                          {(user?.profile?.fullName || user?.email)?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="text-sm font-medium text-foreground">
-                          {user?.name}
+                          {user?.profile?.fullName || user?.email?.split('@')[0]}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {user?.email}
@@ -248,7 +263,7 @@ const Navbar: React.FC = () => {
                       </Button>
                     </Link>
                     <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="gradient" size="sm" className="w-full">
+                      <Button variant="default" size="sm" className="w-full">
                         Get Started
                       </Button>
                     </Link>

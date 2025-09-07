@@ -85,7 +85,8 @@ const QuizCreator: React.FC = () => {
     trigger,
   } = useForm<QuizConfig>({
     resolver: zodResolver(quizConfigSchema),
-    mode: "onSubmit",
+    mode: "onChange",
+    shouldFocusError: false,
     defaultValues: {
       academicLevel: "ssc",
       subject: "",
@@ -646,7 +647,7 @@ const QuizCreator: React.FC = () => {
                 <Button
                   type="button"
                   onClick={nextStep}
-                  variant="gradient"
+                  variant="outline"
                   className="cursor-pointer"
                 >
                   Next
@@ -655,10 +656,13 @@ const QuizCreator: React.FC = () => {
               ) : (
                 <Button
                   type="submit"
-                  variant="gradient"
+                  variant="outline"
                   className="cursor-pointer"
-                  loading={isGenerating}
                   disabled={isGenerating}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSubmit(onSubmit)();
+                  }}
                 >
                   {isGenerating ? "Generating..." : "Generate Quiz"}
                   {!isGenerating && <Sparkles className="w-4 h-4 ml-2" />}

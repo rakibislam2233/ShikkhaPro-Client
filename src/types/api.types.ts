@@ -1,4 +1,4 @@
-export interface APIResponse<T = any> {
+export interface APIResponse<T> {
   success: boolean;
   data: T;
   message: string;
@@ -10,7 +10,6 @@ export interface APIError {
   error: {
     code: string;
     message: string;
-    details?: any;
   };
   timestamp: string;
 }
@@ -73,7 +72,7 @@ export interface QuizGenerationRequest {
 }
 
 export interface QuizGenerationResponse {
-  quiz: import('./quiz.types').Quiz;
+  quiz: import('./quiz.types').IQuiz;
   metadata: {
     tokensUsed: number;
     generationTime: number;

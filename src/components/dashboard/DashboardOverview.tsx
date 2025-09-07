@@ -2,65 +2,20 @@ import { motion } from "framer-motion";
 import {
   Plus,
   FileText,
-  Users,
-  Trophy,
   TrendingUp,
-  Clock,
-  Target,
   BookOpen,
   ArrowRight,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { getDemoStats, demoQuizzes } from "../../utils/demoData";
 import { Link } from "react-router-dom";
+import { useGetMyQuizzesQuery } from "@/redux/features/quiz/quizApi";
+import { useAuth } from "@/hooks/useAuth";
+import LoadingSpinner from "../ui/LoadingSpinner";
 const DashboardOverview = () => {
-  const demoStats = getDemoStats();
-
-  const stats = {
-    totalQuizzes: demoStats.totalQuizzes,
-    totalAttempts: demoStats.totalAttempts,
-    avgScore: demoStats.averageScore,
-    completionRate: demoStats.completionRate,
-    totalStudents: demoStats.totalStudents,
-    activeQuizzes: demoStats.activeQuizzes,
-  };
-
-  const recentQuizzes = demoQuizzes.map((quiz) => ({
-    id: quiz.id,
-    title: quiz.title,
-    subject: quiz.subject,
-    attempts: Math.floor(Math.random() * 20) + 5,
-    avgScore: Math.floor(Math.random() * 20) + 70,
-    createdAt: quiz.createdAt,
-    status: quiz.isPublic ? "active" : "draft",
-  })).slice(0, 3);
-
-  const recentActivity = [
-    {
-      id: "1",
-      type: "quiz_completed",
-      student: "Ahmed Rahman",
-      quiz: "Mathematics - Algebra Basics",
-      score: 95,
-      time: "2 hours ago",
-    },
-    {
-      id: "2",
-      type: "quiz_created",
-      quiz: "Physics - Motion and Forces",
-      time: "5 hours ago",
-    },
-    {
-      id: "3",
-      type: "quiz_completed",
-      student: "Fatima Khan",
-      quiz: "Chemistry - Periodic Table",
-      score: 87,
-      time: "1 day ago",
-    },
-  ];
-
+  const { user } = useAuth();
+  const { data: quizzesData, isLoading: quizzesLoading } = useGetMyQuizzesQuery(undefined);
+  const myQuizzes = quizzesData?.data || [];
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -76,6 +31,17 @@ const DashboardOverview = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  if (quizzesLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <LoadingSpinner />
+          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       variants={containerVariants}
@@ -88,17 +54,19 @@ const DashboardOverview = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Welcome back!
+              Welcome back, {user?.profile?.fullName || user?.email?.split('@')[0]}!
             </h1>
             <p className="text-muted-foreground mt-1">
               Here's what's happening with your quizzes today.
             </p>
           </div>
           <div className="mt-4 sm:mt-0">
-            <Button className="flex items-center space-x-2">
-              <Plus className="h-4 w-4" />
-              <span>Create New Quiz</span>
-            </Button>
+            <Link to="/dashboard/create-quiz">
+              <Button className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Create New Quiz</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </motion.div>
@@ -113,59 +81,11 @@ const DashboardOverview = () => {
                   Total Quizzes
                 </p>
                 <p className="text-2xl font-bold text-foreground">
-                  {stats.totalQuizzes}
+                  {myQuizzes?.totalQuizzes}
                 </p>
               </div>
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <FileText className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Attempts
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.totalAttempts}
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Average Score
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.avgScore}%
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-                <Trophy className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Completion Rate
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.completionRate}%
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Target className="h-6 w-6 text-primary" />
               </div>
             </div>
           </Card>
@@ -192,141 +112,41 @@ const DashboardOverview = () => {
             </Card>
           </Link>
 
-          <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-green-600 dark:text-green-400" />
+          <Link to="/dashboard/my-quizzes">
+            <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">My Quizzes</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Manage your quiz collection
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">My Quizzes</h3>
-                <p className="text-sm text-muted-foreground">
-                  Manage your quiz collection
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </Card>
+            </Card>
+          </Link>
 
-          <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+          <Link to="/dashboard/analytics">
+            <Card className="p-6 cursor-pointer hover:shadow-lg transition-shadow">
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Analytics</h3>
+                  <p className="text-sm text-muted-foreground">
+                    View performance insights
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">Analytics</h3>
-                <p className="text-sm text-muted-foreground">
-                  View performance insights
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </Card>
+            </Card>
+          </Link>
         </div>
       </motion.div>
-
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Quizzes */}
-        <motion.div variants={itemVariants}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Recent Quizzes</h3>
-              <Button variant="outline" size="sm">
-                View All
-              </Button>
-            </div>
-            <div className="space-y-4">
-              {recentQuizzes.map((quiz) => (
-                <Link
-                  key={quiz.id}
-                  to={`/dashboard/quiz/${quiz.id}`}
-                  className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
-                >
-                  <div className="flex-1">
-                    <h4 className="font-medium">{quiz.title}</h4>
-                    <div className="flex items-center space-x-4 mt-1 text-sm text-muted-foreground">
-                      <span>{quiz.subject}</span>
-                      <span>•</span>
-                      <span>{quiz.attempts} attempts</span>
-                      <span>•</span>
-                      <span>{quiz.avgScore}% avg</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        quiz.status === "active"
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
-                      }`}
-                    >
-                      {quiz.status}
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Recent Activity */}
-        <motion.div variants={itemVariants}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Recent Activity</h3>
-              <Button variant="outline" size="sm">
-                View All
-              </Button>
-            </div>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <div
-                    className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      activity.type === "quiz_completed"
-                        ? "bg-green-100 dark:bg-green-900/30"
-                        : "bg-primary/10"
-                    }`}
-                  >
-                    {activity.type === "quiz_completed" ? (
-                      <Trophy className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    ) : (
-                      <FileText className="h-4 w-4 text-primary" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm">
-                      {activity.type === "quiz_completed" ? (
-                        <>
-                          <span className="font-medium">
-                            {activity.student}
-                          </span>{" "}
-                          completed{" "}
-                          <span className="font-medium">{activity.quiz}</span>{" "}
-                          with{" "}
-                          <span className="font-medium text-green-600">
-                            {activity.score}%
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          Created new quiz{" "}
-                          <span className="font-medium">{activity.quiz}</span>
-                        </>
-                      )}
-                    </p>
-                    <div className="flex items-center mt-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {activity.time}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-      </div>
     </motion.div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Clock, AlertCircle } from "lucide-react";
@@ -8,7 +8,12 @@ import QuestionCard from "./QuestionCard";
 import ProgressBar from "./ProgressBar";
 import NavigationControls from "./NavigationControls";
 import type { IQuiz } from "@/types/quiz.types";
-import { useGetQuizByIdQuery } from "@/redux/features/quiz/quizApi";
+import {
+  useGetQuizByIdQuery,
+  useSubmitAnswerMutation,
+} from "@/redux/features/quiz/quizApi";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
 
 interface QuizInterfaceProps {
   quizId: string;
@@ -16,18 +21,25 @@ interface QuizInterfaceProps {
 
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const [currentQuiz, setCurrentQuiz] = useState<IQuiz | null>(null);
-  const [saveAnswer, setSaveAnswer] = useState<
-    (questionId: string, answer: string | string[]) => void
-  >(() => () => {});
+  const [userAnswers, setUserAnswers] = useState<{
+    [key: string]: string | string[];
+  }>({});
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
-  const { data: responseData } = useGetQuizByIdQuery(quizId, {
-    refetchOnMountOrArgChange: true,
-    skip: !quizId,
-  });
+  const [isQuizStarted, setIsQuizStarted] = useState(false);
+
+  const { data: responseData, isLoading: quizLoading } = useGetQuizByIdQuery(
+    quizId,
+    {
+      refetchOnMountOrArgChange: true,
+      skip: !quizId,
+    }
+  );
+
+  const [submitAnswer] = useSubmitAnswerMutation();
 
   // Load quiz when component mounts
   useEffect(() => {
@@ -37,27 +49,68 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   }, [responseData]);
 
   useEffect(() => {
-    if (currentQuiz?.timeLimit) {
-      setTimeRemaining(currentQuiz.timeLimit * 60);
+    if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
+      setTimeRemaining(currentQuiz.estimatedTime * 60);
+      setIsQuizStarted(true); // Mark quiz as started when time is set
+    } else if (currentQuiz) {
+      // If no time limit, just mark as started without timer
+      setIsQuizStarted(true);
+      setTimeRemaining(0);
     }
   }, [currentQuiz]);
 
+  const handleSubmitQuiz = useCallback(async () => {
+    setIsSubmitting(true);
+    try {
+      const submissionData = {
+        quizId,
+        answers: userAnswers,
+      };
+      const result = await submitAnswer(submissionData).unwrap();
+      toast.success("Quiz submitted successfully!");
+      navigate(`/dashboard/quiz-result/${result?.data?.attemptId}`);
+    } catch (error) {
+      const err = error as TError;
+      toast.error(
+        err?.data?.message || "Failed to submit quiz. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+      setShowSubmitDialog(false);
+    }
+  }, [quizId, userAnswers, submitAnswer, navigate]);
+
   useEffect(() => {
-    if (timeRemaining > 0) {
+    if (
+      timeRemaining > 0 &&
+      isQuizStarted &&
+      currentQuiz?.estimatedTime &&
+      currentQuiz.estimatedTime > 0
+    ) {
       const timer = setTimeout(() => {
         setTimeRemaining((prev) => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (timeRemaining === 0 && currentQuiz) {
+    } else if (
+      timeRemaining === 0 &&
+      currentQuiz &&
+      isQuizStarted &&
+      currentQuiz?.estimatedTime &&
+      currentQuiz.estimatedTime > 0
+    ) {
+      // Only auto-submit if there was actually a time limit and it has expired
       handleSubmitQuiz();
     }
-  }, [timeRemaining, currentQuiz]);
+  }, [timeRemaining, currentQuiz, handleSubmitQuiz, isQuizStarted]);
 
   const handleAnswerSelect = (
     questionId: string,
     answer: string | string[]
   ) => {
-    setSaveAnswer(questionId, answer);
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionId]: answer,
+    }));
   };
 
   const handleNextQuestion = () => {
@@ -72,18 +125,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
-    }
-  };
-
-  const handleSubmitQuiz = async () => {
-    setIsSubmitting(true);
-    try {
-      await submitQuiz(quizId);
-    } catch (error) {
-      console.error("Failed to submit quiz:", error);
-    } finally {
-      setIsSubmitting(false);
-      setShowSubmitDialog(false);
     }
   };
 
@@ -102,15 +143,25 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
 
   const getAnsweredQuestions = () => {
     if (!currentQuiz) return 0;
-    return currentQuiz.questions.filter(
-      (q) => currentQuiz.userAnswers && currentQuiz.userAnswers[q.id]
-    ).length;
+    return currentQuiz.questions.filter((q) => userAnswers[q.id] !== undefined)
+      .length;
   };
 
   const isQuizComplete = () => {
     if (!currentQuiz) return false;
     return getAnsweredQuestions() === currentQuiz.questions.length;
   };
+
+  if (quizLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading quiz...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentQuiz) {
     return (
@@ -141,13 +192,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              {currentQuiz.timeLimit && (
+              {currentQuiz.estimatedTime && (
                 <div
-                  className={`flex items-center space-x-2 ${
-                    timeRemaining < 300
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`flex items-center space-x-2 text-muted-foreground`}
                 >
                   <Clock className="h-4 w-4" />
                   <span className="font-mono font-medium">
@@ -155,14 +202,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                   </span>
                 </div>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSubmitDialog(true)}
-                className="bg-background/50"
-              >
-                Submit Quiz
-              </Button>
             </div>
           </div>
         </div>
@@ -190,7 +229,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               <QuestionCard
                 question={currentQuestion}
                 questionNumber={currentQuestionIndex + 1}
-                selectedAnswer={currentQuiz.userAnswers?.[currentQuestion.id]}
+                selectedAnswer={userAnswers[currentQuestion.id]}
                 onAnswerSelect={(answer) =>
                   handleAnswerSelect(currentQuestion.id, answer)
                 }
@@ -205,7 +244,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               onNext={handleNextQuestion}
               canGoNext={true}
               canGoPrevious={currentQuestionIndex > 0}
-              currentAnswer={currentQuiz.userAnswers?.[currentQuestion.id]}
+              currentAnswer={userAnswers[currentQuestion.id]}
               requireAnswer={true}
             />
           </div>
@@ -230,14 +269,14 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 <Button
                   variant="outline"
                   onClick={() => setShowSubmitDialog(false)}
-                  className="flex-1"
+                  className="flex-1 cursor-pointer"
                 >
                   Continue Quiz
                 </Button>
                 <Button
                   onClick={handleSubmitQuiz}
                   disabled={isSubmitting}
-                  className="flex-1"
+                  className="flex-1 cursor-pointer"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Quiz"}
                 </Button>

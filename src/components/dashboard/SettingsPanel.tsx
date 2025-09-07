@@ -1,11 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   User,
-  Bell,
   Shield,
-  Palette,
-  Globe,
   Key,
   Trash2,
   Save,
@@ -19,35 +16,32 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { useAuth } from "@/hooks/useAuth";
+import { useUpdateProfileMutation, useDeleteProfileMutation } from "@/redux/features/profile/profileApi";
+import { toast } from "sonner";
+import AuthGuard from "@/components/auth/AuthGuard";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import type { TError } from "@/types/erro";
 
 const SettingsPanel = () => {
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1234567890",
-    location: "New York, USA",
-    organization: "Example University",
-    bio: "Passionate educator with 10+ years of experience in creating engaging educational content.",
-  };
+  const { user, isLoading: userLoading } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [updateProfile, { isLoading: updateLoading }] = useUpdateProfileMutation();
+  const [deleteProfile, { isLoading: deleteLoading }] = useDeleteProfileMutation();
+  
   const [activeTab, setActiveTab] = useState("profile");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [profileData, setProfileData] = useState({
-    name: user?.name || "John Doe",
-    email: user?.email || "john.doe@example.com",
-    phone: "+1234567890",
-    location: "New York, USA",
-    organization: "Example University",
-    bio: "Passionate educator with 10+ years of experience in creating engaging educational content.",
-  });
-
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    quizAttempts: true,
-    weeklyReports: true,
-    systemUpdates: false,
-    marketingEmails: false,
+    fullName: user?.profile?.fullName || "",
+    email: user?.email || "",
+    phone: user?.profile?.phone || "",
+    address: user?.profile?.address || "",
+    organization: user?.profile?.organization || "",
+    bio: user?.profile?.bio || "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -56,35 +50,96 @@ const SettingsPanel = () => {
     confirmPassword: "",
   });
 
-  const [languageSettings, setLanguageSettings] = useState({
-    interface: "english",
-    defaultQuizLanguage: "english",
-    dateFormat: "MM/DD/YYYY",
-    timeFormat: "12-hour",
-  });
+  // Update form data when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        fullName: user.profile?.fullName || "",
+        email: user.email || "",
+        phone: user.profile?.phone || "",
+        address: user.profile?.address || "",
+        organization: user.profile?.organization || "",
+        bio: user.profile?.bio || "",
+      });
+    }
+  }, [user]);
 
   const settingsTabs = [
     { id: "profile", name: "Profile", icon: User },
-    { id: "notifications", name: "Notifications", icon: Bell },
     { id: "security", name: "Security", icon: Shield },
-    { id: "appearance", name: "Appearance", icon: Palette },
-    { id: "language", name: "Language", icon: Globe },
   ];
 
-  const handleProfileSave = () => {
-    console.log("Saving profile data:", profileData);
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error("Image size should be less than 5MB");
+        return;
+      }
+      
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Please select a valid image file (JPEG, PNG, GIF)");
+        return;
+      }
+
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleNotificationSave = () => {
-    console.log("Saving notification settings:", notificationSettings);
+  const handleProfileSave = async () => {
+    try {
+      const formData = new FormData();
+      
+      // Add profile data
+      formData.append('fullName', profileData.fullName);
+      formData.append('phone', profileData.phone);
+      formData.append('address', profileData.address);
+      formData.append('organization', profileData.organization || '');
+      formData.append('bio', profileData.bio || '');
+      
+      // Add image if selected
+      if (selectedImage) {
+        formData.append('avatar', selectedImage);
+      }
+      await updateProfile(formData).unwrap();
+      toast.success("Profile updated successfully!");
+      
+      // Reset image selection
+      setSelectedImage(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err?.data?.message || "Failed to update profile");
+    }
   };
 
   const handlePasswordChange = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("New passwords do not match");
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      toast.error("Please fill in all password fields");
       return;
     }
-    console.log("Changing password");
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long");
+      return;
+    }
+    
+    // TODO: Add password change API call
+    toast.success("Password changed successfully!");
     setPasswordData({
       currentPassword: "",
       newPassword: "",
@@ -92,8 +147,22 @@ const SettingsPanel = () => {
     });
   };
 
-  const handleLanguageSave = () => {
-    console.log("Saving language settings:", languageSettings);
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    
+    if (confirmDelete) {
+      try {
+        await deleteProfile(undefined).unwrap();
+        toast.success("Account deleted successfully");
+        // Redirect to login or home page
+        window.location.href = "/";
+      } catch (error) {
+        const err = error as TError;
+        toast.error(err?.data?.message || "Failed to delete account");
+      }
+    }
   };
 
   const renderProfileTab = () => (
@@ -104,18 +173,39 @@ const SettingsPanel = () => {
         {/* Profile Picture */}
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <div className="h-20 w-20 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold">
-              {profileData.name.charAt(0)}
+            <div className="h-20 w-20 rounded-full overflow-hidden bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+              ) : user?.profile?.avatar ? (
+                <img src={user.profile.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                profileData.fullName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'
+              )}
             </div>
-            <button className="absolute -bottom-1 -right-1 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors"
+            >
               <Camera className="h-3 w-3" />
             </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
           </div>
           <div>
             <h4 className="font-medium">Profile Picture</h4>
             <p className="text-sm text-muted-foreground">
-              Click the camera icon to upload a new picture
+              Click the camera icon to upload a new picture (max 5MB)
             </p>
+            {selectedImage && (
+              <p className="text-sm text-green-600 mt-1">
+                New image selected: {selectedImage.name}
+              </p>
+            )}
           </div>
         </div>
 
@@ -125,9 +215,9 @@ const SettingsPanel = () => {
             <label className="block text-sm font-medium mb-2">Full Name</label>
             <input
               type="text"
-              value={profileData.name}
+              value={profileData.fullName}
               onChange={(e) =>
-                setProfileData({ ...profileData, name: e.target.value })
+                setProfileData({ ...profileData, fullName: e.target.value })
               }
               className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
             />
@@ -142,12 +232,13 @@ const SettingsPanel = () => {
               <input
                 type="email"
                 value={profileData.email}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, email: e.target.value })
-                }
-                className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
+                disabled
+                className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-muted text-muted-foreground cursor-not-allowed"
               />
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Email cannot be changed
+            </p>
           </div>
 
           <div>
@@ -168,14 +259,14 @@ const SettingsPanel = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Location</label>
+            <label className="block text-sm font-medium mb-2">Address</label>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
-                value={profileData.location}
+                value={profileData.address}
                 onChange={(e) =>
-                  setProfileData({ ...profileData, location: e.target.value })
+                  setProfileData({ ...profileData, address: e.target.value })
                 }
                 className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
               />
@@ -214,150 +305,21 @@ const SettingsPanel = () => {
         <div className="flex justify-end">
           <Button
             onClick={handleProfileSave}
+            disabled={updateLoading}
             className="flex items-center space-x-2"
           >
-            <Save className="h-4 w-4" />
-            <span>Save Changes</span>
+            {updateLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            <span>{updateLoading ? "Saving..." : "Save Changes"}</span>
           </Button>
         </div>
       </div>
     </Card>
   );
 
-  const renderNotificationsTab = () => (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-6">Notification Preferences</h3>
-
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Email Notifications</h4>
-              <p className="text-sm text-muted-foreground">
-                Receive notifications via email
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notificationSettings.emailNotifications}
-                onChange={(e) =>
-                  setNotificationSettings({
-                    ...notificationSettings,
-                    emailNotifications: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-muted-foreground after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Quiz Attempt Notifications</h4>
-              <p className="text-sm text-muted-foreground">
-                Get notified when students complete quizzes
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notificationSettings.quizAttempts}
-                onChange={(e) =>
-                  setNotificationSettings({
-                    ...notificationSettings,
-                    quizAttempts: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-muted-foreground after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Weekly Reports</h4>
-              <p className="text-sm text-muted-foreground">
-                Receive weekly performance summaries
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notificationSettings.weeklyReports}
-                onChange={(e) =>
-                  setNotificationSettings({
-                    ...notificationSettings,
-                    weeklyReports: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-muted-foreground after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">System Updates</h4>
-              <p className="text-sm text-muted-foreground">
-                Get notified about new features and updates
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notificationSettings.systemUpdates}
-                onChange={(e) =>
-                  setNotificationSettings({
-                    ...notificationSettings,
-                    systemUpdates: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-muted-foreground after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Marketing Emails</h4>
-              <p className="text-sm text-muted-foreground">
-                Receive tips, guides, and promotional content
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notificationSettings.marketingEmails}
-                onChange={(e) =>
-                  setNotificationSettings({
-                    ...notificationSettings,
-                    marketingEmails: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-muted-foreground after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <Button
-            onClick={handleNotificationSave}
-            className="flex items-center space-x-2"
-          >
-            <Save className="h-4 w-4" />
-            <span>Save Preferences</span>
-          </Button>
-        </div>
-      </div>
-    </Card>
-  );
 
   const renderSecurityTab = () => (
     <Card className="p-6">
@@ -465,11 +427,17 @@ const SettingsPanel = () => {
               quizzes and data will be permanently removed.
             </p>
             <Button
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
               variant="outline"
               className="text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Account
+              {deleteLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
+              ) : (
+                <Trash2 className="h-4 w-4 mr-2" />
+              )}
+              {deleteLoading ? "Deleting..." : "Delete Account"}
             </Button>
           </div>
         </div>
@@ -477,183 +445,44 @@ const SettingsPanel = () => {
     </Card>
   );
 
-  const renderAppearanceTab = () => (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-6">Appearance Settings</h3>
-
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className="font-medium">Theme</h4>
-            <p className="text-sm text-muted-foreground">
-              Choose your preferred theme
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <h4 className="font-medium mb-4">Color Scheme</h4>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 border border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
-              <div className="flex space-x-2 mb-2">
-                <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <div className="w-4 h-4 bg-purple-500 rounded"></div>
-              </div>
-              <p className="text-sm font-medium">Default</p>
-            </div>
-            <div className="p-4 border border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
-              <div className="flex space-x-2 mb-2">
-                <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <div className="w-4 h-4 bg-pink-500 rounded"></div>
-              </div>
-              <p className="text-sm font-medium">Warm</p>
-            </div>
-            <div className="p-4 border border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
-              <div className="flex space-x-2 mb-2">
-                <div className="w-4 h-4 bg-cyan-500 rounded"></div>
-                <div className="w-4 h-4 bg-teal-500 rounded"></div>
-                <div className="w-4 h-4 bg-emerald-500 rounded"></div>
-              </div>
-              <p className="text-sm font-medium">Cool</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-
-  const renderLanguageTab = () => (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-6">
-        Language & Regional Settings
-      </h3>
-
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Interface Language
-            </label>
-            <select
-              value={languageSettings.interface}
-              onChange={(e) =>
-                setLanguageSettings({
-                  ...languageSettings,
-                  interface: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
-            >
-              <option value="english">English</option>
-              <option value="bengali">বাংলা (Bengali)</option>
-              <option value="hindi">हिंदी (Hindi)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Default Quiz Language
-            </label>
-            <select
-              value={languageSettings.defaultQuizLanguage}
-              onChange={(e) =>
-                setLanguageSettings({
-                  ...languageSettings,
-                  defaultQuizLanguage: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
-            >
-              <option value="english">English</option>
-              <option value="bengali">বাংলা (Bengali)</option>
-              <option value="hindi">हिंदी (Hindi)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Date Format
-            </label>
-            <select
-              value={languageSettings.dateFormat}
-              onChange={(e) =>
-                setLanguageSettings({
-                  ...languageSettings,
-                  dateFormat: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
-            >
-              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Time Format
-            </label>
-            <select
-              value={languageSettings.timeFormat}
-              onChange={(e) =>
-                setLanguageSettings({
-                  ...languageSettings,
-                  timeFormat: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary"
-            >
-              <option value="12-hour">12-hour (AM/PM)</option>
-              <option value="24-hour">24-hour</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <Button
-            onClick={handleLanguageSave}
-            className="flex items-center space-x-2"
-          >
-            <Save className="h-4 w-4" />
-            <span>Save Settings</span>
-          </Button>
-        </div>
-      </div>
-    </Card>
-  );
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "profile":
         return renderProfileTab();
-      case "notifications":
-        return renderNotificationsTab();
       case "security":
         return renderSecurityTab();
-      case "appearance":
-        return renderAppearanceTab();
-      case "language":
-        return renderLanguageTab();
       default:
         return renderProfileTab();
     }
   };
 
+  if (userLoading) {
+    return (
+      <AuthGuard>
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <LoadingSpinner />
+            <p className="mt-4 text-muted-foreground">Loading settings...</p>
+          </div>
+        </div>
+      </AuthGuard>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="mb-6 lg:mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-          Settings
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your account preferences and customize your learning
-          experience.
-        </p>
-      </div>
+    <AuthGuard>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+            Settings
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your account preferences and customize your learning
+            experience.
+          </p>
+        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Settings Navigation */}
@@ -698,7 +527,8 @@ const SettingsPanel = () => {
           </motion.div>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 };
 

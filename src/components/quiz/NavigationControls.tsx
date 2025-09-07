@@ -124,14 +124,12 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
       {/* Right Section - Next Navigation */}
       <div className="flex items-center space-x-2">
         <motion.div
-          whileHover={{ scale: canProceedNext ? 1.05 : 1 }}
-          whileTap={{ scale: canProceedNext ? 0.95 : 1 }}
         >
           <Button
             variant={canProceedNext ? "default" : "outline"}
             onClick={onNext}
             disabled={!canProceedNext}
-            className={`flex items-center space-x-2 px-4 ${
+            className={`flex items-center cursor-pointer space-x-2 px-4 ${
               !canProceedNext && canGoNext ? 'opacity-60 cursor-not-allowed' : ''
             }`}
           >

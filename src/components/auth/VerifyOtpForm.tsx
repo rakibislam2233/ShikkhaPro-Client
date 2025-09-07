@@ -264,9 +264,8 @@ const VerifyOtpForm: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full cursor-pointer"
-                variant="gradient"
+                variant="default"
                 size="lg"
-                loading={isLoading || isSubmitting}
                 disabled={otp.join("").length !== 6}
               >
                 {isLoading || isSubmitting ? "Verifying..." : "Verify Account"}

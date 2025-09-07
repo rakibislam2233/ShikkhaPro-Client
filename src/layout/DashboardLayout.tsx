@@ -15,18 +15,47 @@ import {
   HelpCircle,
   Sparkles,
 } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { removeAuthTokens } from "@/utils/cookies";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  // Mock user data
-  const user = {
-    name: "Ahmed Rahman",
-    email: "ahmed@email.com",
-    avatar: "AR",
-    level: "HSC Student",
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
+
+  const handleLogout = () => {
+    try {
+      removeAuthTokens();
+      toast.success("Logged out successfully!");
+      navigate("/login");
+      setProfileDropdownOpen(false);
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err.data.message || "Error logging out");
+    }
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (user?.profile?.fullName) {
+      return user.profile.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    return user?.email?.charAt(0).toUpperCase() || "U";
+  };
+
+  const getUserDisplayName = () => {
+    return user?.profile?.fullName || user?.email?.split("@")[0] || "User";
   };
 
   const navigation = [
@@ -91,19 +120,19 @@ const DashboardLayout = () => {
             {/* Sidebar Header */}
             <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 border-b border-gray-200">
               <Link to="/">
-              <div className="flex items-center space-x-2 lg:space-x-3">
-                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                <div className="flex items-center space-x-2 lg:space-x-3">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg">
+                    <BookOpen className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg lg:text-xl font-bold text-primary">
+                      ShikkhaPro
+                    </h1>
+                    <p className="text-xs text-gray-500 hidden lg:block">
+                      AI Learning Platform
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-lg lg:text-xl font-bold text-primary">
-                    ShikkhaPro
-                  </h1>
-                  <p className="text-xs text-gray-500 hidden lg:block">
-                    AI Learning Platform
-                  </p>
-                </div>
-              </div>
               </Link>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -118,14 +147,14 @@ const DashboardLayout = () => {
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-primary/20">
                 <div className="flex items-center space-x-2 lg:space-x-3">
                   <div className="w-10 h-10 lg:w-12 lg:h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm lg:text-lg shadow-lg">
-                    {user.avatar}
+                    {getUserInitials()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">
-                      {user.name}
+                      {getUserDisplayName()}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
-                      {user.level}
+                      {user?.role || "Student"}
                     </p>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -142,8 +171,10 @@ const DashboardLayout = () => {
               <ul className="space-y-1 lg:space-y-2">
                 {navigation.map((item) => {
                   const IconComponent = item.icon;
-                  const isActive = location.pathname === item.href || 
-                    (item.href === '/dashboard' && location.pathname === '/dashboard');
+                  const isActive =
+                    location.pathname === item.href ||
+                    (item.href === "/dashboard" &&
+                      location.pathname === "/dashboard");
                   return (
                     <li key={item.id}>
                       <Link
@@ -172,7 +203,9 @@ const DashboardLayout = () => {
                             </div>
                             <div
                               className={`text-xs hidden lg:block ${
-                                isActive ? "text-primary-foreground/80" : "text-gray-500"
+                                isActive
+                                  ? "text-primary-foreground/80"
+                                  : "text-gray-500"
                               }`}
                             >
                               {item.description}
@@ -243,10 +276,10 @@ const DashboardLayout = () => {
                     className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors"
                   >
                     <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
-                      {user.avatar}
+                      {getUserInitials()}
                     </div>
                     <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">
-                      {user.name.split(" ")[0]}
+                      {getUserDisplayName().split(" ")[0]}
                     </span>
                   </button>
 
@@ -255,15 +288,18 @@ const DashboardLayout = () => {
                     <div className="absolute right-0 mt-2 w-48 lg:w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-medium text-gray-900">
-                          {user.name}
+                          {getUserDisplayName()}
                         </p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
                       <button className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <User className="w-4 h-4" />
                         <span>Profile Settings</span>
                       </button>
-                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
                       </button>

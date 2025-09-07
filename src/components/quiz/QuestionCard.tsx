@@ -30,7 +30,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           const isCorrect = showCorrectAnswer && question.correctAnswer === option;
           const isWrong = showCorrectAnswer && isSelected && question.correctAnswer !== option;
           
-          let buttonClass = "w-full text-left p-4 border-2 transition-all duration-200 ";
+          let buttonClass = "w-full text-left p-4 border rounded-lg cursor-pointer transition-all duration-200 ";
           
           if (isReviewMode) {
             if (isCorrect) {
@@ -56,8 +56,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               onClick={() => !isReviewMode && onAnswerSelect(option)}
               className={buttonClass}
               disabled={isReviewMode}
-              whileHover={!isReviewMode ? { scale: 1.01 } : {}}
-              whileTap={!isReviewMode ? { scale: 0.99 } : {}}
             >
               <div className="flex items-start space-x-3">
                 <div className={`
@@ -266,17 +264,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-medium leading-relaxed mb-2">
-              {question.question}
+              {question?.question}
             </h3>
             {question.explanation && isReviewMode && (
               <p className="text-sm text-muted-foreground">
-                {question.explanation}
+                {question?.explanation}
               </p>
             )}
           </div>
           <div className="flex-shrink-0">
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded uppercase font-medium">
-              {question.type.replace('-', ' ')}
+              {question?.type.replace('-', ' ')}
             </span>
           </div>
         </div>

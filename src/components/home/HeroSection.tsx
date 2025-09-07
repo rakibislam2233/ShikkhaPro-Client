@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import { ArrowRight, Sparkles, BookOpen, Brain } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
 const HeroSection: React.FC = () => {
-  const isAuthenticated = true;
+  const { isAuthenticated } = useAuth();
 
   return (
     <section className="relative pt-24 md:pt-28 lg:pt-32 xl:pt-40 flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/30 to-white">
@@ -35,9 +36,9 @@ const HeroSection: React.FC = () => {
               className="px-6 py-2 text-base font-medium border-primary/20 bg-primary/5"
             >
               <motion.span
-                initial={{ scale: 1, rotate: 0 }}
+                initial={{ scale: 1,rotate:0 }}
                 animate={{
-                  scale: [1, 1.3, 1],
+                  scale: [1, 1.3, 1], 
                   rotate: [0, 10, 0],
                 }}
                 transition={{
@@ -114,8 +115,8 @@ const HeroSection: React.FC = () => {
               <>
                 <Link to="/dashboard/create-quiz">
                   <Button
-                    size="xl"
-                    variant="gradient"
+                    size="lg"
+                    variant="default"
                     className="group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
                   >
                     <BookOpen className="w-5 h-5 mr-2" />
@@ -125,7 +126,7 @@ const HeroSection: React.FC = () => {
                 </Link>
                 <Link to="/dashboard">
                   <Button
-                    size="xl"
+                    size="default"
                     variant="outline"
                     className="cursor-pointer hover:bg-primary/5 transition-all duration-300"
                   >
@@ -138,8 +139,8 @@ const HeroSection: React.FC = () => {
               <>
                 <Link to="/register">
                   <Button
-                    size="xl"
-                    variant="gradient"
+                    size="lg"
+                    variant="default"
                     className="group cursor-pointer transition-all duration-300 transform hover:scale-102"
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
@@ -149,7 +150,7 @@ const HeroSection: React.FC = () => {
                 </Link>
                 <Link to="/login" className="w-full sm:w-auto cursor-pointer">
                   <Button
-                    size="xl"
+                    size="lg"
                     variant="secondary"
                     className="w-full max-w-56 group cursor-pointer transition-all duration-300 hover:scale-102"
                   >

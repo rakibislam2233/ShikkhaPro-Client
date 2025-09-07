@@ -47,6 +47,13 @@ const quizApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Quiz"],
     }),
+    getQuizResult: builder.query({
+      query: (attemptId) => ({
+        url: `/quizzes/attempt/results/${attemptId}`,
+        method: "GET",
+      }),
+      providesTags: ["Quiz"],
+    }),
   }),
 });
 
@@ -57,4 +64,5 @@ export const {
   useUpdateQuizMutation,
   useDeleteQuizMutation,
   useSubmitAnswerMutation,
+  useGetQuizResultQuery,
 } = quizApi;

@@ -8,13 +8,13 @@ import DashboardPage from "@/pages/DashboardPage";
 import HomePage from "@/pages/HomePage";
 import QuizGeneratorPage from "@/pages/QuizGeneratorPage";
 import QuizTakingPage from "@/pages/QuizTakingPage";
-import ResultsPage from "@/pages/ResultsPage";
 import MyQuizzesPage from "@/pages/MyQuizzesPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import AboutPage from "@/pages/AboutPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
+import QuizResultPage from "@/pages/QuizResultPage";
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "@/layout/MainLayout";
 
@@ -90,8 +90,8 @@ const router = createBrowserRouter([
         element: <QuizTakingPage />,
       },
       {
-        path: "/dashboard/quiz/results/:quizId",
-        element: <ResultsPage />,
+        path: "/dashboard/quiz-result/:attemptId",
+        element: <QuizResultPage />,
       },
     ],
   },

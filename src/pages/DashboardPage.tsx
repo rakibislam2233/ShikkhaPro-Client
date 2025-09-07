@@ -6,18 +6,36 @@ import {
   Sparkles,
   Trophy,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import AuthGuard from "@/components/auth/AuthGuard";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const DashboardPage: React.FC = () => {
-  // Mock user data
-  const user = {
-    name: "Ahmed Rahman",
-    email: "ahmed@email.com",
-    avatar: "AR",
-    level: "HSC Student",
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <AuthGuard>
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center">
+            <LoadingSpinner />
+            <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  const getUserDisplayName = () => {
+    return user?.profile?.fullName || user?.email?.split('@')[0] || 'User';
+  };
+
+  const getUserLevel = () => {
+    return user?.role || 'Student';
   };
 
   return (
-    <>
+    <AuthGuard>
       <Helmet>
         <title>Dashboard - ShikkhaPro</title>
         <meta name="description" content="Your personal learning dashboard. Track quiz performance, view analytics, and monitor your educational progress with ShikkhaPro." />
@@ -59,7 +77,7 @@ const DashboardPage: React.FC = () => {
                   </span>
                 </div>
                 <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-2">
-                  Hello, {user.name.split(" ")[0]}! 👋
+                  Hello, {getUserDisplayName()}! 👋
                 </h1>
                 <p className="text-primary-foreground/90 text-sm sm:text-base lg:text-lg">
                   Ready to continue your learning journey?
@@ -71,14 +89,11 @@ const DashboardPage: React.FC = () => {
 
               <div className="flex flex-row sm:flex-col lg:items-end space-x-3 sm:space-x-0 sm:space-y-2">
                 <div className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 lg:px-4 py-1.5 lg:py-2 backdrop-blur-sm">
-                  <Trophy className="w-3 h-3 lg:w-4 lg:h-4 text-yellow-300" />
-                  <span className="text-xs lg:text-sm font-medium">
-                    {user.level}
+                  <Trophy className="w-3 h-3 lg:w-4 lg:h-4 text-gray-500" />
+                  <span className="text-xs lg:text-sm font-medium text-gray-500">
+                    {getUserLevel()}
                   </span>
                 </div>
-                <button className="bg-white bg-opacity-20 hover:bg-white hover:bg-opacity-30 backdrop-blur-sm rounded-lg lg:rounded-xl px-4 lg:px-6 py-1.5 lg:py-2 text-xs lg:text-sm font-medium transition-all duration-200 border border-white border-opacity-20 whitespace-nowrap">
-                  View Progress
-                </button>
               </div>
             </div>
           </div>
@@ -87,7 +102,7 @@ const DashboardPage: React.FC = () => {
       {/* Main Content */}
       <DashboardOverview />
     </main>
-    </>
+    </AuthGuard>
   );
 };
 

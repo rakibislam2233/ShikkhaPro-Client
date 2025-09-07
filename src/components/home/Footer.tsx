@@ -152,7 +152,7 @@ const Footer: React.FC = () => {
           className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
         >
           <div className="text-gray-400 text-sm text-center md:text-left">
-            <p>© {new Date().getFullYear()} QuizAI. All rights reserved.</p>
+            <p>© {new Date().getFullYear()}  ShikkhaPro. All rights reserved.</p>
           </div>
 
           <div className="flex items-center space-x-1 text-gray-400 text-sm">
