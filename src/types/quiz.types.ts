@@ -25,9 +25,9 @@ export interface Question {
   id: string;
   question: string;
   type: QuestionType;
-  options?: string[]; // For MCQ questions
-  correctAnswer: string | string[]; // string for single answers, string[] for multiple-select
-  correct_answer?: string; // Legacy compatibility
+  options?: string[]; 
+  correctAnswer: string | string[];
+  correct_answer?: string; 
   explanation: string;
   difficulty: Difficulty;
   points: number;
@@ -72,7 +72,7 @@ export interface QuizAttempt {
   totalScore?: number;
   totalQuestions: number;
   correctAnswers: number;
-  timeSpent?: number; // in seconds
+  timeSpent?: number; 
   isCompleted: boolean;
   flaggedQuestions: string[];
 }
