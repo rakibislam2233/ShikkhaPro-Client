@@ -97,3 +97,33 @@ export const getObjectCookie = (name: string): unknown => {
 export const isCookie = (name: string, value: string): boolean => {
   return getCookie(name) === value;
 };
+
+// Token management functions
+export const setAccessToken = (token: string, days: number = 1): void => {
+  setCookie(COOKIE_NAMES.ACCESS_TOKEN, token, days);
+};
+
+export const getAccessToken = (): string | undefined => {
+  return getCookie(COOKIE_NAMES.ACCESS_TOKEN);
+};
+
+export const setRefreshToken = (token: string, days: number = 30): void => {
+  setCookie(COOKIE_NAMES.REFRESH_TOKEN, token, days);
+};
+
+export const getRefreshToken = (): string | undefined => {
+  return getCookie(COOKIE_NAMES.REFRESH_TOKEN);
+};
+
+export const removeAuthTokens = (): void => {
+  removeCookie(COOKIE_NAMES.ACCESS_TOKEN);
+  removeCookie(COOKIE_NAMES.REFRESH_TOKEN);
+};
+
+export const hasAccessToken = (): boolean => {
+  return Boolean(getAccessToken());
+};
+
+export const hasRefreshToken = (): boolean => {
+  return Boolean(getRefreshToken());
+};

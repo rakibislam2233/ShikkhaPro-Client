@@ -1,138 +1,113 @@
 import type { QuizConfig } from '../types/quiz.types';
-import * as yup from 'yup';
+import { z } from 'zod';
 
 // Validation schemas for forms
-export const loginSchema = yup.object({
-  email: yup
+export const loginSchema = z.object({
+  email: z
     .string()
     .email('Please enter a valid email address')
-    .required('Email is required'),
-  password: yup
+    .min(1, 'Email is required'),
+  password: z
     .string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-  rememberMe: yup.boolean(),
+    .min(6, 'Password must be at least 6 characters'),
+  rememberMe: z.boolean().optional(),
 });
 
-export const registerSchema = yup.object({
-  name: yup
+export const registerSchema = z.object({
+  fullName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters')
-    .required('Name is required'),
-  email: yup
+    .min(2, 'Full name must be at least 2 characters')
+    .max(50, 'Full name must be less than 50 characters'),
+  email: z
     .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
-  password: yup
+    .email('Please enter a valid email address'),
+  password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .matches(
+    .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    )
-    .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .required('Please confirm your password'),
-  agreeToTerms: yup
+    ),
+  agreeToTerms: z
     .boolean()
-    .oneOf([true], 'You must agree to the terms and conditions'),
+    .refine((val) => val === true, 'You must agree to the terms and conditions'),
 });
 
-export const forgotPasswordSchema = yup.object({
-  email: yup
+export const forgotPasswordSchema = z.object({
+  email: z
     .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
+    .email('Please enter a valid email address'),
 });
 
-export const resetPasswordSchema = yup.object({
-  token: yup.string().required('Reset token is required'),
-  newPassword: yup
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  newPassword: z
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .matches(
+    .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    )
-    .required('New password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('newPassword')], 'Passwords must match')
-    .required('Please confirm your new password'),
+    ),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'Passwords must match',
+  path: ['confirmPassword'],
 });
 
-export const otpSchema = yup.object({
-  email: yup
+export const otpSchema = z.object({
+  email: z
     .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
-  otp: yup
+    .email('Please enter a valid email address'),
+  otp: z
     .string()
-    .matches(/^\d{6}$/, 'OTP must be exactly 6 digits')
-    .required('OTP is required'),
+    .regex(/^\d{6}$/, 'OTP must be exactly 6 digits'),
 });
 
-export const quizConfigSchema = yup.object({
-  academicLevel: yup
-    .string()
-    .oneOf([
+export const quizConfigSchema = z.object({
+  academicLevel: z
+    .enum([
       'class-1', 'class-2', 'class-3', 'class-4', 'class-5',
       'class-6', 'class-7', 'class-8', 'class-9', 'class-10',
       'jsc', 'ssc', 'hsc', 'bsc', 'msc'
-    ])
-    .required('Academic level is required'),
-  subject: yup
+    ], { errorMap: () => ({ message: 'Academic level is required' }) }),
+  subject: z
     .string()
     .min(2, 'Subject must be at least 2 characters')
-    .max(50, 'Subject must be less than 50 characters')
-    .required('Subject is required'),
-  topic: yup
+    .max(50, 'Subject must be less than 50 characters'),
+  topic: z
     .string()
     .min(2, 'Topic must be at least 2 characters')
-    .max(100, 'Topic must be less than 100 characters')
-    .required('Topic is required'),
-  language: yup
-    .string()
-    .oneOf(['english', 'bengali', 'hindi'])
-    .required('Language is required'),
-  questionType: yup
-    .string()
-    .oneOf(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'])
-    .required('Question type is required'),
-  difficulty: yup
-    .string()
-    .oneOf(['easy', 'medium', 'hard'])
-    .required('Difficulty level is required'),
-  questionCount: yup
+    .max(100, 'Topic must be less than 100 characters'),
+  language: z
+    .enum(['english', 'bengali', 'hindi'], { errorMap: () => ({ message: 'Language is required' }) }),
+  questionType: z
+    .enum(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'], { errorMap: () => ({ message: 'Question type is required' }) }),
+  difficulty: z
+    .enum(['easy', 'medium', 'hard'], { errorMap: () => ({ message: 'Difficulty level is required' }) }),
+  questionCount: z
     .number()
     .min(5, 'Minimum 5 questions required')
-    .max(50, 'Maximum 50 questions allowed')
-    .required('Question count is required'),
-  timeLimit: yup.number().min(0, 'Time limit cannot be negative').optional(),
-  instructions: yup.string().max(500, 'Instructions must be less than 500 characters').optional(),
+    .max(50, 'Maximum 50 questions allowed'),
+  timeLimit: z.number().min(0, 'Time limit cannot be negative').optional(),
+  instructions: z.string().max(500, 'Instructions must be less than 500 characters').optional(),
 });
 
-export const profileUpdateSchema = yup.object({
-  name: yup
+export const profileUpdateSchema = z.object({
+  name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters')
-    .required('Name is required'),
-  email: yup
+    .max(50, 'Name must be less than 50 characters'),
+  email: z
     .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
-  preferences: yup.object({
-    theme: yup.string().oneOf(['light', 'dark', 'system']).required(),
-    language: yup.string().oneOf(['english', 'bengali', 'hindi']).required(),
-    notifications: yup.boolean().required(),
-    autoSave: yup.boolean().required(),
-    defaultQuestionCount: yup.number().min(5).max(50).required(),
-    defaultDifficulty: yup.string().oneOf(['easy', 'medium', 'hard']).required(),
-  }).required(),
+    .email('Please enter a valid email address'),
+  preferences: z.object({
+    theme: z.enum(['light', 'dark', 'system']),
+    language: z.enum(['english', 'bengali', 'hindi']),
+    notifications: z.boolean(),
+    autoSave: z.boolean(),
+    defaultQuestionCount: z.number().min(5).max(50),
+    defaultDifficulty: z.enum(['easy', 'medium', 'hard']),
+  }),
 });
 
 // Utility functions for validation
@@ -182,15 +157,14 @@ export function validateQuizConfig(config: Partial<QuizConfig>): {
   errors: Record<string, string>;
 } {
   try {
-    quizConfigSchema.validateSync(config, { abortEarly: false });
+    quizConfigSchema.parse(config);
     return { isValid: true, errors: {} };
   } catch (error) {
-    if (error instanceof yup.ValidationError) {
+    if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};
-      error.inner.forEach(err => {
-        if (err.path) {
-          errors[err.path] = err.message;
-        }
+      error.issues.forEach(issue => {
+        const path = issue.path.join('.');
+        errors[path] = issue.message;
       });
       return { isValid: false, errors };
     }
@@ -231,14 +205,22 @@ export function hasFieldError(
   return Boolean(errors[fieldName]);
 }
 
-export function formatValidationError(error: yup.ValidationError): Record<string, string> {
+export function formatValidationError(error: z.ZodError): Record<string, string> {
   const errors: Record<string, string> = {};
   
-  error.inner.forEach(err => {
-    if (err.path) {
-      errors[err.path] = err.message;
-    }
+  error.issues.forEach(issue => {
+    const path = issue.path.join('.');
+    errors[path] = issue.message;
   });
   
   return errors;
 }
+
+// Type exports for forms
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type OtpFormData = z.infer<typeof otpSchema>;
+export type QuizConfigFormData = z.infer<typeof quizConfigSchema>;
+export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>;

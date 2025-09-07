@@ -18,7 +18,6 @@ import {
   CardTitle,
 } from "../ui/Card";
 import { Input } from "../ui/Input";
-
 import type { LoginFormData } from "../../types/auth.types";
 
 const LoginForm: React.FC = () => {
