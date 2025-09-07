@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Eye,
   EyeOff,
@@ -14,9 +13,7 @@ import {
   X,
   BookOpen,
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
 import {
@@ -27,27 +24,31 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import { registerSchema, type RegisterFormData } from "../../utils/validation.utils";
 import { cn } from "../../lib/utils";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
+import type { RegisterFormData } from "@/utils/validation.utils";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { Input } from "../ui/Input";
 
 const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const { register: registerUser, isLoading, error } = useAuth();
+  const [registerUser, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    // resolver: zodResolver(registerSchema),
+    mode: "onSubmit",
     defaultValues: {
       fullName: "",
       email: "",
       password: "",
-      agreeToTerms: false,
     },
   });
 
@@ -107,17 +108,17 @@ const RegisterForm: React.FC = () => {
   };
 
   const onSubmit = async (data: RegisterFormData) => {
+    console.log("Register data:", data);
     try {
       await registerUser({
-        name: data.fullName,
+        fullName: data.fullName,
         email: data.email,
         password: data.password,
-        confirmPassword: data.password,
-        agreeToTerms: data.agreeToTerms,
       });
       navigate("/dashboard");
-    } catch{
-      // Error handled by context
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err.data?.message || "Registration failed");
     }
   };
 
@@ -167,16 +168,6 @@ const RegisterForm: React.FC = () => {
 
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md"
-                >
-                  {error}
-                </motion.div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">
@@ -185,9 +176,7 @@ const RegisterForm: React.FC = () => {
                     id="name"
                     type="text"
                     placeholder="Enter your full name"
-                    className="pl-10"
                     {...register("fullName")}
-                    aria-invalid={!!errors.fullName}
                   />
                 </div>
                 {errors.fullName && (
@@ -204,10 +193,8 @@ const RegisterForm: React.FC = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
-                    className="pl-10"
+                    placeholder="Enter your email address"
                     {...register("email")}
-                    aria-invalid={!!errors.email}
                   />
                 </div>
                 {errors.email && (
@@ -224,10 +211,8 @@ const RegisterForm: React.FC = () => {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password"
-                    className="pl-10 pr-10"
+                    placeholder="Enter your password"
                     {...register("password")}
-                    aria-invalid={!!errors.password}
                   />
                   <button
                     type="button"
@@ -310,11 +295,7 @@ const RegisterForm: React.FC = () => {
 
               <div className="space-y-2">
                 <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="agreeToTerms"
-                    {...register("agreeToTerms")}
-                    className="mt-1"
-                  />
+                  <Checkbox id="agreeToTerms" className="mt-1" />
                   <Label
                     htmlFor="agreeToTerms"
                     className="text-sm font-normal cursor-pointer leading-relaxed"
@@ -332,11 +313,6 @@ const RegisterForm: React.FC = () => {
                     </Link>
                   </Label>
                 </div>
-                {errors.agreeToTerms && (
-                  <p className="text-sm text-destructive">
-                    {errors.agreeToTerms.message}
-                  </p>
-                )}
               </div>
 
               <Button
@@ -344,15 +320,11 @@ const RegisterForm: React.FC = () => {
                 className="w-full"
                 variant="gradient"
                 size="lg"
-                loading={isLoading || isSubmitting}
+                loading={isLoading}
                 disabled={passwordStrength < 3}
               >
-                {isLoading || isSubmitting
-                  ? "Creating Account..."
-                  : "Create Account"}
-                {!isLoading && !isSubmitting && (
-                  <ArrowRight className="size-5 ml-2" />
-                )}
+                {isLoading ? "Creating Account..." : "Create Account"}
+                {!isLoading && <ArrowRight className="size-5 ml-2" />}
               </Button>
             </form>
           </CardContent>

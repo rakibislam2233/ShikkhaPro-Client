@@ -76,6 +76,7 @@ const QuizCreator: React.FC = () => {
     trigger,
   } = useForm<QuizConfig>({
     resolver: zodResolver(quizConfigSchema),
+    mode: "onSubmit",
     defaultValues: {
       academicLevel: "class-10",
       subject: "",

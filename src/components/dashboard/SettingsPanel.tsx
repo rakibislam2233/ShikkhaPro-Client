@@ -19,10 +19,16 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { useAuth } from "../../contexts/AuthContext";
 
 const SettingsPanel = () => {
-  const { user } = useAuth();
+  const user = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "+1234567890",
+    location: "New York, USA",
+    organization: "Example University",
+    bio: "Passionate educator with 10+ years of experience in creating engaging educational content.",
+  };
   const [activeTab, setActiveTab] = useState("profile");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);

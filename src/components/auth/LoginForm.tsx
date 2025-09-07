@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, BookOpen } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
-import { loginSchema, type LoginFormData } from "../../utils/validation.utils";
+import { loginSchema } from "../../utils/validation.utils";
 import {
   Card,
   CardContent,
@@ -18,16 +16,22 @@ import {
   CardTitle,
 } from "../ui/Card";
 import { Input } from "../ui/Input";
+import type { LoginFormData } from "../../types/auth.types";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { TError } from "@/types/erro";
+import { toast } from "sonner";
+import { setAccessToken, setRefreshToken } from "@/utils/cookies";
 
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error } = useAuth();
+  const [login, { isLoading: isSubmitting }] = useLoginMutation();
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,10 +43,21 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(data);
+      const res = await login(data).unwrap();
+      if (
+        res.message ===
+        "Account locked for 1 minutes due to too many failed attempts."
+      ) {
+        toast.error(res.message);
+      }
+      // set token for cookie
+      setAccessToken(res?.data?.accessToken, 2);
+      setRefreshToken(res?.data?.refreshToken, 30);
+      toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
-      // Error handled by context
+      const error = err as TError;
+      toast.error(error.data.message);
     }
   };
 
@@ -80,17 +95,7 @@ const LoginForm: React.FC = () => {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md"
-                >
-                  {error}
-                </motion.div>
-              )}
-
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
@@ -166,12 +171,10 @@ const LoginForm: React.FC = () => {
                 className="w-full cursor-pointer"
                 variant="gradient"
                 size="lg"
-                loading={isLoading || isSubmitting}
+                loading={isSubmitting}
               >
-                {isLoading || isSubmitting ? "Signing in..." : "Sign In"}
-                {!isLoading && !isSubmitting && (
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                )}
+                {isSubmitting ? "Signing in..." : "Sign In"}
+                {!isSubmitting && <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </form>
           </CardContent>

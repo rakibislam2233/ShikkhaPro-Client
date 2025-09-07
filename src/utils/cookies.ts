@@ -5,11 +5,11 @@ const ENCRYPTION_KEY = import.meta.env.VITE_PUBLIC_ENCRYPTION_KEY || 'your-secre
 
 // Cookie names - obfuscated for security
 export const COOKIE_NAMES = {
-  VERIFY_OTP_MAIL: "vom",           
-  VERIFY_OTP_TYPE: "vot",       
-  FORGOT_PASSWORD_MAIL: "fpm",
-  ACCESS_TOKEN: "at",         
-  REFRESH_TOKEN: "rt",   
+  VERIFY_OTP_MAIL: "svom",           
+  VERIFY_OTP_TYPE: "svot",       
+  FORGOT_PASSWORD_MAIL: "sfpm",
+  ACCESS_TOKEN: "sat",         
+  REFRESH_TOKEN: "srt",   
 } as const;
 
 // Encrypt function

@@ -1,12 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, ArrowRight, ArrowLeft, CheckCircle, BookOpen } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
+import { Mail, ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import {
   Card,
@@ -15,94 +12,55 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import { forgotPasswordSchema, type ForgotPasswordFormData } from "../../utils/validation.utils";
+import type { ForgotPasswordFormData } from "../../utils/validation.utils";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
+import { useForgotPasswordMutation } from "@/redux/features/auth/authApi";
 
 const ForgotPasswordForm: React.FC = () => {
-  const [emailSent, setEmailSent] = React.useState(false);
-  const { forgotPassword, isLoading, error } = useAuth();
+  const [forgotPassword] = useForgotPasswordMutation();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    getValues,
   } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+    // resolver: zodResolver(forgotPasswordSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+    },
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
+    console.log("Forgot password data:", data);
+
+    // Manual validation
+    if (!data.email || data.email.trim().length === 0) {
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     try {
       await forgotPassword(data.email);
-      setEmailSent(true);
-    } catch (err) {
-      // Error handled by context
+      toast.success("OTP sent to your email!");
+      // Redirect to OTP verification page with email in query params
+      navigate(
+        `/verify-otp?email=${encodeURIComponent(
+          data.email
+        )}&type=reset-password`
+      );
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err.data.message);
     }
   };
-
-  if (emailSent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full max-w-md"
-        >
-          <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm text-center">
-            <CardHeader className="space-y-4">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center"
-              >
-                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </motion.div>
-
-              <div>
-                <CardTitle className="text-2xl font-bold">
-                  Check Your Email
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  We've sent a password reset link to
-                </CardDescription>
-                <p className="text-sm font-medium text-foreground mt-1">
-                  {getValues("email")}
-                </p>
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>
-                  Click the link in the email to reset your password. If you
-                  don't see it, check your spam folder.
-                </p>
-                <p>The link will expire in 24 hours for security reasons.</p>
-              </div>
-
-              <div className="space-y-3">
-                <Button
-                  onClick={() => setEmailSent(false)}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Try Different Email
-                </Button>
-
-                <Link to="/login">
-                  <Button variant="ghost" className="w-full">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Sign In
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
@@ -156,11 +114,11 @@ const ForgotPasswordForm: React.FC = () => {
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-5" />
-                  <Input
+                  <input
                     id="email"
                     type="email"
                     placeholder="Enter your email address"
-                    className="pl-10"
+                    className="pl-10 file:text-foreground placeholder:text-base selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-12 w-full min-w-0 rounded-md border bg-transparent px-3 py-5 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-10 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     {...register("email")}
                     aria-invalid={!!errors.email}
                   />
@@ -177,14 +135,10 @@ const ForgotPasswordForm: React.FC = () => {
                 className="w-full"
                 variant="gradient"
                 size="lg"
-                loading={isLoading || isSubmitting}
+                loading={isSubmitting}
               >
-                {isLoading || isSubmitting
-                  ? "Sending Reset Link..."
-                  : "Send Reset Link"}
-                {!isLoading && !isSubmitting && (
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                )}
+                {isSubmitting ? "Sending Reset Link..." : "Send Reset Link"}
+                {!isSubmitting && <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </form>
 

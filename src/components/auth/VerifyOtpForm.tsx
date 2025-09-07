@@ -1,18 +1,15 @@
 import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { 
-  Shield, 
-  ArrowRight, 
-  ArrowLeft, 
-  CheckCircle, 
-  BookOpen, 
+import {
+  Shield,
+  ArrowLeft,
+  CheckCircle,
+  BookOpen,
   RotateCcw,
-  Clock
+  Clock,
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import {
@@ -22,27 +19,21 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import * as yup from 'yup';
-
-interface VerifyOtpFormData {
-  otp: string;
-}
-
-const otpSchema = yup.object({
-  otp: yup
-    .string()
-    .required("OTP is required")
-    .length(6, "OTP must be 6 digits")
-    .matches(/^\d+$/, "OTP must contain only numbers"),
-});
+import type { OtpFormData } from "../../utils/validation.utils";
+import { toast } from "sonner";
+import { useVerifyOtpMutation } from "@/redux/features/auth/authApi";
+import type { TError } from "@/types/erro";
 
 const VerifyOtpForm: React.FC = () => {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [isVerified, setIsVerified] = useState(false);
   const [countdown, setCountdown] = useState(120); // 2 minutes
   const [canResend, setCanResend] = useState(false);
-  const { verifyOtp, resendOtp, isLoading, error } = useAuth();
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email") || "";
+  const type = searchParams.get("type") || "email-verification";
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const {
@@ -50,8 +41,13 @@ const VerifyOtpForm: React.FC = () => {
     formState: { errors, isSubmitting },
     setValue,
     trigger,
-  } = useForm<VerifyOtpFormData>({
-    resolver: yupResolver(otpSchema),
+  } = useForm<OtpFormData>({
+    // resolver: zodResolver(otpSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: email,
+      otp: "",
+    },
   });
 
   React.useEffect(() => {
@@ -85,7 +81,10 @@ const VerifyOtpForm: React.FC = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Backspace") {
       if (!otp[index] && index > 0) {
         otpRefs.current[index - 1]?.focus();
@@ -104,55 +103,81 @@ const VerifyOtpForm: React.FC = () => {
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text");
-    
+
     if (pastedData.length === 6 && /^\d+$/.test(pastedData)) {
       const newOtp = pastedData.split("");
       setOtp(newOtp);
       setValue("otp", pastedData);
       trigger("otp");
-      
+
       // Focus the last input
       otpRefs.current[5]?.focus();
     }
   };
 
-  const onSubmit = async (data: VerifyOtpFormData) => {
+  const onSubmit = async (data: OtpFormData) => {
+    console.log("OTP form data:", data);
+
     try {
-      // Demo: Simulate successful OTP verification
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      if (data.otp === "123456") {
-        setIsVerified(true);
-        setTimeout(() => {
+      await verifyOtp({
+        email: data.email,
+        otp: data.otp,
+      }).unwrap();
+      setIsVerified(true);
+      toast.success("OTP verified successfully!");
+      setTimeout(() => {
+        if (type === "reset-password") {
+          // Redirect to reset password page
+          navigate(`/reset-password"}`);
+        } else {
+          // Regular email verification - go to dashboard
           navigate("/dashboard");
-        }, 2000);
-      } else {
-        throw new Error("Invalid OTP. Please try again.");
-      }
-    } catch (err) {
-      // Error handled by context or shown in UI
-      console.error("OTP verification failed:", err);
+        }
+      }, 1500);
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err.data.message || "OTP verification failed");
     }
   };
 
   const handleResendOtp = async () => {
     try {
-      // Demo: Simulate resend OTP
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Make API call to resend OTP
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/resend-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to resend OTP");
+      }
+
+      toast.success("OTP resent successfully!");
       setCountdown(120);
       setCanResend(false);
       setOtp(new Array(6).fill(""));
       setValue("otp", "");
       otpRefs.current[0]?.focus();
-    } catch (err) {
-      console.error("Failed to resend OTP:", err);
+    } catch (error) {
+      const err = error as any;
+      toast.error(err.message || "Failed to resend OTP");
     }
   };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (isVerified) {
@@ -180,7 +205,9 @@ const VerifyOtpForm: React.FC = () => {
                   Verification Successful!
                 </CardTitle>
                 <CardDescription className="mt-2">
-                  Your account has been verified successfully. Redirecting to dashboard...
+                  {type === "reset-password"
+                    ? "Code verified! Redirecting to reset password page..."
+                    : "Your account has been verified successfully. Redirecting to dashboard..."}
                 </CardDescription>
               </div>
             </CardHeader>
@@ -218,13 +245,17 @@ const VerifyOtpForm: React.FC = () => {
             </motion.div>
 
             <CardTitle className="text-2xl font-bold">
-              Verify Your Account
+              {type === "reset-password"
+                ? "Verify Reset Code"
+                : "Verify Your Account"}
             </CardTitle>
             <CardDescription>
-              Enter the 6-digit code sent to your email address
+              {type === "reset-password"
+                ? "Enter the 6-digit code sent to your email to reset your password"
+                : "Enter the 6-digit code sent to your email address"}
               <br />
               <span className="font-medium text-foreground">
-                demo@example.com
+                {email || "your email"}
               </span>
             </CardDescription>
           </CardHeader>
@@ -242,12 +273,19 @@ const VerifyOtpForm: React.FC = () => {
               )}
 
               <div className="space-y-3">
-                <Label className="text-center block">Enter Verification Code</Label>
-                <div className="flex justify-center space-x-2" onPaste={handlePaste}>
+                <Label className="text-center block">
+                  Enter Verification Code
+                </Label>
+                <div
+                  className="flex justify-center space-x-2"
+                  onPaste={handlePaste}
+                >
                   {otp.map((digit, index) => (
                     <input
                       key={index}
-                      ref={(el) => (otpRefs.current[index] = el)}
+                      ref={(el) => {
+                        otpRefs.current[index] = el;
+                      }}
                       type="text"
                       maxLength={1}
                       value={digit}
@@ -269,10 +307,12 @@ const VerifyOtpForm: React.FC = () => {
                 <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
                   <span>
-                    {countdown > 0 ? `Resend code in ${formatTime(countdown)}` : "Code expired"}
+                    {countdown > 0
+                      ? `Resend code in ${formatTime(countdown)}`
+                      : "Code expired"}
                   </span>
                 </div>
-                
+
                 {canResend && (
                   <Button
                     type="button"
@@ -295,9 +335,7 @@ const VerifyOtpForm: React.FC = () => {
                 loading={isLoading || isSubmitting}
                 disabled={otp.join("").length !== 6}
               >
-                {isLoading || isSubmitting
-                  ? "Verifying..."
-                  : "Verify Account"}
+                {isLoading || isSubmitting ? "Verifying..." : "Verify Account"}
                 {!isLoading && !isSubmitting && (
                   <Shield className="w-4 h-4 ml-2" />
                 )}
@@ -306,7 +344,8 @@ const VerifyOtpForm: React.FC = () => {
 
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Demo: Use code <span className="font-mono font-bold text-primary">123456</span>
+                Demo: Use code{" "}
+                <span className="font-mono font-bold text-primary">123456</span>
               </p>
               <Link
                 to="/login"

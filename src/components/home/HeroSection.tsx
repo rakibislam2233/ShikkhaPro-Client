@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
-import { useAuth } from "../../contexts/AuthContext";
 import { ArrowRight, Sparkles, BookOpen, Brain } from "lucide-react";
 
 const HeroSection: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = true;
 
   return (
     <section className="relative pt-24 md:pt-28 lg:pt-32 xl:pt-40 flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/30 to-white">
@@ -36,9 +35,9 @@ const HeroSection: React.FC = () => {
               className="px-6 py-2 text-base font-medium border-primary/20 bg-primary/5"
             >
               <motion.span
-                initial={{ scale: 1,rotate:0 }}
+                initial={{ scale: 1, rotate: 0 }}
                 animate={{
-                  scale: [1, 1.3, 1], 
+                  scale: [1, 1.3, 1],
                   rotate: [0, 10, 0],
                 }}
                 transition={{

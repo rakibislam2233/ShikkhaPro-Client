@@ -1,58 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, BookOpen, LogOut } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
-import { Avatar, AvatarImage, AvatarFallback } from '../ui/Avatar';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, BookOpen, LogOut } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/Avatar";
+import { cn } from "@/lib/utils";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+
+  const isAuthenticated = true;
+  const user = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    avatar: "https://via.placeholder.com/150",
+  };
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About'},
-    { href: '/dashboard', label: 'Dashboard', authRequired: true },
-    { href: '/dashboard/create-quiz', label: 'Create Quiz', authRequired: true },
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+    { href: "/dashboard", label: "Dashboard", authRequired: true },
+    {
+      href: "/dashboard/create-quiz",
+      label: "Create Quiz",
+      authRequired: true,
+    },
   ];
 
   const isActiveLink = (href: string) => {
-    if (href === '/') {
-      return location.pathname === '/';
+    if (href === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(href);
   };
 
   const handleLogout = () => {
-    logout();
     setIsMenuOpen(false);
   };
 
   return (
     <motion.nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b",
         {
-          'bg-background/80 backdrop-blur-lg border-border ': isScrolled,
-          'bg-transparent border-transparent': !isScrolled,
+          "bg-background/80 backdrop-blur-lg border-border ": isScrolled,
+          "bg-transparent border-transparent": !isScrolled,
         }
       )}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-5 py-5">
         <div className="flex justify-between items-center ">
@@ -67,15 +75,21 @@ const Navbar: React.FC = () => {
               className="flex items-center space-x-2 text-xl font-bold"
             >
               <BookOpen className="w-8 h-8 text-primary" />
-              <span className={`gradient-text font-semibold ${isScrolled ? 'text-primary' : 'text-gray-800'}`}>ShikkhaPro</span>
+              <span
+                className={`gradient-text font-semibold ${
+                  isScrolled ? "text-primary" : "text-gray-800"
+                }`}
+              >
+                ShikkhaPro
+              </span>
             </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
             {navLinks.map((link, index) => {
-              if (link.authRequired && !isAuthenticated) return null;
-              
+              if (link.authRequired) return null;
+
               return (
                 <motion.div
                   key={link.href}
@@ -86,10 +100,12 @@ const Navbar: React.FC = () => {
                   <Link
                     to={link.href}
                     className={cn(
-                      'relative block px-5 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                      "relative block px-5 py-2 rounded-md text-sm font-medium transition-all duration-200",
                       {
-                        'bg-primary text-white': isActiveLink(link.href),
-                        'text-primary hover:bg-accent': !isActiveLink(link.href),
+                        "bg-primary text-white": isActiveLink(link.href),
+                        "text-primary hover:bg-accent": !isActiveLink(
+                          link.href
+                        ),
                       }
                     )}
                   >
@@ -97,10 +113,16 @@ const Navbar: React.FC = () => {
                       <motion.div
                         className="absolute inset-0 bg-primary/10 rounded-md"
                         layoutId="activeNavLink"
-                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
                       />
                     )}
-                    <span className="relative z-10 text-base">{link.label}</span>
+                    <span className="relative z-10 text-base">
+                      {link.label}
+                    </span>
                   </Link>
                 </motion.div>
               );
@@ -118,16 +140,10 @@ const Navbar: React.FC = () => {
                       {user?.name?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-foreground">
-                    {user?.name}
-                  </span>
+                  <span className="text-sm text-foreground">{user?.name}</span>
                 </div>
-                
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  onClick={handleLogout}
-                >
+
+                <Button variant="ghost" size="lg" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </Button>
@@ -166,7 +182,7 @@ const Navbar: React.FC = () => {
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
             className="md:hidden bg-background border-t border-border"
@@ -174,17 +190,18 @@ const Navbar: React.FC = () => {
             <div className="px-4 py-4 space-y-3">
               {navLinks.map((link) => {
                 if (link.authRequired && !isAuthenticated) return null;
-                
+
                 return (
                   <Link
                     key={link.href}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
                     className={cn(
-                      'block px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      "block px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                       {
-                        'text-primary bg-primary/10': isActiveLink(link.href),
-                        'text-foreground hover:text-primary hover:bg-accent': !isActiveLink(link.href),
+                        "text-primary bg-primary/10": isActiveLink(link.href),
+                        "text-foreground hover:text-primary hover:bg-accent":
+                          !isActiveLink(link.href),
                       }
                     )}
                   >
@@ -192,10 +209,8 @@ const Navbar: React.FC = () => {
                   </Link>
                 );
               })}
-              
-              <div className="border-t border-border pt-3">
 
-                
+              <div className="border-t border-border pt-3">
                 {isAuthenticated ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 px-3 py-2">
@@ -214,7 +229,7 @@ const Navbar: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"
