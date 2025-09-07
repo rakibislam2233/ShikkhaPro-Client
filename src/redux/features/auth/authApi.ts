@@ -1,10 +1,10 @@
 import { baseApi } from "../api/baseApi";
-import type { 
-  LoginFormData, 
-  RegisterFormData, 
-  ForgotPasswordFormData, 
-  ResetPasswordFormData, 
-  OtpFormData 
+import type {
+  LoginFormData,
+  RegisterFormData,
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+  OtpFormData,
 } from "../../../utils/validation.utils";
 
 interface AuthResponse {
@@ -38,28 +38,28 @@ const authApi = baseApi.injectEndpoints({
         url: "/auth/login",
         method: "POST",
         body: credentials,
-      })
+      }),
     }),
     register: builder.mutation<AuthResponse, RegisterFormData>({
       query: (credentials) => ({
         url: "/auth/register",
         method: "POST",
         body: credentials,
-      })
+      }),
     }),
     forgotPassword: builder.mutation<OtpResponse, ForgotPasswordFormData>({
       query: (credentials) => ({
         url: "/auth/forgot-password",
         method: "POST",
         body: credentials,
-      })
+      }),
     }),
     verifyOtp: builder.mutation<AuthResponse, OtpFormData>({
       query: (credentials) => ({
         url: "/auth/verify-otp",
         method: "POST",
         body: credentials,
-      })
+      }),
     }),
     resendOtp: builder.mutation<OtpResponse, { email: string }>({
       query: (credentials) => ({
@@ -68,7 +68,10 @@ const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
-    resetPassword: builder.mutation<{ success: boolean; message: string }, ResetPasswordFormData>({
+    resetPassword: builder.mutation<
+      { success: boolean; message: string },
+      ResetPasswordFormData
+    >({
       query: (credentials) => ({
         url: "/auth/reset-password",
         method: "POST",
@@ -76,10 +79,11 @@ const authApi = baseApi.injectEndpoints({
       }),
     }),
     logout: builder.mutation<{ success: boolean; message: string }, void>({
-      query: () => ({
+      query: (refreshToken) => ({
         url: "/auth/logout",
         method: "POST",
-      })
+        body: refreshToken,
+      }),
     }),
   }),
 });
