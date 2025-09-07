@@ -7,7 +7,8 @@
       "Bash(npm run dev:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm update)"
     ],
     "deny": [],
     "ask": []
