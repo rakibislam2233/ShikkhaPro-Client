@@ -1,32 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Clock, AlertCircle } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { useQuiz } from '../../contexts/QuizContext';
-import QuestionCard from './QuestionCard';
-import ProgressBar from './ProgressBar';
-import NavigationControls from './NavigationControls';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Clock, AlertCircle } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import QuestionCard from "./QuestionCard";
+import ProgressBar from "./ProgressBar";
+import NavigationControls from "./NavigationControls";
+import type { IQuiz } from "@/types/quiz.types";
+import { useGetQuizByIdQuery } from "@/redux/features/quiz/quizApi";
 
 interface QuizInterfaceProps {
   quizId: string;
 }
 
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
-  const { currentQuiz, submitQuiz, saveAnswer, startQuiz } = useQuiz();
+  const [currentQuiz, setCurrentQuiz] = useState<IQuiz | null>(null);
+  const [saveAnswer, setSaveAnswer] = useState<
+    (questionId: string, answer: string | string[]) => void
+  >(() => () => {});
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const { data: responseData } = useGetQuizByIdQuery(quizId, {
+    refetchOnMountOrArgChange: true,
+    skip: !quizId,
+  });
 
   // Load quiz when component mounts
   useEffect(() => {
-    if (quizId && !currentQuiz) {
-      startQuiz(quizId).catch(console.error);
+    if (responseData?.data) {
+      setCurrentQuiz(responseData?.data);
     }
-  }, [quizId, currentQuiz, startQuiz]);
+  }, [responseData]);
 
   useEffect(() => {
     if (currentQuiz?.timeLimit) {
@@ -37,7 +45,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   useEffect(() => {
     if (timeRemaining > 0) {
       const timer = setTimeout(() => {
-        setTimeRemaining(prev => prev - 1);
+        setTimeRemaining((prev) => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else if (timeRemaining === 0 && currentQuiz) {
@@ -45,13 +53,16 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     }
   }, [timeRemaining, currentQuiz]);
 
-  const handleAnswerSelect = (questionId: string, answer: string | string[]) => {
-    saveAnswer(questionId, answer);
+  const handleAnswerSelect = (
+    questionId: string,
+    answer: string | string[]
+  ) => {
+    setSaveAnswer(questionId, answer);
   };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < (currentQuiz?.questions.length || 0) - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // If it's the last question, show submit dialog
       setShowSubmitDialog(true);
@@ -60,7 +71,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
 
@@ -68,10 +79,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     setIsSubmitting(true);
     try {
       await submitQuiz(quizId);
-      // Navigate to results page after successful submission
-      // navigate(`/dashboard/quiz/results/${quizId}`);
     } catch (error) {
-      console.error('Failed to submit quiz:', error);
+      console.error("Failed to submit quiz:", error);
     } finally {
       setIsSubmitting(false);
       setShowSubmitDialog(false);
@@ -82,17 +91,19 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    
+
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds
+        .toString()
+        .padStart(2, "0")}`;
     }
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const getAnsweredQuestions = () => {
     if (!currentQuiz) return 0;
-    return currentQuiz.questions.filter(q => 
-      currentQuiz.userAnswers && currentQuiz.userAnswers[q.id]
+    return currentQuiz.questions.filter(
+      (q) => currentQuiz.userAnswers && currentQuiz.userAnswers[q.id]
     ).length;
   };
 
@@ -107,7 +118,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Quiz Not Found</h2>
-          <p className="text-muted-foreground">The requested quiz could not be loaded.</p>
+          <p className="text-muted-foreground">
+            The requested quiz could not be loaded.
+          </p>
         </div>
       </div>
     );
@@ -129,7 +142,13 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
             </div>
             <div className="flex items-center space-x-4">
               {currentQuiz.timeLimit && (
-                <div className={`flex items-center space-x-2 ${timeRemaining < 300 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                <div
+                  className={`flex items-center space-x-2 ${
+                    timeRemaining < 300
+                      ? "text-destructive"
+                      : "text-muted-foreground"
+                  }`}
+                >
                   <Clock className="h-4 w-4" />
                   <span className="font-mono font-medium">
                     {formatTime(timeRemaining)}
@@ -172,7 +191,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 question={currentQuestion}
                 questionNumber={currentQuestionIndex + 1}
                 selectedAnswer={currentQuiz.userAnswers?.[currentQuestion.id]}
-                onAnswerSelect={(answer) => handleAnswerSelect(currentQuestion.id, answer)}
+                onAnswerSelect={(answer) =>
+                  handleAnswerSelect(currentQuestion.id, answer)
+                }
               />
             </motion.div>
 
@@ -199,10 +220,11 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
               <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Submit Quiz?</h3>
               <p className="text-muted-foreground mb-6">
-                {isQuizComplete() 
+                {isQuizComplete()
                   ? "You have answered all questions. Are you sure you want to submit?"
-                  : `You have answered ${getAnsweredQuestions()} out of ${currentQuiz.questions.length} questions. Unanswered questions will be marked as incorrect.`
-                }
+                  : `You have answered ${getAnsweredQuestions()} out of ${
+                      currentQuiz.questions.length
+                    } questions. Unanswered questions will be marked as incorrect.`}
               </p>
               <div className="flex space-x-3">
                 <Button
@@ -217,7 +239,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                   disabled={isSubmitting}
                   className="flex-1"
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
+                  {isSubmitting ? "Submitting..." : "Submit Quiz"}
                 </Button>
               </div>
             </div>

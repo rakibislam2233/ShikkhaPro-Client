@@ -1,10 +1,9 @@
 import { createContext, useContext, useReducer, type ReactNode } from "react";
 import type {
-  Quiz,
+  IQuiz as Quiz,
   QuizAttempt,
   QuizConfig,
-  QuizResult,
-  QuizContextType,
+  QuizResult
 } from "@/types/quiz.types";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { generateQuizWithAI } from "../utils/openai.api";

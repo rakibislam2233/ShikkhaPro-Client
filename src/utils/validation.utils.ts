@@ -1,5 +1,5 @@
 import type { QuizConfig } from "../types/quiz.types";
-import { email, z } from "zod";
+import { z } from "zod";
 
 // Validation schemas for forms
 export const loginSchema = z.object({
@@ -50,9 +50,7 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z
   .object({
     email: z.string().email("Please enter a valid email address").optional(),
-    newPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().optional(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -81,9 +79,6 @@ export const quizConfigSchema = z.object({
       "class-5",
       "class-6",
       "class-7",
-      "class-8",
-      "class-9",
-      "class-10",
       "jsc",
       "ssc",
       "hsc",

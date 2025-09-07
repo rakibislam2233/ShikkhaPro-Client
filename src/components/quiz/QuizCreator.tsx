@@ -13,7 +13,6 @@ import {
   FileText,
   CheckCircle,
 } from "lucide-react";
-import { useQuiz } from "../../contexts/QuizContext";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Input } from "../ui/Input";
@@ -32,7 +31,15 @@ import {
 } from "../../utils/constants";
 import { quizConfigSchema } from "../../utils/validation.utils";
 import { cn } from "@/lib/utils";
-import type { QuizConfig } from "@/types/quiz.types";
+import type {
+  QuestionType,
+  QuizConfig,
+  QuizDifficulty,
+  QuizLanguage,
+} from "@/types/quiz.types";
+import { useGenerateQuizMutation } from "@/redux/features/quiz/quizApi";
+import type { TError } from "@/types/erro";
+import { toast } from "sonner";
 
 const steps = [
   {
@@ -64,8 +71,10 @@ const steps = [
 const QuizCreator: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { generateQuiz } = useQuiz();
   const navigate = useNavigate();
+
+  // generate quiz
+  const [generateQuiz] = useGenerateQuizMutation();
 
   const {
     register,
@@ -78,7 +87,7 @@ const QuizCreator: React.FC = () => {
     resolver: zodResolver(quizConfigSchema),
     mode: "onSubmit",
     defaultValues: {
-      academicLevel: "class-10",
+      academicLevel: "ssc",
       subject: "",
       topic: "",
       language: "english",
@@ -102,7 +111,7 @@ const QuizCreator: React.FC = () => {
     const currentFields =
       fieldsToValidate[currentStep as keyof typeof fieldsToValidate];
     if (currentFields) {
-      const isValid = await trigger(currentFields as any);
+      const isValid = await trigger(currentFields as (keyof QuizConfig)[]);
       if (!isValid) return;
     }
 
@@ -116,10 +125,11 @@ const QuizCreator: React.FC = () => {
   const onSubmit = async (data: QuizConfig) => {
     setIsGenerating(true);
     try {
-      await generateQuiz(data);
-      navigate("/dashboard/quiz/current");
+      const res = await generateQuiz(data).unwrap();
+      navigate(`/dashboard/quiz/${res?.data?.quizId}`);
     } catch (error) {
-      console.error("Failed to generate quiz:", error);
+      const err = error as TError;
+      toast.error(err.data.message || "Failed to generate quiz");
       setIsGenerating(false);
     }
   };
@@ -278,7 +288,9 @@ const QuizCreator: React.FC = () => {
                 <Label>Language</Label>
                 <RadioGroup
                   value={watchedValues.language}
-                  onValueChange={(value) => setValue("language", value as any)}
+                  onValueChange={(value) =>
+                    setValue("language", value as QuizLanguage)
+                  }
                 >
                   {LANGUAGES.map((lang) => (
                     <div
@@ -307,7 +319,7 @@ const QuizCreator: React.FC = () => {
                 <RadioGroup
                   value={watchedValues.questionType}
                   onValueChange={(value) =>
-                    setValue("questionType", value as any)
+                    setValue("questionType", value as QuestionType)
                   }
                 >
                   {QUESTION_TYPES.map((type) => (
@@ -339,7 +351,7 @@ const QuizCreator: React.FC = () => {
                 <RadioGroup
                   value={watchedValues.difficulty}
                   onValueChange={(value) =>
-                    setValue("difficulty", value as any)
+                    setValue("difficulty", value as QuizDifficulty)
                   }
                 >
                   {DIFFICULTY_LEVELS.map((level) => (
@@ -548,7 +560,6 @@ const QuizCreator: React.FC = () => {
             </AnimatePresence>
           </motion.div>
         );
-
       default:
         return null;
     }
@@ -562,8 +573,8 @@ const QuizCreator: React.FC = () => {
           Create a Quiz
         </h1>
         <p className="text-muted-foreground mt-2">
-          Create a personalized quiz based on your academic level, subject, topic,
-          language, and question type.
+          Create a personalized quiz based on your academic level, subject,
+          topic, language, and question type.
         </p>
       </div>
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -623,14 +634,21 @@ const QuizCreator: React.FC = () => {
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className={currentStep === 1 ? "invisible" : ""}
+                className={`cursor-pointer ${
+                  currentStep === 1 && "opacity-50"
+                }`}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Previous
               </Button>
 
               {currentStep < 4 ? (
-                <Button type="button" onClick={nextStep} variant="gradient">
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  variant="gradient"
+                  className="cursor-pointer"
+                >
                   Next
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -638,6 +656,7 @@ const QuizCreator: React.FC = () => {
                 <Button
                   type="submit"
                   variant="gradient"
+                  className="cursor-pointer"
                   loading={isGenerating}
                   disabled={isGenerating}
                 >

@@ -8,9 +8,6 @@ export const ACADEMIC_LEVELS: { value: AcademicLevel; label: string; description
   { value: 'class-5', label: 'Class 5', description: 'Primary Level - Age 10-11' },
   { value: 'class-6', label: 'Class 6', description: 'Middle School - Age 11-12' },
   { value: 'class-7', label: 'Class 7', description: 'Middle School - Age 12-13' },
-  { value: 'class-8', label: 'Class 8', description: 'Middle School - Age 13-14' },
-  { value: 'class-9', label: 'Class 9', description: 'Secondary Level - Age 14-15' },
-  { value: 'class-10', label: 'Class 10', description: 'Secondary Level - Age 15-16' },
   { value: 'jsc', label: 'JSC', description: 'Junior School Certificate' },
   { value: 'ssc', label: 'SSC', description: 'Secondary School Certificate' },
   { value: 'hsc', label: 'HSC', description: 'Higher Secondary Certificate' },
@@ -25,24 +22,24 @@ export const QUESTION_TYPES: { value: QuestionType; label: string; description: 
     description: '4 options with one correct answer',
     icon: '🔘',
   },
-  {
-    value: 'short-answer',
-    label: 'Short Answer',
-    description: 'Brief written responses',
-    icon: '✏️',
-  },
-  {
-    value: 'true-false',
-    label: 'True/False',
-    description: 'Binary choice questions',
-    icon: '✓',
-  },
-  {
-    value: 'mixed',
-    label: 'Mixed Types',
-    description: 'Combination of all question types',
-    icon: '🎯',
-  },
+  // {
+  //   value: 'short-answer',
+  //   label: 'Short Answer',
+  //   description: 'Brief written responses',
+  //   icon: '✏️',
+  // },
+  // {
+  //   value: 'true-false',
+  //   label: 'True/False',
+  //   description: 'Binary choice questions',
+  //   icon: '✓',
+  // },
+  // {
+  //   value: 'mixed',
+  //   label: 'Mixed Types',
+  //   description: 'Combination of all question types',
+  //   icon: '🎯',
+  // },
 ];
 
 export const DIFFICULTY_LEVELS: { value: Difficulty; label: string; description: string; color: string }[] = [
@@ -145,7 +142,7 @@ export const DEFAULT_QUIZ_CONFIG = {
   timeLimit: 30, // minutes
 };
 
-export const QUESTION_COUNT_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50];
+export const QUESTION_COUNT_OPTIONS = [5, 10, 15];
 
 export const TIME_LIMIT_OPTIONS = [
   { value: 0, label: 'No Time Limit' },

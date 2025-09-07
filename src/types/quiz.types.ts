@@ -1,12 +1,28 @@
-export type AcademicLevel = 'class-1' | 'class-2' | 'class-3' | 'class-4' | 'class-5' | 
-  'class-6' | 'class-7' | 'class-8' | 'class-9' | 'class-10' | 'jsc' | 'ssc' | 'hsc' | 'bsc' | 'msc';
+export type AcademicLevel =
+  | "class-1"
+  | "class-2"
+  | "class-3"
+  | "class-4"
+  | "class-5"
+  | "class-6"
+  | "class-7"
+  | "jsc"
+  | "ssc"
+  | "hsc"
+  | "bsc"
+  | "msc";
 
-export type QuestionType = 'mcq' | 'short-answer' | 'true-false' | 'multiple-select' | 'mixed';
+export type QuestionType =
+  | "mcq"
+  | "short-answer"
+  | "true-false"
+  | "multiple-select"
+  | "mixed";
 
-export type QuizDifficulty = 'easy' | 'medium' | 'hard';
+export type QuizDifficulty = "easy" | "medium" | "hard";
 export type Difficulty = QuizDifficulty;
 
-export type QuizLanguage = 'english' | 'bengali' | 'hindi';
+export type QuizLanguage = "english" | "bengali" | "hindi";
 export type Language = QuizLanguage;
 
 export interface QuizConfig {
@@ -17,7 +33,7 @@ export interface QuizConfig {
   questionType: QuestionType;
   difficulty: QuizDifficulty;
   questionCount: number;
-  timeLimit?: number; // in minutes
+  timeLimit?: number;
   instructions?: string;
 }
 
@@ -25,9 +41,9 @@ export interface Question {
   id: string;
   question: string;
   type: QuestionType;
-  options?: string[]; 
+  options?: string[];
   correctAnswer: string | string[];
-  correct_answer?: string; 
+  correct_answer?: string;
   explanation: string;
   difficulty: Difficulty;
   points: number;
@@ -35,8 +51,8 @@ export interface Question {
   tags?: string[];
 }
 
-export interface Quiz {
-  id: string;
+export interface IQuiz {
+  _id: string;
   title: string;
   description?: string;
   subject: string;
@@ -46,19 +62,18 @@ export interface Quiz {
   language: QuizLanguage;
   questions: Question[];
   timeLimit?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   createdBy: string;
   isPublic: boolean;
   tags: string[];
   estimatedTime?: number;
   totalPoints?: number;
   instructions?: string;
-  userAnswers?: { [questionId: string]: string | string[] };
-  // Legacy compatibility
   config?: QuizConfig;
   attempts?: number;
   averageScore?: number;
+  status: "draft" | "published" | "archived";
 }
 
 export interface QuizAttempt {
@@ -72,14 +87,14 @@ export interface QuizAttempt {
   totalScore?: number;
   totalQuestions: number;
   correctAnswers: number;
-  timeSpent?: number; 
+  timeSpent?: number;
   isCompleted: boolean;
   flaggedQuestions: string[];
 }
 
 export interface QuizResult {
   attempt: QuizAttempt;
-  quiz: Quiz;
+  quiz: IQuiz;
   detailedResults: {
     questionId: string;
     question: string;
@@ -118,25 +133,9 @@ export interface Achievement {
   description: string;
   icon: string;
   unlockedAt: string;
-  category: 'performance' | 'consistency' | 'improvement' | 'milestone';
+  category: "performance" | "consistency" | "improvement" | "milestone";
 }
 
-export interface QuizContextType {
-  currentQuiz: Quiz | null;
-  currentAttempt: QuizAttempt | null;
-  isGenerating: boolean;
-  error: string | null;
-  generateQuiz: (config: QuizConfig) => Promise<void>;
-  startQuiz: (quizId: string) => Promise<void>;
-  submitAnswer: (questionId: string, answer: string | string[]) => void;
-  saveAnswer: (questionId: string, answer: string | string[]) => void;
-  submitQuiz: (quizId: string) => Promise<void>;
-  flagQuestion: (questionId: string) => void;
-  completeQuiz: () => Promise<QuizResult>;
-  saveQuiz: (quiz: Quiz) => Promise<void>;
-  loadQuiz: (quizId: string) => Promise<void>;
-  clearError: () => void;
-}
 
 export interface QuizSearchFilters {
   academicLevel?: AcademicLevel[];
@@ -152,11 +151,11 @@ export interface QuizSearchFilters {
 }
 
 export interface QuizLibrary {
-  quizzes: Quiz[];
+  quizzes: IQuiz[];
   totalCount: number;
   currentPage: number;
   totalPages: number;
   filters: QuizSearchFilters;
-  sortBy: 'createdAt' | 'updatedAt' | 'attempts' | 'averageScore' | 'title';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "createdAt" | "updatedAt" | "attempts" | "averageScore" | "title";
+  sortOrder: "asc" | "desc";
 }
