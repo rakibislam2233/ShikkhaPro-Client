@@ -1,15 +1,21 @@
 import type { QuizConfig } from "../types/quiz.types";
-import { z } from "zod";
+import { email, z } from "zod";
 
 // Validation schemas for forms
 export const loginSchema = z.object({
   email: z
     .string()
     .refine((val) => val.trim().length > 0, "Email is required")
-    .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), "Please enter a valid email address"),
+    .refine(
+      (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      "Please enter a valid email address"
+    ),
   password: z
     .string()
-    .refine((val) => val.trim().length >= 6, "Password must be at least 6 characters"),
+    .refine(
+      (val) => val.trim().length >= 6,
+      "Password must be at least 6 characters"
+    ),
   rememberMe: z.boolean().optional(),
 });
 
@@ -28,27 +34,26 @@ export const registerSchema = z.object({
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    )
+    ),
 });
 
 export const forgotPasswordSchema = z.object({
   email: z
     .string()
     .refine((val) => val.trim().length > 0, "Email is required")
-    .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), "Please enter a valid email address"),
+    .refine(
+      (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      "Please enter a valid email address"
+    ),
 });
 
 export const resetPasswordSchema = z
   .object({
-    token: z.string().min(1, "Reset token is required"),
+    email: z.string().email("Please enter a valid email address").optional(),
     newPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
-    confirmPassword: z.string(),
+      .min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().optional(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords must match",

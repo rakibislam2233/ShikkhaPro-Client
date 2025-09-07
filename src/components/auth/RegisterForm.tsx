@@ -14,6 +14,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
 import {
@@ -27,9 +28,13 @@ import {
 import { cn } from "../../lib/utils";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";
-import type { RegisterFormData } from "@/utils/validation.utils";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
-import { Input } from "../ui/Input";
+import {
+  registerSchema,
+  type RegisterFormData,
+} from "@/utils/validation.utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { setAccessToken, setRefreshToken } from "@/utils/cookies";
 
 const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,9 +46,9 @@ const RegisterForm: React.FC = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
-    // resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema),
     mode: "onSubmit",
     defaultValues: {
       fullName: "",
@@ -108,13 +113,12 @@ const RegisterForm: React.FC = () => {
   };
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log("Register data:", data);
     try {
-      await registerUser({
-        fullName: data.fullName,
-        email: data.email,
-        password: data.password,
-      });
+      const res = await registerUser(data).unwrap();
+      // set token for cookie
+      setAccessToken(res?.data?.accessToken, 2);
+      setRefreshToken(res?.data?.refreshToken, 30);
+      toast.success("Registration successful!");
       navigate("/dashboard");
     } catch (error) {
       const err = error as TError;
@@ -176,7 +180,9 @@ const RegisterForm: React.FC = () => {
                     id="name"
                     type="text"
                     placeholder="Enter your full name"
+                    className="pl-10"
                     {...register("fullName")}
+                    aria-invalid={!!errors.fullName}
                   />
                 </div>
                 {errors.fullName && (
@@ -193,8 +199,10 @@ const RegisterForm: React.FC = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="Enter your email"
+                    className="pl-10"
                     {...register("email")}
+                    aria-invalid={!!errors.email}
                   />
                 </div>
                 {errors.email && (
@@ -211,8 +219,10 @@ const RegisterForm: React.FC = () => {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Create a password"
+                    className="pl-10 pr-10"
                     {...register("password")}
+                    aria-invalid={!!errors.password}
                   />
                   <button
                     type="button"
@@ -314,17 +324,20 @@ const RegisterForm: React.FC = () => {
                   </Label>
                 </div>
               </div>
-
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full cursor-pointer"
                 variant="gradient"
                 size="lg"
-                loading={isLoading}
+                loading={isLoading || isSubmitting}
                 disabled={passwordStrength < 3}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
-                {!isLoading && <ArrowRight className="size-5 ml-2" />}
+                {isLoading || isSubmitting
+                  ? "Creating Account..."
+                  : "Create Account"}
+                {!isLoading && !isSubmitting && (
+                  <ArrowRight className="size-5 ml-2" />
+                )}
               </Button>
             </form>
           </CardContent>

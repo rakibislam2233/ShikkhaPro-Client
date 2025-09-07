@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
       <HelmetProvider>
           <QuizProvider>
             <RouterProvider router={router} />
-            <Toaster richColors />
+            <Toaster richColors position="top-right"/>
           </QuizProvider>
       </HelmetProvider>
     </Provider>

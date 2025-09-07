@@ -12,21 +12,28 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import type { ForgotPasswordFormData } from "../../utils/validation.utils";
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from "../../utils/validation.utils";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";
 import { useForgotPasswordMutation } from "@/redux/features/auth/authApi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "../ui/Input";
+import { COOKIE_NAMES, setCookie } from "@/utils/cookies";
 
 const ForgotPasswordForm: React.FC = () => {
-  const [forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword, { isLoading: isSubmitting }] =
+    useForgotPasswordMutation();
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ForgotPasswordFormData>({
-    // resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema),
     mode: "onSubmit",
     defaultValues: {
       email: "",
@@ -34,28 +41,15 @@ const ForgotPasswordForm: React.FC = () => {
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
-    console.log("Forgot password data:", data);
-
-    // Manual validation
-    if (!data.email || data.email.trim().length === 0) {
-      toast.error("Email is required");
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
     try {
-      await forgotPassword(data.email);
+      await forgotPassword({
+        email: data.email,
+      }).unwrap();
       toast.success("OTP sent to your email!");
       // Redirect to OTP verification page with email in query params
-      navigate(
-        `/verify-otp?email=${encodeURIComponent(
-          data.email
-        )}&type=reset-password`
-      );
+      setCookie(COOKIE_NAMES.VERIFY_OTP_MAIL, data?.email, 1);
+      setCookie(COOKIE_NAMES.FORGOT_PASSWORD_MAIL, data?.email, 1);
+      navigate(`/verify-otp`);
     } catch (error) {
       const err = error as TError;
       toast.error(err.data.message);
@@ -100,27 +94,16 @@ const ForgotPasswordForm: React.FC = () => {
 
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md"
-                >
-                  {error}
-                </motion.div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-5" />
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    className="pl-10 file:text-foreground placeholder:text-base selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-12 w-full min-w-0 rounded-md border bg-transparent px-3 py-5 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-10 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  <Input
                     {...register("email")}
-                    aria-invalid={!!errors.email}
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    className="pl-10"
                   />
                 </div>
                 {errors.email && (
@@ -132,12 +115,12 @@ const ForgotPasswordForm: React.FC = () => {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full cursor-pointer"
                 variant="gradient"
                 size="lg"
                 loading={isSubmitting}
               >
-                {isSubmitting ? "Sending Reset Link..." : "Send Reset Link"}
+                {isSubmitting ? "Sending OTP..." : "Send OTP"}
                 {!isSubmitting && <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </form>
