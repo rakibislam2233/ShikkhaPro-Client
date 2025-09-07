@@ -70,8 +70,7 @@ export const quizConfigSchema = z.object({
       'class-6', 'class-7', 'class-8', 'class-9', 'class-10',
       'jsc', 'ssc', 'hsc', 'bsc', 'msc'
     ], { 
-      required_error: 'Academic level is required',
-      invalid_type_error: 'Academic level is required'
+      message: 'Academic level is required'
     }),
   subject: z
     .string()
@@ -83,18 +82,15 @@ export const quizConfigSchema = z.object({
     .max(100, 'Topic must be less than 100 characters'),
   language: z
     .enum(['english', 'bengali', 'hindi'], { 
-      required_error: 'Language is required',
-      invalid_type_error: 'Language is required'
+      message: 'Language is required'
     }),
   questionType: z
     .enum(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'], { 
-      required_error: 'Question type is required',
-      invalid_type_error: 'Question type is required'
+      message: 'Question type is required'
     }),
   difficulty: z
     .enum(['easy', 'medium', 'hard'], { 
-      required_error: 'Difficulty level is required',
-      invalid_type_error: 'Difficulty level is required'
+      message: 'Difficulty level is required'
     }),
   questionCount: z
     .number()

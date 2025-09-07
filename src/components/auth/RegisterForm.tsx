@@ -44,7 +44,7 @@ const RegisterForm: React.FC = () => {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
       agreeToTerms: false,
@@ -108,7 +108,13 @@ const RegisterForm: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(data);
+      await registerUser({
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.password,
+        agreeToTerms: data.agreeToTerms,
+      });
       navigate("/dashboard");
     } catch{
       // Error handled by context
@@ -180,13 +186,13 @@ const RegisterForm: React.FC = () => {
                     type="text"
                     placeholder="Enter your full name"
                     className="pl-10"
-                    {...register("name")}
-                    aria-invalid={!!errors.name}
+                    {...register("fullName")}
+                    aria-invalid={!!errors.fullName}
                   />
                 </div>
-                {errors.name && (
+                {errors.fullName && (
                   <p className="text-sm text-destructive">
-                    {errors.name.message}
+                    {errors.fullName.message}
                   </p>
                 )}
               </div>

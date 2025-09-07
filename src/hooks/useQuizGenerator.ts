@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { QuizConfig, Quiz } from '../types/quiz.types';
+import type { QuizConfig, Quiz } from '../types/quiz.types';
 import { generateQuizWithAI } from '../utils/openai.api';
 
 interface UseQuizGeneratorReturn {

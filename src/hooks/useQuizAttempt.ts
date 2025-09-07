@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { QuizAttempt, Quiz, QuizResult } from '../types/quiz.types';
+import type { QuizAttempt, Quiz, QuizResult } from '../types/quiz.types';
 import { useLocalStorage } from './useLocalStorage';
 
 interface UseQuizAttemptReturn {

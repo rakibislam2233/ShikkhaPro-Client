@@ -46,7 +46,7 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
-      async onQueryStarted(credentials, { queryFulfilled }) {
+      async onQueryStarted(_, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           if (data.success && data.data.accessToken) {
@@ -64,7 +64,7 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
-      async onQueryStarted(credentials, { queryFulfilled }) {
+      async onQueryStarted(_, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           if (data.success && data.data.accessToken) {
