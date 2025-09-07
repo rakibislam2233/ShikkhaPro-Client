@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, ArrowRight, ArrowLeft, CheckCircle, BookOpen } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
@@ -15,9 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import { forgotPasswordSchema } from "../../utils/validation.utils";
-
-import type { ForgotPasswordFormData } from "../../types/auth.types";
+import { forgotPasswordSchema, type ForgotPasswordFormData } from "../../utils/validation.utils";
 
 const ForgotPasswordForm: React.FC = () => {
   const [emailSent, setEmailSent] = React.useState(false);
@@ -29,7 +27,7 @@ const ForgotPasswordForm: React.FC = () => {
     formState: { errors, isSubmitting },
     getValues,
   } = useForm<ForgotPasswordFormData>({
-    resolver: yupResolver(forgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {

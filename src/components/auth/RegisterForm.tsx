@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Eye,
   EyeOff,
@@ -27,10 +27,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/Card";
-import { registerSchema } from "../../utils/validation.utils";
+import { registerSchema, type RegisterFormData } from "../../utils/validation.utils";
 import { cn } from "../../lib/utils";
-
-import type { RegisterFormData } from "../../types/auth.types";
 
 const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,7 +42,7 @@ const RegisterForm: React.FC = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
-    resolver: yupResolver(registerSchema) as any,
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",

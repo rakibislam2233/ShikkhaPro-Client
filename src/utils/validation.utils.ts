@@ -69,7 +69,10 @@ export const quizConfigSchema = z.object({
       'class-1', 'class-2', 'class-3', 'class-4', 'class-5',
       'class-6', 'class-7', 'class-8', 'class-9', 'class-10',
       'jsc', 'ssc', 'hsc', 'bsc', 'msc'
-    ], { errorMap: () => ({ message: 'Academic level is required' }) }),
+    ], { 
+      required_error: 'Academic level is required',
+      invalid_type_error: 'Academic level is required'
+    }),
   subject: z
     .string()
     .min(2, 'Subject must be at least 2 characters')
@@ -79,11 +82,20 @@ export const quizConfigSchema = z.object({
     .min(2, 'Topic must be at least 2 characters')
     .max(100, 'Topic must be less than 100 characters'),
   language: z
-    .enum(['english', 'bengali', 'hindi'], { errorMap: () => ({ message: 'Language is required' }) }),
+    .enum(['english', 'bengali', 'hindi'], { 
+      required_error: 'Language is required',
+      invalid_type_error: 'Language is required'
+    }),
   questionType: z
-    .enum(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'], { errorMap: () => ({ message: 'Question type is required' }) }),
+    .enum(['mcq', 'short-answer', 'true-false', 'multiple-select', 'mixed'], { 
+      required_error: 'Question type is required',
+      invalid_type_error: 'Question type is required'
+    }),
   difficulty: z
-    .enum(['easy', 'medium', 'hard'], { errorMap: () => ({ message: 'Difficulty level is required' }) }),
+    .enum(['easy', 'medium', 'hard'], { 
+      required_error: 'Difficulty level is required',
+      invalid_type_error: 'Difficulty level is required'
+    }),
   questionCount: z
     .number()
     .min(5, 'Minimum 5 questions required')

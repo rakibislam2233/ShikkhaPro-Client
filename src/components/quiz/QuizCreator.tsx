@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
@@ -75,7 +75,7 @@ const QuizCreator: React.FC = () => {
     formState: { errors },
     trigger,
   } = useForm<QuizConfig>({
-    resolver: yupResolver(quizConfigSchema),
+    resolver: zodResolver(quizConfigSchema),
     defaultValues: {
       academicLevel: "class-10",
       subject: "",

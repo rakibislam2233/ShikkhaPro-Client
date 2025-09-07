@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, BookOpen } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { Checkbox } from "../ui/Checkbox";
-import { loginSchema } from "../../utils/validation.utils";
+import { loginSchema, type LoginFormData } from "../../utils/validation.utils";
 import {
   Card,
   CardContent,
@@ -18,7 +18,6 @@ import {
   CardTitle,
 } from "../ui/Card";
 import { Input } from "../ui/Input";
-import type { LoginFormData } from "../../types/auth.types";
 
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +29,7 @@ const LoginForm: React.FC = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema) as any,
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
