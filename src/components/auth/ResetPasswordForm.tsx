@@ -25,7 +25,7 @@ import {
   type ResetPasswordFormData,
 } from "../../utils/validation.utils";
 import { toast } from "sonner";
-import { COOKIE_NAMES, getCookie } from "@/utils/cookies";
+import { COOKIE_NAMES, getCookie, removeCookie } from "@/utils/cookies";
 import { useResetPasswordMutation } from "@/redux/features/auth/authApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TError } from "@/types/erro";
@@ -88,6 +88,7 @@ const ResetPasswordForm: React.FC = () => {
       }).unwrap();
       toast.success("Password reset successfully!");
       setTimeout(() => {
+        removeCookie(COOKIE_NAMES.FORGOT_PASSWORD_MAIL);
         navigate("/login");
       }, 2000);
     } catch (error) {

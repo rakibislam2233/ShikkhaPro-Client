@@ -8,6 +8,7 @@ import {
   BookOpen,
   RotateCcw,
   Clock,
+  Loader,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
@@ -33,7 +34,7 @@ const VerifyOtpForm: React.FC = () => {
   const [countdown, setCountdown] = useState(120); // 2 minutes
   const [canResend, setCanResend] = useState(false);
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
-  const [resendOtp] = useResendOtpMutation();
+  const [resendOtp, { isLoading: isResendLoading }] = useResendOtpMutation();
   const navigate = useNavigate();
   const email = getCookie(COOKIE_NAMES.VERIFY_OTP_MAIL);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -243,10 +244,19 @@ const VerifyOtpForm: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={handleResendOtp}
-                    className="text-primary hover:text-primary-foreground hover:bg-primary"
+                    className="text-primary hover:text-primary-foreground hover:bg-primary cursor-pointer"
                   >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Resend Code
+                    {isResendLoading ? (
+                      <h1 className="flex items-center">
+                        <Loader className="w-4 h-4 mr-2 animate-spin" />
+                        Resending...
+                      </h1>
+                    ) : (
+                      <h1 className="flex items-center">
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Resend Code
+                      </h1>
+                    )}
                   </Button>
                 )}
               </div>
