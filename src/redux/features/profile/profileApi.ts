@@ -11,7 +11,14 @@ const profileApi = baseApi.injectEndpoints({
     updateProfile: builder.mutation({
       query: (data) => ({
         url: "/users/profile/update",
-        method: "PUT",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    updateProfileImage: builder.mutation({
+      query: (data) => ({
+        url: "/users/profile/image",
+        method: "PATCH",
         body: data,
       }),
     }),
@@ -26,6 +33,7 @@ const profileApi = baseApi.injectEndpoints({
 
 export const {
   useGetProfileQuery,
+  useUpdateProfileImageMutation,
   useUpdateProfileMutation,
   useDeleteProfileMutation,
 } = profileApi;

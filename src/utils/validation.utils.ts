@@ -58,6 +58,25 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .superRefine(({ newPassword, confirmPassword }, ctx) => {
+    if (newPassword !== confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passwords must match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 export const otpSchema = z.object({
   email: z
     .string()
@@ -218,7 +237,6 @@ export function sanitizeQuizConfig(config: QuizConfig): QuizConfig {
   };
 }
 
-
 export function formatValidationError(
   error: z.ZodError
 ): Record<string, string> {
@@ -237,6 +255,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 export type OtpFormData = z.infer<typeof otpSchema>;
 export type QuizConfigFormData = z.infer<typeof quizConfigSchema>;
 export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>;

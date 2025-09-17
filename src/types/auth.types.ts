@@ -89,3 +89,9 @@ export interface RegisterFormData {
 export interface ForgotPasswordFormData {
   email: string;
 }
+
+export interface ChangePasswordFormData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

@@ -70,7 +70,7 @@ const QuizManagement = () => {
         </div>
         <div className="mt-4 sm:mt-0">
           <Link to="/dashboard/create-quiz">
-            <Button className="flex items-center space-x-2">
+            <Button className="flex items-center space-x-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               <span>Create Quiz</span>
             </Button>
@@ -233,7 +233,7 @@ const QuizManagement = () => {
               Get started by creating your first quiz
             </p>
             <Link to="/dashboard/create-quiz">
-              <Button>
+              <Button className="mx-auto cursor-pointer">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Quiz
               </Button>

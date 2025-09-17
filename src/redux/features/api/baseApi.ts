@@ -4,12 +4,12 @@ import {
   type BaseQueryFn,
   type FetchArgs,
 } from "@reduxjs/toolkit/query/react";
-import { 
-  getAccessToken, 
-  getRefreshToken, 
-  setAccessToken, 
-  setRefreshToken, 
-  removeAuthTokens 
+import {
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  removeAuthTokens,
 } from "../../../utils/cookies";
 
 const baseQuery = fetchBaseQuery({
@@ -17,9 +17,9 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     const accessToken = getAccessToken();
     if (accessToken) {
-      headers.set('Authorization', `Bearer ${accessToken}`);
+      headers.set("Authorization", `Bearer ${accessToken}`);
     }
-    headers.set('Content-Type', 'application/json');
+
     return headers;
   },
 });
@@ -33,12 +33,12 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
   if (result?.error?.status === 401) {
     const refreshToken = getRefreshToken();
-    
+
     if (refreshToken) {
       const refreshResult = await baseQuery(
         {
-          url: '/auth/refresh-token',
-          method: 'POST',
+          url: "/auth/refresh-token",
+          method: "POST",
           body: { refreshToken },
         },
         api,
@@ -46,22 +46,23 @@ const baseQueryWithRefreshToken: BaseQueryFn<
       );
 
       if (refreshResult?.data) {
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = refreshResult.data as {
-          accessToken: string;
-          refreshToken: string;
-        };
-        
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+          refreshResult.data as {
+            accessToken: string;
+            refreshToken: string;
+          };
+
         setAccessToken(newAccessToken);
         setRefreshToken(newRefreshToken);
-        
+
         result = await baseQuery(args, api, extraOptions);
       } else {
         removeAuthTokens();
-        window.location.href = '/login';
+        window.location.href = "/login";
       }
     } else {
       removeAuthTokens();
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
   }
 

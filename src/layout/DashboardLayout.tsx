@@ -7,38 +7,15 @@ import {
   Settings,
   BookOpen,
   X,
-  Bell,
-  Search,
-  User,
-  LogOut,
-  HelpCircle,
   Sparkles,
 } from "lucide-react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { removeAuthTokens } from "@/utils/cookies";
-import { toast } from "sonner";
-import type { TError } from "@/types/erro";
-
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-
   const { user } = useAuth();
-
-  const handleLogout = () => {
-    try {
-      removeAuthTokens();
-      toast.success("Logged out successfully!");
-      navigate("/login");
-      setProfileDropdownOpen(false);
-    } catch (error) {
-      const err = error as TError;
-      toast.error(err.data.message || "Error logging out");
-    }
-  };
 
   // Get user initials for avatar
   const getUserInitials = () => {
@@ -216,8 +193,8 @@ const DashboardLayout = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-h-screen lg:ml-80">
           {/* Top Navigation Bar */}
-          <header className="sticky top-0 z-40 bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl border-b border-gray-200">
-            <div className="flex h-14 lg:h-16 items-center justify-between px-4 lg:px-8">
+          <header className="sticky top-0 z-40 bg-white lg:bg-white lg:bg-opacity-90 lg:backdrop-blur-xl 0">
+            <div className="flex h-14 md:h-0 items-center gap-8">
               {/* Mobile menu button */}
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -234,70 +211,6 @@ const DashboardLayout = () => {
                 <span className="text-lg font-bold text-primary">
                   ShikkhaPro
                 </span>
-              </div>
-
-              {/* Search Bar */}
-              <div className="flex-1 max-w-xs lg:max-w-lg mx-2 lg:mx-4">
-                <div className="relative">
-                  <Search className="absolute left-2 lg:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full pl-8 lg:pl-10 pr-3 lg:pr-4 py-1.5 lg:py-2 bg-gray-50 border border-gray-200 rounded-lg lg:rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Top Navigation Actions */}
-              <div className="flex items-center space-x-1 lg:space-x-3">
-                {/* Notifications */}
-                <button className="relative p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors">
-                  <Bell className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
-                  <span className="absolute top-0.5 lg:top-1 right-0.5 lg:right-1 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full"></span>
-                </button>
-
-                {/* Help - Hidden on small screens */}
-                <button className="hidden sm:block p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors">
-                  <HelpCircle className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
-                </button>
-
-                {/* Profile Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
-                      {getUserInitials()}
-                    </div>
-                    <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">
-                      {getUserDisplayName().split(" ")[0]}
-                    </span>
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {profileDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 lg:w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900">
-                          {getUserDisplayName()}
-                        </p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
-                      </div>
-                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                        <User className="w-4 h-4" />
-                        <span>Profile Settings</span>
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </header>
