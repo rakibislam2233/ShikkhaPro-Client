@@ -39,6 +39,14 @@ const quizApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Quiz"],
     }),
+    startQuiz: builder.mutation({
+      query: (quizId) => ({
+        url: `/quizzes/attempt/start`,
+        method: "POST",
+        body: { quizId },
+      }),
+      invalidatesTags: ["Quiz"],
+    }),
     submitAnswer: builder.mutation({
       query: (answerData) => ({
         url: "/quizzes/attempt/submit-quiz-answer",
@@ -62,6 +70,7 @@ export const {
   useGetMyQuizzesQuery,
   useGetQuizByIdQuery,
   useUpdateQuizMutation,
+  useStartQuizMutation,
   useDeleteQuizMutation,
   useSubmitAnswerMutation,
   useGetQuizResultQuery,

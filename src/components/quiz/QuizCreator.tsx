@@ -95,7 +95,6 @@ const QuizCreator: React.FC = () => {
       questionType: "mcq",
       difficulty: "medium",
       questionCount: 10,
-      timeLimit: 30,
       instructions: "",
     },
   });
@@ -328,7 +327,7 @@ const QuizCreator: React.FC = () => {
                       key={type.value}
                       className="flex items-center space-x-2"
                     >
-                      <RadioGroupItem value={type.value} id={type.value} />
+                      <RadioGroupItem value={type.value} id={type.value} className="cursor-pointer" />
                       <Label
                         htmlFor={type.value}
                         className="flex items-center space-x-2 cursor-pointer"
@@ -360,7 +359,7 @@ const QuizCreator: React.FC = () => {
                       key={level.value}
                       className="flex items-center space-x-2"
                     >
-                      <RadioGroupItem value={level.value} id={level.value} />
+                      <RadioGroupItem value={level.value} id={level.value} className="cursor-pointer" />
                       <Label htmlFor={level.value} className="cursor-pointer">
                         <span className={cn("font-medium", level.color)}>
                           {level.label}
@@ -394,21 +393,6 @@ const QuizCreator: React.FC = () => {
                   ))}
                 </div>
               </div>
-            </div>
-
-            {/* Time Limit */}
-            <div className="space-y-2">
-              <Label htmlFor="timeLimit">Time Limit (minutes) - Optional</Label>
-              <Input
-                id="timeLimit"
-                type="number"
-                min="0"
-                max="180"
-                {...register("timeLimit")}
-              />
-              <p className="text-xs text-muted-foreground">
-                Set to 0 for no time limit
-              </p>
             </div>
           </motion.div>
         );

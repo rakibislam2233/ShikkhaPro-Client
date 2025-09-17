@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, AlertCircle } from "lucide-react";
+import { Clock, AlertCircle, Play, Timer, BookOpen } from "lucide-react";
 import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import QuestionCard from "./QuestionCard";
@@ -11,6 +11,7 @@ import type { IQuiz } from "@/types/quiz.types";
 import {
   useGetQuizByIdQuery,
   useSubmitAnswerMutation,
+  useStartQuizMutation,
 } from "@/redux/features/quiz/quizApi";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";
@@ -30,6 +31,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
+  const [attemptId, setAttemptId] = useState<string | null>(null);
 
   const { data: responseData, isLoading: quizLoading } = useGetQuizByIdQuery(
     quizId,
@@ -40,6 +42,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   );
 
   const [submitAnswer] = useSubmitAnswerMutation();
+  const [startQuiz, { isLoading: isStartingQuiz }] = useStartQuizMutation();
 
   // Load quiz when component mounts
   useEffect(() => {
@@ -48,27 +51,36 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     }
   }, [responseData]);
 
-  useEffect(() => {
-    if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
-      setTimeRemaining(currentQuiz.estimatedTime * 60);
-      setIsQuizStarted(true); // Mark quiz as started when time is set
-    } else if (currentQuiz) {
-      // If no time limit, just mark as started without timer
+  // Handle quiz start
+  const handleStartQuiz = async () => {
+    try {
+      const result = await startQuiz(quizId).unwrap();
+      setAttemptId(result?.data?.attemptId);
       setIsQuizStarted(true);
-      setTimeRemaining(0);
+
+      // Set timer if there's a time limit
+      if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
+        setTimeRemaining(currentQuiz.estimatedTime * 60);
+      }
+
+      toast.success("Quiz started successfully!");
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err?.data?.message || "Failed to start quiz");
     }
-  }, [currentQuiz]);
+  };
 
   const handleSubmitQuiz = useCallback(async () => {
     setIsSubmitting(true);
     try {
       const submissionData = {
         quizId,
+        attemptId,
         answers: userAnswers,
       };
       const result = await submitAnswer(submissionData).unwrap();
       toast.success("Quiz submitted successfully!");
-      navigate(`/dashboard/quiz-result/${result?.data?.attemptId}`);
+      navigate(`/dashboard/quiz-result/${attemptId || result?.data?.attemptId}`);
     } catch (error) {
       const err = error as TError;
       toast.error(
@@ -78,7 +90,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
       setIsSubmitting(false);
       setShowSubmitDialog(false);
     }
-  }, [quizId, userAnswers, submitAnswer, navigate]);
+  }, [quizId, attemptId, userAnswers, submitAnswer, navigate]);
 
   useEffect(() => {
     if (
@@ -172,6 +184,91 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
           <p className="text-muted-foreground">
             The requested quiz could not be loaded.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show quiz start screen if quiz hasn't started yet
+  if (!isQuizStarted) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="p-8">
+              <div className="text-center space-y-6">
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    <BookOpen className="w-8 h-8 text-primary" />
+                  </div>
+                </div>
+
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">{currentQuiz.title}</h1>
+                  <p className="text-muted-foreground">
+                    {currentQuiz.subject} • {currentQuiz.academicLevel}
+                  </p>
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-6 space-y-4">
+                  <h3 className="text-lg font-semibold">Quiz Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium">Questions:</span>
+                      <span>{currentQuiz.questions.length}</span>
+                    </div>
+                    {currentQuiz.estimatedTime && (
+                      <div className="flex items-center space-x-2">
+                        <Timer className="w-4 h-4" />
+                        <span className="font-medium">Time Limit:</span>
+                        <span>{currentQuiz.estimatedTime} minutes</span>
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium">Difficulty:</span>
+                      <span className="capitalize">{currentQuiz.difficulty}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {currentQuiz.instructions && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">
+                      Instructions
+                    </h4>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 text-left">
+                      {currentQuiz.instructions}
+                    </p>
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  <Button
+                    onClick={handleStartQuiz}
+                    disabled={isStartingQuiz}
+                    size="lg"
+                    className="w-full md:w-auto px-8 cursor-pointer"
+                  >
+                    {isStartingQuiz ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Starting Quiz...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <Play className="w-5 h-5" />
+                        <span>Start Quiz</span>
+                      </div>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       </div>
     );

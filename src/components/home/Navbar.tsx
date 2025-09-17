@@ -209,12 +209,12 @@ const Navbar: React.FC = () => {
             ) : (
               <div className="flex items-center space-x-5">
                 <Link to="/login">
-                  <Button variant="outline" size="lg">
+                  <Button variant="outline" size="lg" className="cursor-pointer">
                     Login
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="default" size="lg">
+                  <Button variant="default" size="lg" className="cursor-pointer">
                     Get Started
                   </Button>
                 </Link>
