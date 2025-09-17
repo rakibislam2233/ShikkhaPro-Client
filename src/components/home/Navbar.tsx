@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const { isAuthenticated, user, isLoading } = useAuth();
 
   useEffect(() => {
@@ -49,8 +49,7 @@ const Navbar: React.FC = () => {
     try {
       removeAuthTokens();
       toast.success("Logged out successfully!");
-      navigate("/");
-      setIsMenuOpen(false);
+      navigate("/login");
     } catch (error) {
       const err = error as TError;
       toast.error(err.data.message || "Error logging out");
@@ -142,19 +141,26 @@ const Navbar: React.FC = () => {
             {isLoading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span className="text-sm text-muted-foreground">Loading...</span>
+                <span className="text-sm text-muted-foreground">
+                  Loading...
+                </span>
               </div>
             ) : isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profile?.avatar} alt={user?.profile?.fullName || user?.email} />
+                    <AvatarImage
+                      src={user?.profile?.avatar}
+                      alt={user?.profile?.fullName || user?.email}
+                    />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {(user?.profile?.fullName || user?.email)?.charAt(0).toUpperCase()}
+                      {(user?.profile?.fullName || user?.email)
+                        ?.charAt(0)
+                        .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-foreground">
-                    {user?.profile?.fullName || user?.email?.split('@')[0]}
+                    {user?.profile?.fullName || user?.email?.split("@")[0]}
                   </span>
                 </div>
 
@@ -230,14 +236,20 @@ const Navbar: React.FC = () => {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.profile?.avatar} alt={user?.profile?.fullName || user?.email} />
+                        <AvatarImage
+                          src={user?.profile?.avatar}
+                          alt={user?.profile?.fullName || user?.email}
+                        />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {(user?.profile?.fullName || user?.email)?.charAt(0).toUpperCase()}
+                          {(user?.profile?.fullName || user?.email)
+                            ?.charAt(0)
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="text-sm font-medium text-foreground">
-                          {user?.profile?.fullName || user?.email?.split('@')[0]}
+                          {user?.profile?.fullName ||
+                            user?.email?.split("@")[0]}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {user?.email}
@@ -247,7 +259,7 @@ const Navbar: React.FC = () => {
 
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="lg"
                       className="w-full justify-start"
                       onClick={handleLogout}
                     >
@@ -258,12 +270,16 @@ const Navbar: React.FC = () => {
                 ) : (
                   <div className="space-y-2">
                     <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" size="sm" className="w-full">
+                      <Button
+                        variant="ghost"
+                        size="lg"
+                        className="w-full cursor-pointer"
+                      >
                         Login
                       </Button>
                     </Link>
                     <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="default" size="sm" className="w-full">
+                      <Button variant="default" size="lg" className="w-full">
                         Get Started
                       </Button>
                     </Link>

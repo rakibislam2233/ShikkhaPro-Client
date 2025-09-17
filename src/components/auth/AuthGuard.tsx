@@ -1,7 +1,7 @@
-import React, { type ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import React, { type ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import LoadingSpinner from "../ui/LoadingSpinner";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -14,9 +14,11 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children,
   requireAuth = true,
   fallback = null,
-  redirectTo = '/login'
+  redirectTo = "/login",
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
+
+  console.log("IS AUTHENTICATED", isAuthenticated);
 
   if (isLoading) {
     return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Clock, AlertCircle } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import QuestionCard from "./QuestionCard";
 import ProgressBar from "./ProgressBar";

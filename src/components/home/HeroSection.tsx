@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import { Badge } from "../ui/Badge";
 import { ArrowRight, Sparkles, BookOpen, Brain } from "lucide-react";
 import useAuth from "@/hooks/useAuth";

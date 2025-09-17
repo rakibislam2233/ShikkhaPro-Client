@@ -9,7 +9,7 @@ import {
   Tag,
   Trash,
 } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import type { IQuiz } from "@/types/quiz.types";
 import { Link } from "react-router-dom";

@@ -4,7 +4,6 @@ import {
   Home,
   PlusCircle,
   FileText,
-  BarChart3,
   Settings,
   BookOpen,
   X,
@@ -79,13 +78,6 @@ const DashboardLayout = () => {
       icon: FileText,
       href: "/dashboard/my-quizzes",
       description: "Your saved quizzes",
-    },
-    {
-      id: "analytics",
-      name: "Analytics",
-      icon: BarChart3,
-      href: "/dashboard/analytics",
-      description: "Performance insights",
     },
     {
       id: "settings",

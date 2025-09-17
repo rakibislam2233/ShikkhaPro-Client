@@ -11,7 +11,7 @@ import {
   Download,
   Zap,
 } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 
 const AnalyticsDashboard: React.FC = () => {

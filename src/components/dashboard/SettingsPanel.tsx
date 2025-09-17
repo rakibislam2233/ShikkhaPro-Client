@@ -14,7 +14,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import { useUpdateProfileMutation, useDeleteProfileMutation } from "@/redux/features/profile/profileApi";

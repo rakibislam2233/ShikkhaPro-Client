@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { Mail, ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
-import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import {
   Card,
@@ -22,6 +21,7 @@ import { useForgotPasswordMutation } from "@/redux/features/auth/authApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/Input";
 import { COOKIE_NAMES, setCookie } from "@/utils/cookies";
+import { Button } from '../ui/Button';
 
 const ForgotPasswordForm: React.FC = () => {
   const [forgotPassword, { isLoading: isSubmitting }] =
