@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Clock, AlertCircle, Play, Timer, BookOpen, CheckCircle, X, Send } from "lucide-react";
 import { Button } from '../ui/Button';
-import { Card } from "../ui/Card";
+import { Card } from "../ui/Card.tsx";
 import QuestionCard from "./QuestionCard";
 import ProgressBar from "./ProgressBar";
 import NavigationControls from "./NavigationControls";

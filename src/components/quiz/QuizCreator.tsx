@@ -14,7 +14,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card.tsx";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Textarea } from "../ui/Textarea";

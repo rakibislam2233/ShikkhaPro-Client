@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from '../ui/Button';
-import { Card } from "../ui/Card";
+import { Card } from "../ui/Card.tsx";
 import type { IQuiz } from "@/types/quiz.types";
 import { Link } from "react-router-dom";
 import { useGetMyQuizzesQuery, useDeleteQuizMutation } from "@/redux/features/quiz/quizApi";

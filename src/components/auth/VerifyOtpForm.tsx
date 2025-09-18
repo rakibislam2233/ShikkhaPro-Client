@@ -18,7 +18,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/Card";
+} from "../ui/Card.tsx";
 import { otpSchema, type OtpFormData } from "../../utils/validation.utils";
 import { toast } from "sonner";
 import {

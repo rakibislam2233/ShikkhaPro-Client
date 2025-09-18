@@ -12,7 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from '../ui/Button';
-import { Card } from "../ui/Card";
+import { Card } from "../ui/Card.tsx";
 
 const AnalyticsDashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState("7d");

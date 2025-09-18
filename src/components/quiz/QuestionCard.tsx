@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { Card } from '../ui/Card.tsx';
 import type { Question } from '../../types/quiz.types';
 
 interface QuestionCardProps {

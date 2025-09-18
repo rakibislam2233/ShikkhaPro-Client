@@ -14,7 +14,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import { Card } from '../ui/Card.tsx';
 import QuestionCard from './QuestionCard';
 import type { Question, QuizAttempt } from '@/types/quiz.types';
 

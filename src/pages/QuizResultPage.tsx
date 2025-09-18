@@ -13,7 +13,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card.tsx";
 import { Badge } from "@/components/ui/Badge";
 import { Progress } from "@/components/ui/Progress";
 import { useGetQuizResultQuery } from "@/redux/features/quiz/quizApi";
