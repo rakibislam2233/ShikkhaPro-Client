@@ -4,7 +4,7 @@ import {
   FileText
 } from "lucide-react";
 import { Button } from '../ui/Button';
-import { Card } from "../ui/Card.tsx";
+import { Card } from "../ui/Card";
 import { Link } from "react-router-dom";
 import { useGetMyQuizzesQuery } from "@/redux/features/quiz/quizApi";
 import { useAuth } from "@/hooks/useAuth";

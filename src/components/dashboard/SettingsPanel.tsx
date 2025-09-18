@@ -15,7 +15,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/Card.tsx";
+import { Card } from "../ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import {
   useUpdateProfileMutation,

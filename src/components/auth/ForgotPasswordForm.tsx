@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/Card.tsx";
+} from "../ui/Card";
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,

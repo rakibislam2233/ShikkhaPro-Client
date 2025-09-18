@@ -24,7 +24,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/Card.tsx";
+} from "../ui/Card";
 import { cn } from "../../lib/utils";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";

@@ -19,7 +19,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/Card.tsx";
+} from "../ui/Card";
 import {
   resetPasswordSchema,
   type ResetPasswordFormData,
