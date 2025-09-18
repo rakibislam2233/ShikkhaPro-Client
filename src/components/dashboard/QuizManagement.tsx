@@ -1,23 +1,56 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   Plus,
   MoreHorizontal,
-  Edit,
   Calendar,
   Clock,
   BookOpen,
   Tag,
   Trash,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import type { IQuiz } from "@/types/quiz.types";
 import { Link } from "react-router-dom";
-import { useGetMyQuizzesQuery } from "@/redux/features/quiz/quizApi";
+import { useGetMyQuizzesQuery, useDeleteQuizMutation } from "@/redux/features/quiz/quizApi";
+import { toast } from "sonner";
+import type { TError } from "@/types/erro";
 
 const QuizManagement = () => {
   const { data: response } = useGetMyQuizzesQuery(undefined);
   const myQuizzes = response?.data?.results;
+  const [deleteQuiz, { isLoading: isDeleting }] = useDeleteQuizMutation();
+
+  // Modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [quizToDelete, setQuizToDelete] = useState<{id: string, title: string} | null>(null);
+
+  const handleDeleteClick = (quizId: string, quizTitle: string) => {
+    setQuizToDelete({ id: quizId, title: quizTitle });
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!quizToDelete) return;
+
+    try {
+      await deleteQuiz(quizToDelete?.id).unwrap();
+      toast.success("Quiz deleted successfully!");
+      setShowDeleteModal(false);
+      setQuizToDelete(null);
+    } catch (error) {
+      const err = error as TError;
+      toast.error(err?.data?.message || "Failed to delete quiz");
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setQuizToDelete(null);
+  };
   const formatDate = (dateString: string | Date) => {
     if (!dateString) return "Never";
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
@@ -205,10 +238,13 @@ const QuizManagement = () => {
                     </div>
 
                     <div className="flex items-center space-x-2 ml-4">
-                      <Button variant="outline" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteClick(quiz?._id, quiz?.title)}
+                        disabled={isDeleting}
+                        className="text-red-600 hover:text-red-700 hover:border-red-300 cursor-pointer"
+                      >
                         <Trash className="h-4 w-4" />
                       </Button>
 
@@ -241,6 +277,80 @@ const QuizManagement = () => {
           </Card>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className="w-full max-w-md mx-auto p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Quiz
+                  </h3>
+                </div>
+                <button
+                  onClick={handleDeleteCancel}
+                  disabled={isDeleting}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-600 mb-2">
+                  Are you sure you want to delete this quiz?
+                </p>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="font-medium text-gray-900">
+                    "{quizToDelete?.title}"
+                  </p>
+                </div>
+                <p className="text-sm text-red-600 mt-3">
+                  ⚠️ This action cannot be undone. All quiz data and student attempts will be permanently deleted.
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={handleDeleteCancel}
+                  disabled={isDeleting}
+                  className="flex-1 cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleDeleteConfirm}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                >
+                  {isDeleting ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Deleting...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Trash className="h-4 w-4" />
+                      <span>Delete</span>
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

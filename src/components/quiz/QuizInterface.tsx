@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, AlertCircle, Play, Timer, BookOpen } from "lucide-react";
+import { Clock, AlertCircle, Play, Timer, BookOpen, CheckCircle, X, Send } from "lucide-react";
 import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import QuestionCard from "./QuestionCard";
@@ -350,22 +350,89 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
 
       {/* Submit Confirmation Dialog */}
       {showSubmitDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4 p-6">
-            <div className="text-center">
-              <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Submit Quiz?</h3>
-              <p className="text-muted-foreground mb-6">
-                {isQuizComplete()
-                  ? "You have answered all questions. Are you sure you want to submit?"
-                  : `You have answered ${getAnsweredQuestions()} out of ${
-                      currentQuiz.questions.length
-                    } questions. Unanswered questions will be marked as incorrect.`}
-              </p>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className="w-full max-w-lg mx-auto p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    isQuizComplete()
+                      ? "bg-green-100"
+                      : "bg-amber-100"
+                  }`}>
+                    {isQuizComplete() ? (
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-amber-600" />
+                    )}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Submit Quiz
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowSubmitDialog(false)}
+                  disabled={isSubmitting}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-600 mb-4">
+                  {isQuizComplete()
+                    ? "Congratulations! You have answered all questions."
+                    : "You haven't answered all questions yet."}
+                </p>
+
+                {/* Progress Summary */}
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Progress</span>
+                    <span className="text-sm text-gray-500">
+                      {getAnsweredQuestions()}/{currentQuiz.questions.length} questions
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        isQuizComplete() ? "bg-green-500" : "bg-amber-500"
+                      }`}
+                      style={{
+                        width: `${(getAnsweredQuestions() / currentQuiz.questions.length) * 100}%`
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {!isQuizComplete() && (
+                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+                    <p className="text-sm text-amber-800">
+                      ⚠️ Unanswered questions will be marked as incorrect. You can continue answering or submit now.
+                    </p>
+                  </div>
+                )}
+
+                {isQuizComplete() && (
+                  <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
+                    <p className="text-sm text-green-800">
+                      ✅ All questions completed! Ready to submit your quiz.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <div className="flex space-x-3">
                 <Button
                   variant="outline"
                   onClick={() => setShowSubmitDialog(false)}
+                  disabled={isSubmitting}
                   className="flex-1 cursor-pointer"
                 >
                   Continue Quiz
@@ -373,13 +440,27 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 <Button
                   onClick={handleSubmitQuiz}
                   disabled={isSubmitting}
-                  className="flex-1 cursor-pointer"
+                  className={`flex-1 cursor-pointer ${
+                    isQuizComplete()
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Quiz"}
+                  {isSubmitting ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Submitting...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Send className="h-4 w-4" />
+                      <span>Submit Quiz</span>
+                    </div>
+                  )}
                 </Button>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
         </div>
       )}
     </div>
