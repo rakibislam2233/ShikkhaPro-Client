@@ -90,3 +90,6 @@ export {
   CardDescription,
   CardContent,
 }
+
+// Default export for easier importing
+export default Card;
