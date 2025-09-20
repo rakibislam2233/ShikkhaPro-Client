@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import HeroSection from '../components/home/HeroSection';
 import FeaturesSection from '../components/home/FeaturesSection';
 import HowItWorks from '../components/home/HowItWorks';
+import StudentFeedback from '../components/home/StudentFeedback';
 
 const HomePage: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const HomePage: React.FC = () => {
         <HeroSection />
         <FeaturesSection />
         <HowItWorks />
+        <StudentFeedback />
       </main>
     </div>
     </>

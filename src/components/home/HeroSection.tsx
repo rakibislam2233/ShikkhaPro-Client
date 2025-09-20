@@ -117,7 +117,7 @@ const HeroSection: React.FC = () => {
                   <Button
                     size="lg"
                     variant="default"
-                    className="group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
+                    className="group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300 h-14 px-8"
                   >
                     <BookOpen className="w-5 h-5 mr-2" />
                     Create Your First Quiz
@@ -126,9 +126,9 @@ const HeroSection: React.FC = () => {
                 </Link>
                 <Link to="/dashboard">
                   <Button
-                    size="default"
+                    size="lg"
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary/5 transition-all duration-300"
+                    className="cursor-pointer hover:bg-primary/5 transition-all duration-300 h-14 px-6"
                   >
                     <Brain className="w-5 h-5 mr-2" />
                     Go to Dashboard
@@ -141,7 +141,7 @@ const HeroSection: React.FC = () => {
                   <Button
                     size="lg"
                     variant="default"
-                    className="group cursor-pointer transition-all duration-300 transform hover:scale-102"
+                    className="group cursor-pointer transition-all duration-300 transform hover:scale-102 h-14 px-8"
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
                     Start Learning Free
@@ -152,7 +152,7 @@ const HeroSection: React.FC = () => {
                   <Button
                     size="lg"
                     variant="secondary"
-                    className="w-full max-w-56 group cursor-pointer transition-all duration-300 hover:scale-102"
+                    className="w-full group cursor-pointer transition-all duration-300 hover:scale-102 h-14 px-10"
                   >
                     <BookOpen className="w-5 h-5 mr-2" />
                     Sign In

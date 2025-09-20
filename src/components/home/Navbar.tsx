@@ -209,12 +209,12 @@ const Navbar: React.FC = () => {
             ) : (
               <div className="flex items-center space-x-5">
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="cursor-pointer">
+                  <Button variant="outline" size="lg" className="cursor-pointer h-12 px-6">
                     Login
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="default" size="lg" className="cursor-pointer">
+                  <Button variant="default" size="lg" className="cursor-pointer h-12 px-6">
                     Get Started
                   </Button>
                 </Link>
@@ -271,25 +271,25 @@ const Navbar: React.FC = () => {
               <div className="border-t border-border pt-3">
                 {isAuthenticated ? (
                   <button
-                    className="w-full py-3 px-5 flex justify-start rounded-lg items-center bg-primary text-primary-foreground"
+                    className="w-full py-4 px-5 flex justify-start rounded-lg items-center bg-primary text-primary-foreground h-12"
                     onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Logout
                   </button>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                       <Button
                         variant="ghost"
                         size="lg"
-                        className="w-full cursor-pointer"
+                        className="w-full cursor-pointer h-12"
                       >
                         Login
                       </Button>
                     </Link>
                     <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="default" size="lg" className="w-full">
+                      <Button variant="default" size="lg" className="w-full h-12">
                         Get Started
                       </Button>
                     </Link>

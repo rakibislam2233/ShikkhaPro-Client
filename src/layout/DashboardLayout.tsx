@@ -8,6 +8,7 @@ import {
   BookOpen,
   X,
   Sparkles,
+  ClipboardList,
 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -55,6 +56,13 @@ const DashboardLayout = () => {
       icon: FileText,
       href: "/dashboard/my-quizzes",
       description: "Your saved quizzes",
+    },
+    {
+      id: "quiz-attempts",
+      name: "Quiz Attempts",
+      icon: ClipboardList,
+      href: "/dashboard/quiz-attempts",
+      description: "Your quiz attempts",
     },
     {
       id: "settings",

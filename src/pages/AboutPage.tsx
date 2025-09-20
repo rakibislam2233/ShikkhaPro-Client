@@ -103,11 +103,27 @@ const AboutPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow"
+                  whileHover={{ y: -5 }}
+                  className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-lg transition-all duration-300"
                 >
-                  <div className={`w-16 h-16 ${value.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <value.icon className={`w-8 h-8 ${value.color}`} />
-                  </div>
+                  <motion.div
+                    className={`w-16 h-16 ${value.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}
+                    whileHover={{ scale: 1.1, rotate: 360 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                  >
+                    <motion.div
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.5
+                      }}
+                    >
+                      <value.icon className={`w-8 h-8 ${value.color}`} />
+                    </motion.div>
+                  </motion.div>
                   <h3 className="text-xl font-semibold mb-4">{value.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{value.description}</p>
                 </motion.div>

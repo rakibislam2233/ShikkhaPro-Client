@@ -15,6 +15,7 @@ import AboutPage from "@/pages/AboutPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import QuizResultPage from "@/pages/QuizResultPage";
+import QuizAttemptsPage from "@/pages/QuizAttemptsPage";
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "@/layout/MainLayout";
 
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/my-quizzes",
         element: <MyQuizzesPage />,
+      },
+      {
+        path: "/dashboard/quiz-attempts",
+        element: <QuizAttemptsPage />,
       },
       {
         path: "/dashboard/analytics",
