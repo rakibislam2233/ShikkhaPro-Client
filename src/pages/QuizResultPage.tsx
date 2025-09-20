@@ -587,24 +587,19 @@ const QuizResultPage: React.FC = () => {
                                   let optionClass =
                                     "p-4 rounded-lg border transition-all duration-200 ";
                                   let iconElement: React.ReactElement | null = null;
-                                  let userLabel: string | null = null;
 
                                   switch (optionState) {
                                     case 'correct':
                                       optionClass += "bg-green-50 border-green-200 text-green-800 shadow-sm";
                                       iconElement = <CheckCircle className="h-5 w-5 text-green-600" />;
-                                      userLabel = 'Correct Selection';
                                       break;
                                     case 'missed':
                                       optionClass += "bg-orange-50 border-orange-200 text-orange-800 shadow-sm";
                                       iconElement = <CheckCircle className="h-5 w-5 text-orange-600" />;
-                                      userLabel = 'Missed Answer';
                                       break;
                                     case 'wrong':
                                       optionClass += "bg-red-50 border-red-200 text-red-800 shadow-sm";
                                       iconElement = <XCircle className="h-5 w-5 text-red-600" />;
-                                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                      userLabel = 'Wrong Selection';
                                       break;
                                     default:
                                       optionClass += "bg-gray-50 border-gray-200 text-gray-700";

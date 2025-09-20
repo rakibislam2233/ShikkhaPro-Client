@@ -102,6 +102,24 @@ const QuizCreator: React.FC = () => {
 
   const watchedValues = watch();
 
+  // Handle language selection logic based on subject
+  React.useEffect(() => {
+    const currentSubject = watchedValues.subject?.toLowerCase();
+
+    // List of common English subjects
+    const englishSubjects = [
+      'english', 'english literature', 'literature', 'grammar', 'vocabulary',
+      'ielts', 'toefl', 'sat', 'gre', 'speaking', 'writing', 'reading', 'listening'
+    ];
+
+    // If user selects an English subject, keep language as English and don't auto-select Bengali
+    if (currentSubject && englishSubjects.some(subject => currentSubject.includes(subject))) {
+      if (watchedValues.language !== 'english') {
+        setValue("language", "english");
+      }
+    }
+  }, [watchedValues.subject, watchedValues.language, setValue]);
+
   const nextStep = async () => {
     const fieldsToValidate = {
       1: ["academicLevel"],

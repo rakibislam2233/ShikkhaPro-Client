@@ -163,7 +163,7 @@ export const quizConfigSchema = z.object({
     .string()
     .min(2, "Topic must be at least 2 characters")
     .max(100, "Topic must be less than 100 characters"),
-  language: z.enum(["english", "bengali", "hindi"], {
+  language: z.enum(["english", "bengali"], {
     message: "Language is required",
   }),
   questionType: z.enum(
@@ -194,7 +194,7 @@ export const profileUpdateSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   preferences: z.object({
     theme: z.enum(["light", "dark", "system"]),
-    language: z.enum(["english", "bengali", "hindi"]),
+    language: z.enum(["english", "bengali"]),
     notifications: z.boolean(),
     autoSave: z.boolean(),
     defaultQuestionCount: z.number().min(5).max(50),

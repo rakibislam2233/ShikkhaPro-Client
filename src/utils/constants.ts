@@ -129,12 +129,6 @@ export const LANGUAGES: { value: Language; label: string; flag: string; nativeNa
     flag: '🇧🇩',
     nativeName: 'বাংলা',
   },
-  {
-    value: 'hindi',
-    label: 'Hindi',
-    flag: '🇮🇳',
-    nativeName: 'हिंदी',
-  },
 ];
 
 export const POPULAR_SUBJECTS = [

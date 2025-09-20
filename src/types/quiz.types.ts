@@ -69,7 +69,7 @@ export type QuestionType =
 export type QuizDifficulty = "easy" | "medium" | "hard";
 export type Difficulty = QuizDifficulty;
 
-export type QuizLanguage = "english" | "bengali" | "hindi";
+export type QuizLanguage = "english" | "bengali";
 export type Language = QuizLanguage;
 
 export interface QuizConfig {
