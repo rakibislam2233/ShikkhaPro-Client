@@ -300,7 +300,7 @@ const QuizManagement = () => {
                 <button
                   onClick={handleDeleteCancel}
                   disabled={isDeleting}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2  cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <X className="h-5 w-5 text-gray-500" />
                 </button>

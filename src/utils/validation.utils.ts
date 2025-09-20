@@ -91,18 +91,65 @@ export const otpSchema = z.object({
 export const quizConfigSchema = z.object({
   academicLevel: z.enum(
     [
+      // Pre-Primary & Primary Education (Ages 3-10)
+      "playgroup",
+      "nursery",
+      "kg",
       "class-1",
       "class-2",
       "class-3",
       "class-4",
       "class-5",
+
+      // Secondary Education (Ages 11-16)
       "class-6",
       "class-7",
+      "class-8",
       "jsc",
+      "class-9",
+      "class-10",
       "ssc",
+
+      // Higher Secondary Education (Ages 17-18)
+      "class-11",
+      "class-12",
       "hsc",
+
+      // Undergraduate Education (Ages 18-22)
+      "bachelor",
       "bsc",
+      "ba",
+      "bcom",
+      "bba",
+      "btech",
+      "beng",
+
+      // Postgraduate Education (Ages 22+)
+      "master",
       "msc",
+      "ma",
+      "mcom",
+      "mba",
+      "mtech",
+      "meng",
+
+      // Professional & Competitive Exams
+      "bcs",
+      "bank-job",
+      "medical",
+      "engineering",
+      "university",
+      "ielts",
+      "toefl",
+      "gre",
+      "sat",
+
+      // Professional Development
+      "professional",
+      "skill-development",
+      "certification",
+      "adult-learning",
+      "general",
     ],
     {
       message: "Academic level is required",

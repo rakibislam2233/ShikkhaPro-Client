@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Clock, AlertCircle, Play, Timer, BookOpen, CheckCircle, X, Send, Award, Users, Target } from "lucide-react";
-import { Button } from '../ui/Button';
-import { Card } from "../ui/Card";
+import { motion } from "framer-motion";
+import {
+  Clock,
+  AlertCircle,
+  Play,
+  CheckCircle,
+  X,
+  Send,
+} from "lucide-react";
+import { Button } from "../ui/Button";
 import QuestionCard from "./QuestionCard";
 import ProgressBar from "./ProgressBar";
 import NavigationControls from "./NavigationControls";
@@ -55,38 +61,42 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
 
   // Handle quiz start
   const handleStartQuiz = async () => {
-    try {
-      const result = await startQuiz(quizId).unwrap();
-      setAttemptId(result?.data?.attemptId);
-
-      // Show countdown before starting quiz
-      setShowCountdown(true);
-      setCountdownTime(3);
-
-      toast.success("Quiz started successfully!");
-    } catch (error) {
-      const err = error as TError;
-      toast.error(err?.data?.message || "Failed to start quiz");
-    }
+    // Show countdown first, then make API call
+    setShowCountdown(true);
+    setCountdownTime(3);
   };
 
   // Countdown timer effect
   useEffect(() => {
     if (showCountdown && countdownTime > 0) {
       const timer = setTimeout(() => {
-        setCountdownTime(prev => prev - 1);
+        setCountdownTime((prev) => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else if (showCountdown && countdownTime === 0) {
-      setShowCountdown(false);
-      setIsQuizStarted(true);
+      // Make API call when countdown reaches 0
+      const startQuizAPI = async () => {
+        try {
+          const result = await startQuiz(quizId).unwrap();
+          setAttemptId(result?.data?.attemptId);
 
-      // Set timer if there's a time limit
-      if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
-        setTimeRemaining(currentQuiz.estimatedTime * 60);
-      }
+          setShowCountdown(false);
+          setIsQuizStarted(true);
+
+          // Set timer if there's a time limit
+          if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
+            setTimeRemaining(currentQuiz.estimatedTime * 60);
+          }
+        } catch (error) {
+          const err = error as TError;
+          toast.error(err?.data?.message || "Failed to start quiz");
+          setShowCountdown(false);
+        }
+      };
+
+      startQuizAPI();
     }
-  }, [showCountdown, countdownTime, currentQuiz]);
+  }, [showCountdown, countdownTime, currentQuiz, quizId, startQuiz]);
 
   const handleSubmitQuiz = useCallback(async () => {
     setIsSubmitting(true);
@@ -97,8 +107,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
         answers: userAnswers,
       };
       const result = await submitAnswer(submissionData).unwrap();
-      toast.success("Quiz submitted successfully!");
-      navigate(`/dashboard/quiz-result/${attemptId || result?.data?.attemptId}`);
+      navigate(
+        `/dashboard/quiz-result/${attemptId || result?.data?.attemptId}`
+      );
     } catch (error) {
       const err = error as TError;
       toast.error(
@@ -210,40 +221,69 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   // Show countdown screen
   if (showCountdown) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-secondary/3 rounded-full blur-3xl animate-spin"
+            style={{ animationDuration: "20s" }}
+          ></div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-center"
+          className="text-center relative z-10"
         >
+          {/* Countdown Circle */}
           <motion.div
             key={countdownTime}
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.5, opacity: 0 }}
+            initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ scale: 1.5, opacity: 0, rotate: 180 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mb-8"
+            className="mb-8 relative"
           >
-            <div className="w-32 h-32 mx-auto bg-primary rounded-full flex items-center justify-center shadow-2xl">
-              <span className="text-6xl font-bold text-white">{countdownTime}</span>
+            <div className="w-40 h-40 mx-auto relative">
+              {/* Outer Ring */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full shadow-2xl"></div>
+              {/* Inner Circle */}
+              <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-7xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {countdownTime}
+                </span>
+              </div>
+              {/* Pulse Animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full animate-ping opacity-20"></div>
             </div>
           </motion.div>
-          <motion.h2
+
+          {/* Text Content */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-foreground mb-4"
+            transition={{ delay: 0.4 }}
+            className="space-y-4"
           >
-            Get Ready!
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-muted-foreground"
-          >
-            Quiz starting in {countdownTime} second{countdownTime !== 1 ? 's' : ''}...
-          </motion.p>
+            <h2 className="text-3xl font-bold text-foreground">Get Ready!</h2>
+            <p className="text-lg text-muted-foreground">
+              Quiz starting in {countdownTime} second
+              {countdownTime !== 1 ? "s" : ""}...
+            </p>
+            {countdownTime === 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center justify-center space-x-2 text-primary"
+              >
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                <span className="font-medium">Starting your quiz...</span>
+              </motion.div>
+            )}
+          </motion.div>
         </motion.div>
       </div>
     );
@@ -252,131 +292,47 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   // Show quiz start screen if quiz hasn't started yet
   if (!isQuizStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary/5">
-        <div className="min-h-screen flex items-center justify-center px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary/10 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-4xl"
+            className="w-full max-w-5xl"
           >
-            <Card className="overflow-hidden shadow-2xl border-0">
-              {/* Header Section */}
-              <div className="bg-gradient-to-r from-primary to-primary/80 p-8 text-white text-center">
+            <div className="p-10 space-y-10">
+              {/* Enhanced Start Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="text-center pt-6"
+              >
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm"
-                >
-                  <BookOpen className="w-10 h-10 text-white" />
-                </motion.div>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-3xl md:text-4xl font-bold mb-2"
-                >
-                  {currentQuiz.title}
-                </motion.h1>
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="text-white/90 text-lg"
-                >
-                  {currentQuiz.subject} • {currentQuiz.academicLevel}
-                </motion.p>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-8 space-y-8">
-                {/* Quiz Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
-                >
-                  <div className="bg-blue-50 rounded-xl p-6 text-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Target className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div className="text-2xl font-bold text-blue-600 mb-1">
-                      {currentQuiz.questions.length}
-                    </div>
-                    <div className="text-sm text-blue-600/80">Questions</div>
-                  </div>
-
-                  {currentQuiz.estimatedTime && (
-                    <div className="bg-green-50 rounded-xl p-6 text-center">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Timer className="w-6 h-6 text-green-600" />
-                      </div>
-                      <div className="text-2xl font-bold text-green-600 mb-1">
-                        {currentQuiz.estimatedTime}
-                      </div>
-                      <div className="text-sm text-green-600/80">Minutes</div>
-                    </div>
-                  )}
-
-                  <div className="bg-purple-50 rounded-xl p-6 text-center">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Award className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div className="text-2xl font-bold text-purple-600 mb-1 capitalize">
-                      {currentQuiz.difficulty}
-                    </div>
-                    <div className="text-sm text-purple-600/80">Difficulty</div>
-                  </div>
-                </motion.div>
-
-                {/* Instructions */}
-                {currentQuiz.instructions && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.0 }}
-                    className="bg-amber-50 border border-amber-200 rounded-xl p-6"
-                  >
-                    <h4 className="font-semibold mb-3 text-amber-800 flex items-center">
-                      <AlertCircle className="w-5 h-5 mr-2" />
-                      Instructions
-                    </h4>
-                    <p className="text-amber-700 leading-relaxed">
-                      {currentQuiz.instructions}
-                    </p>
-                  </motion.div>
-                )}
-
-                {/* Start Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2 }}
-                  className="text-center pt-4"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <Button
                     onClick={handleStartQuiz}
                     disabled={isStartingQuiz}
                     size="lg"
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white px-12 py-4 text-lg font-semibold h-16 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                    className="bg-primary hover:from-primary/90 hover:via-primary/90 hover:to-secondary/90 text-white size-28  rounded-full text-xl font-bold  cursor-pointer"
                   >
                     {isStartingQuiz ? (
-                      <div className="flex items-center space-x-3">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                      <div className="relative z-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-3 border-white"></div>
                         <span>Preparing Quiz...</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-3">
-                        <Play className="w-6 h-6" />
-                        <span>Start Quiz Now</span>
+                      <div className="relative z-10">
+                        <Play className="size-10 md:size-16 mx-auto" />
+                        <span>Start</span>
                       </div>
                     )}
                   </Button>
                 </motion.div>
-              </div>
-            </Card>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -457,118 +413,211 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
         </div>
       </div>
 
-      {/* Submit Confirmation Dialog */}
+      {/* Enhanced Submit Confirmation Dialog */}
       {showSubmitDialog && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{
+              duration: 0.3,
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
           >
-            <Card className="w-full max-w-lg mx-auto p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    isQuizComplete()
-                      ? "bg-green-100"
-                      : "bg-amber-100"
-                  }`}>
-                    {isQuizComplete() ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : (
-                      <AlertCircle className="h-5 w-5 text-amber-600" />
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Submit Quiz
-                  </h3>
+            <div className="w-full max-w-2xl bg-white rounded-xl mx-auto">
+              {/* Enhanced Header */}
+              <div
+                className={`px-8 py-5 rounded-t-xl ${
+                  isQuizComplete()
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                    : "bg-gradient-to-r from-amber-500 to-orange-600"
+                } text-white relative overflow-hidden`}
+              >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-30">
+                  <div
+                    className="w-full h-full"
+                    style={{
+                      backgroundImage:
+                        'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+                    }}
+                  ></div>
                 </div>
-                <button
-                  onClick={() => setShowSubmitDialog(false)}
-                  disabled={isSubmitting}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X className="h-5 w-5 text-gray-500" />
-                </button>
+
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center space-x-4">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{
+                        delay: 0.2,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
+                      className={`size-10 rounded-full flex items-center justify-center bg-white/20 backdrop-blur-sm ${
+                        isQuizComplete()
+                          ? "shadow-green-200"
+                          : "shadow-amber-200"
+                      } shadow-lg`}
+                    >
+                      {isQuizComplete() ? (
+                        <CheckCircle className="h-8 w-8 text-white" />
+                      ) : (
+                        <AlertCircle className="h-8 w-8 text-white" />
+                      )}
+                    </motion.div>
+                    <div>
+                      <h3 className="text-xl font-bold">
+                        {isQuizComplete() ? "Quiz Complete!" : "Submit Quiz?"}
+                      </h3>
+                      <p className="text-white/90 text-sm">
+                        {isQuizComplete()
+                          ? "All questions answered successfully"
+                          : "Some questions are still unanswered"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowSubmitDialog(false)}
+                    disabled={isSubmitting}
+                    className="p-2 hover:bg-white/20 rounded-full transition-colors relative z-10"
+                  >
+                    <X className="h-6 w-6 text-white" />
+                  </button>
+                </div>
               </div>
 
-              <div className="mb-6">
-                <p className="text-gray-600 mb-4">
-                  {isQuizComplete()
-                    ? "Congratulations! You have answered all questions."
-                    : "You haven't answered all questions yet."}
-                </p>
+              {/* Enhanced Content */}
+              <div className="p-8 space-y-8">
+                {/* Quiz Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {currentQuiz.questions.length}
+                    </div>
+                    <div className="text-sm text-blue-600/80">
+                      Total Questions
+                    </div>
+                  </div>
+                  <div
+                    className={`rounded-xl p-4 text-center border ${
+                      isQuizComplete()
+                        ? "bg-green-50 border-green-200"
+                        : "bg-amber-50 border-amber-200"
+                    }`}
+                  >
+                    <div
+                      className={`text-2xl font-bold ${
+                        isQuizComplete() ? "text-green-600" : "text-amber-600"
+                      }`}
+                    >
+                      {getAnsweredQuestions()}
+                    </div>
+                    <div
+                      className={`text-sm ${
+                        isQuizComplete()
+                          ? "text-green-600/80"
+                          : "text-amber-600/80"
+                      }`}
+                    >
+                      Answered
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200">
+                    <div className="text-2xl font-bold text-gray-600">
+                      {currentQuiz.questions.length - getAnsweredQuestions()}
+                    </div>
+                    <div className="text-sm text-gray-600/80">Remaining</div>
+                  </div>
+                </div>
 
-                {/* Progress Summary */}
-                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Progress</span>
-                    <span className="text-sm text-gray-500">
-                      {getAnsweredQuestions()}/{currentQuiz.questions.length} questions
+                {/* Enhanced Progress Bar */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-gray-800">
+                      Quiz Progress
+                    </span>
+                    <span className="text-sm font-medium text-gray-600">
+                      {Math.round(
+                        (getAnsweredQuestions() /
+                          currentQuiz.questions.length) *
+                          100
+                      )}
+                      % Complete
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        isQuizComplete() ? "bg-green-500" : "bg-amber-500"
-                      }`}
-                      style={{
-                        width: `${(getAnsweredQuestions() / currentQuiz.questions.length) * 100}%`
-                      }}
-                    />
+                  <div className="relative">
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${
+                            (getAnsweredQuestions() /
+                              currentQuiz.questions.length) *
+                            100
+                          }%`,
+                        }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className={`h-full rounded-full ${
+                          isQuizComplete()
+                            ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                            : "bg-gradient-to-r from-amber-500 to-orange-600"
+                        } shadow-lg`}
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                   </div>
                 </div>
 
-                {!isQuizComplete() && (
-                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
-                    <p className="text-sm text-amber-800">
-                      ⚠️ Unanswered questions will be marked as incorrect. You can continue answering or submit now.
-                    </p>
-                  </div>
-                )}
-
-                {isQuizComplete() && (
-                  <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
-                    <p className="text-sm text-green-800">
-                      ✅ All questions completed! Ready to submit your quiz.
-                    </p>
-                  </div>
-                )}
               </div>
 
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowSubmitDialog(false)}
-                  disabled={isSubmitting}
-                  className="flex-1 cursor-pointer"
-                >
-                  Continue Quiz
-                </Button>
-                <Button
-                  onClick={handleSubmitQuiz}
-                  disabled={isSubmitting}
-                  className={`flex-1 cursor-pointer ${
-                    isQuizComplete()
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  } text-white`}
-                >
-                  {isSubmitting ? (
+              {/* Enhanced Action Buttons */}
+              <div className="p-8 pt-0">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowSubmitDialog(false)}
+                    disabled={isSubmitting}
+                    className="flex-1 cursor-pointer h-14 text-base font-semibold border "
+                  >
                     <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Submitting...</span>
+                      <X className="h-5 w-5" />
+                      <span>Continue Quiz</span>
                     </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <Send className="h-4 w-4" />
-                      <span>Submit Quiz</span>
-                    </div>
-                  )}
-                </Button>
+                  </Button>
+
+                  <motion.div className="flex-1">
+                    <Button
+                      onClick={handleSubmitQuiz}
+                      disabled={isSubmitting}
+                      className={`w-full h-14 text-base font-bold cursor-pointer ${
+                        isQuizComplete()
+                          ? "bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800"
+                          : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+                      } text-white shadow-lg hover:shadow-xl transition-all duration-300`}
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center space-x-3">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                          <span>Submitting Quiz...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-3">
+                          <Send className="h-5 w-5" />
+                          <span>Submit Quiz</span>
+                          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                      )}
+                    </Button>
+                  </motion.div>
+                </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         </div>
       )}

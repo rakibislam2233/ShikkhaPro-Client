@@ -78,7 +78,7 @@ const DashboardLayout = () => {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-50  bg-opacity-50 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -93,7 +93,7 @@ const DashboardLayout = () => {
             lg:translate-x-0
           `}
         >
-          <div className="flex h-full flex-col bg-white border-r border-gray-200 shadow-xl overflow-hidden">
+          <div className="flex h-full flex-col bg-white border-r   overflow-hidden">
             {/* Sidebar Header */}
             <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 border-b border-gray-200">
               <Link to="/">

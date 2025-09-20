@@ -12,8 +12,9 @@ import {
   Sparkles,
   FileText,
   CheckCircle,
+  PlusCircle,
 } from "lucide-react";
-import { Button } from '../ui/Button';
+import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
@@ -155,30 +156,287 @@ const QuizCreator: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ACADEMIC_LEVELS.map((level) => (
-                <motion.div
-                  key={level.value}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Card
-                    className={cn(
-                      "cursor-pointer transition-all duration-200 hover:shadow-md",
-                      watchedValues.academicLevel === level.value &&
-                        "ring-2 ring-primary"
-                    )}
-                    onClick={() => setValue("academicLevel", level.value)}
-                  >
-                    <CardContent className="p-4 text-center">
-                      <div className="text-lg font-semibold">{level.label}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {level.description}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+            {/* Academic Level Groups */}
+            <div className="space-y-6">
+              {/* Pre-Primary & Primary */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">🎈</span>
+                  Pre-Primary & Primary (Ages 3-11)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['playgroup', 'nursery', 'kg', 'class-1', 'class-2', 'class-3', 'class-4', 'class-5'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Secondary */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">📚</span>
+                  Secondary Education (Ages 11-16)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['class-6', 'class-7', 'class-8', 'jsc', 'class-9', 'class-10', 'ssc'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Higher Secondary */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">🎓</span>
+                  Higher Secondary (Ages 17-18)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['class-11', 'class-12', 'hsc'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Undergraduate */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">🎯</span>
+                  Undergraduate (Ages 18-22)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['bachelor', 'bsc', 'ba', 'bcom', 'bba', 'btech', 'beng'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Postgraduate */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">🏆</span>
+                  Postgraduate (Ages 22+)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['master', 'msc', 'ma', 'mcom', 'mba', 'mtech', 'meng'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Professional & Competitive */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">💼</span>
+                  Professional & Competitive Exams
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['bcs', 'bank-job', 'medical', 'engineering', 'university', 'ielts', 'toefl', 'gre', 'sat'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Professional Development */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
+                  <span className="text-lg mr-2">🛠️</span>
+                  Professional Development
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {ACADEMIC_LEVELS.filter(level =>
+                    ['professional', 'skill-development', 'certification', 'adult-learning', 'general'].includes(level.value)
+                  ).map((level) => (
+                    <motion.div
+                      key={level.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <label
+                        className={cn(
+                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          watchedValues.academicLevel === level.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          value={level.value}
+                          checked={watchedValues.academicLevel === level.value}
+                          onChange={() => setValue("academicLevel", level.value)}
+                        />
+                        <span className="text-sm font-medium">{level.label}</span>
+                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                          {level.description}
+                        </span>
+                      </label>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {errors.academicLevel && (
@@ -327,7 +585,11 @@ const QuizCreator: React.FC = () => {
                       key={type.value}
                       className="flex items-center space-x-2"
                     >
-                      <RadioGroupItem value={type.value} id={type.value} className="cursor-pointer" />
+                      <RadioGroupItem
+                        value={type.value}
+                        id={type.value}
+                        className="cursor-pointer"
+                      />
                       <Label
                         htmlFor={type.value}
                         className="flex items-center space-x-2 cursor-pointer"
@@ -359,7 +621,11 @@ const QuizCreator: React.FC = () => {
                       key={level.value}
                       className="flex items-center space-x-2"
                     >
-                      <RadioGroupItem value={level.value} id={level.value} className="cursor-pointer" />
+                      <RadioGroupItem
+                        value={level.value}
+                        id={level.value}
+                        className="cursor-pointer"
+                      />
                       <Label htmlFor={level.value} className="cursor-pointer">
                         <span className={cn("font-medium", level.color)}>
                           {level.label}
@@ -404,25 +670,6 @@ const QuizCreator: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center space-y-6"
           >
-            <div className="space-y-4">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"
-              >
-                <Sparkles className="w-8 h-8 text-primary" />
-              </motion.div>
-
-              <div>
-                <h2 className="text-2xl font-bold">Ready to Generate!</h2>
-                <p className="text-muted-foreground mt-2">
-                  Review your quiz settings and let AI create your personalized
-                  quiz
-                </p>
-              </div>
-            </div>
-
             {/* Quiz Summary */}
             <Card className="text-left">
               <CardHeader>
@@ -552,6 +799,16 @@ const QuizCreator: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb - Hidden on mobile */}
+      <div className="mb-4 lg:mb-8 hidden sm:block">
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <PlusCircle className="w-4 h-4" />
+          <span>/</span>
+          <span className="font-medium text-gray-900 capitalize">
+            Create Quiz
+          </span>
+        </div>
+      </div>
       {/* Page Header */}
       <div className="mb-6 lg:mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
@@ -578,7 +835,7 @@ const QuizCreator: React.FC = () => {
               >
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2",
+                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border",
                     step.id < currentStep &&
                       "bg-primary border-primary text-primary-foreground",
                     step.id === currentStep &&
