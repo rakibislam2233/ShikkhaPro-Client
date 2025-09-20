@@ -167,7 +167,7 @@ const Navbar: React.FC = () => {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl cursor-pointer  transition-colors"
                 >
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+                  <div className="size-8 md:size-10 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
                     {getUserInitials()}
                   </div>
                   <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">
@@ -209,7 +209,7 @@ const Navbar: React.FC = () => {
             ) : (
               <div className="flex items-center space-x-5">
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="cursor-pointer h-12 px-6">
+                  <Button variant="outline" size="lg" className="cursor-pointer h-12 px-10">
                     Login
                   </Button>
                 </Link>

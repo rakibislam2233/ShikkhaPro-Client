@@ -117,7 +117,7 @@ const HeroSection: React.FC = () => {
                   <Button
                     size="lg"
                     variant="default"
-                    className="group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300 h-14 px-8"
+                    className="group cursor-pointer transition-all duration-300 h-14 px-8"
                   >
                     <BookOpen className="w-5 h-5 mr-2" />
                     Create Your First Quiz

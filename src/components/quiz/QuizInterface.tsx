@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Clock, AlertCircle, Play, Timer, BookOpen, CheckCircle, X, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clock, AlertCircle, Play, Timer, BookOpen, CheckCircle, X, Send, Award, Users, Target } from "lucide-react";
 import { Button } from '../ui/Button';
 import { Card } from "../ui/Card";
 import QuestionCard from "./QuestionCard";
@@ -32,6 +32,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [countdownTime, setCountdownTime] = useState(3);
 
   const { data: responseData, isLoading: quizLoading } = useGetQuizByIdQuery(
     quizId,
@@ -56,12 +58,10 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     try {
       const result = await startQuiz(quizId).unwrap();
       setAttemptId(result?.data?.attemptId);
-      setIsQuizStarted(true);
 
-      // Set timer if there's a time limit
-      if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
-        setTimeRemaining(currentQuiz.estimatedTime * 60);
-      }
+      // Show countdown before starting quiz
+      setShowCountdown(true);
+      setCountdownTime(3);
 
       toast.success("Quiz started successfully!");
     } catch (error) {
@@ -69,6 +69,24 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
       toast.error(err?.data?.message || "Failed to start quiz");
     }
   };
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (showCountdown && countdownTime > 0) {
+      const timer = setTimeout(() => {
+        setCountdownTime(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (showCountdown && countdownTime === 0) {
+      setShowCountdown(false);
+      setIsQuizStarted(true);
+
+      // Set timer if there's a time limit
+      if (currentQuiz?.estimatedTime && currentQuiz.estimatedTime > 0) {
+        setTimeRemaining(currentQuiz.estimatedTime * 60);
+      }
+    }
+  }, [showCountdown, countdownTime, currentQuiz]);
 
   const handleSubmitQuiz = useCallback(async () => {
     setIsSubmitting(true);
@@ -189,83 +207,174 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     );
   }
 
+  // Show countdown screen
+  if (showCountdown) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <motion.div
+            key={countdownTime}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-8"
+          >
+            <div className="w-32 h-32 mx-auto bg-primary rounded-full flex items-center justify-center shadow-2xl">
+              <span className="text-6xl font-bold text-white">{countdownTime}</span>
+            </div>
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold text-foreground mb-4"
+          >
+            Get Ready!
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-muted-foreground"
+          >
+            Quiz starting in {countdownTime} second{countdownTime !== 1 ? 's' : ''}...
+          </motion.p>
+        </motion.div>
+      </div>
+    );
+  }
+
   // Show quiz start screen if quiz hasn't started yet
   if (!isQuizStarted) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary/5">
+        <div className="min-h-screen flex items-center justify-center px-4 py-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.8 }}
+            className="w-full max-w-4xl"
           >
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <BookOpen className="w-8 h-8 text-primary" />
-                  </div>
-                </div>
+            <Card className="overflow-hidden shadow-2xl border-0">
+              {/* Header Section */}
+              <div className="bg-gradient-to-r from-primary to-primary/80 p-8 text-white text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm"
+                >
+                  <BookOpen className="w-10 h-10 text-white" />
+                </motion.div>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-3xl md:text-4xl font-bold mb-2"
+                >
+                  {currentQuiz.title}
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="text-white/90 text-lg"
+                >
+                  {currentQuiz.subject} • {currentQuiz.academicLevel}
+                </motion.p>
+              </div>
 
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">{currentQuiz.title}</h1>
-                  <p className="text-muted-foreground">
-                    {currentQuiz.subject} • {currentQuiz.academicLevel}
-                  </p>
-                </div>
-
-                <div className="bg-muted/50 rounded-lg p-6 space-y-4">
-                  <h3 className="text-lg font-semibold">Quiz Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium">Questions:</span>
-                      <span>{currentQuiz.questions.length}</span>
+              {/* Content Section */}
+              <div className="p-8 space-y-8">
+                {/* Quiz Stats */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                >
+                  <div className="bg-blue-50 rounded-xl p-6 text-center">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Target className="w-6 h-6 text-blue-600" />
                     </div>
-                    {currentQuiz.estimatedTime && (
-                      <div className="flex items-center space-x-2">
-                        <Timer className="w-4 h-4" />
-                        <span className="font-medium">Time Limit:</span>
-                        <span>{currentQuiz.estimatedTime} minutes</span>
+                    <div className="text-2xl font-bold text-blue-600 mb-1">
+                      {currentQuiz.questions.length}
+                    </div>
+                    <div className="text-sm text-blue-600/80">Questions</div>
+                  </div>
+
+                  {currentQuiz.estimatedTime && (
+                    <div className="bg-green-50 rounded-xl p-6 text-center">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Timer className="w-6 h-6 text-green-600" />
                       </div>
-                    )}
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium">Difficulty:</span>
-                      <span className="capitalize">{currentQuiz.difficulty}</span>
+                      <div className="text-2xl font-bold text-green-600 mb-1">
+                        {currentQuiz.estimatedTime}
+                      </div>
+                      <div className="text-sm text-green-600/80">Minutes</div>
                     </div>
-                  </div>
-                </div>
+                  )}
 
+                  <div className="bg-purple-50 rounded-xl p-6 text-center">
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Award className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-purple-600 mb-1 capitalize">
+                      {currentQuiz.difficulty}
+                    </div>
+                    <div className="text-sm text-purple-600/80">Difficulty</div>
+                  </div>
+                </motion.div>
+
+                {/* Instructions */}
                 {currentQuiz.instructions && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                    <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.0 }}
+                    className="bg-amber-50 border border-amber-200 rounded-xl p-6"
+                  >
+                    <h4 className="font-semibold mb-3 text-amber-800 flex items-center">
+                      <AlertCircle className="w-5 h-5 mr-2" />
                       Instructions
                     </h4>
-                    <p className="text-sm text-blue-800 dark:text-blue-200 text-left">
+                    <p className="text-amber-700 leading-relaxed">
                       {currentQuiz.instructions}
                     </p>
-                  </div>
+                  </motion.div>
                 )}
 
-                <div className="pt-4">
+                {/* Start Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.2 }}
+                  className="text-center pt-4"
+                >
                   <Button
                     onClick={handleStartQuiz}
                     disabled={isStartingQuiz}
                     size="lg"
-                    className="w-full md:w-auto px-8 cursor-pointer"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white px-12 py-4 text-lg font-semibold h-16 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer"
                   >
                     {isStartingQuiz ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Starting Quiz...</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                        <span>Preparing Quiz...</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-2">
-                        <Play className="w-5 h-5" />
-                        <span>Start Quiz</span>
+                      <div className="flex items-center space-x-3">
+                        <Play className="w-6 h-6" />
+                        <span>Start Quiz Now</span>
                       </div>
                     )}
                   </Button>
-                </div>
+                </motion.div>
               </div>
             </Card>
           </motion.div>

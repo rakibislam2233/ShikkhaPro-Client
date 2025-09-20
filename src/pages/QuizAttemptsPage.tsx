@@ -117,7 +117,7 @@ const QuizAttemptsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full mx-auto">
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <LoadingSpinner />
@@ -132,7 +132,7 @@ const QuizAttemptsPage: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full mx-auto">
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <p className="text-red-500">Error loading quiz attempts</p>
@@ -154,7 +154,7 @@ const QuizAttemptsPage: React.FC = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full mx-auto">
           <motion.div
             variants={containerVariants}
             initial="hidden"
