@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/Card";
+} from "../ui/card";
 import { Input } from "../ui/Input";
 import type { LoginFormData } from "../../types/auth.types";
 import { useLoginMutation } from "@/redux/features/auth/authApi";

@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <HelmetProvider>
         <RouterProvider router={router} />
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-center" />
       </HelmetProvider>
     </Provider>
   </StrictMode>

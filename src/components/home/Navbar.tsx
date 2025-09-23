@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { removeAuthTokens } from "@/utils/cookies";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";
+import imageBaseUrl from "@/utils/imageBaseUrl";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -167,12 +168,19 @@ const Navbar: React.FC = () => {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center space-x-1 lg:space-x-2 p-1.5 lg:p-2 rounded-lg lg:rounded-xl cursor-pointer  transition-colors"
                 >
-                  <div className="size-8 md:size-10 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
+                 {
+                  user?.profile?.avatar ? (
+                    <img
+                      className="size-10 md:size-12 rounded-full"
+                      src={`${imageBaseUrl}${user.profile.avatar}`}
+                      alt="Profile"
+                    />
+                  ) : (
+                     <div className="size-10 md:size-12 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
                     {getUserInitials()}
                   </div>
-                  <span className="hidden sm:block text-xs lg:text-sm font-medium text-gray-700">
-                    {getUserDisplayName().split(" ")[0]}
-                  </span>
+                  )
+                 }
                 </button>
 
                 {/* Dropdown Menu */}
