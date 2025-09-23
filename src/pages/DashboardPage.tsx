@@ -47,7 +47,6 @@ const DashboardPage: React.FC = () => {
       <div className="mb-4 lg:mb-8 hidden sm:block">
         <div className="flex items-center space-x-2 text-sm text-gray-600">
           <Home className="w-4 h-4" />
-          <span>/</span>
           <span className="font-medium text-gray-900 capitalize">
             Dashboard
           </span>

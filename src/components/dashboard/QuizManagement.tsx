@@ -87,7 +87,6 @@ const QuizManagement = () => {
     }
   };
 
-  console.log("myQuizzes", myQuizzes);
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -103,7 +102,7 @@ const QuizManagement = () => {
         </div>
         <div className="mt-4 sm:mt-0">
           <Link to="/dashboard/create-quiz">
-            <Button className="flex items-center space-x-2 cursor-pointer">
+            <Button className="flex items-center px-5 h-12 space-x-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               <span>Create Quiz</span>
             </Button>
@@ -183,7 +182,7 @@ const QuizManagement = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card className="p-6 hover:shadow-md transition-shadow">
+            <div className="border bg-white rounded-lg p-6">
               <div className="flex items-start space-x-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
@@ -220,7 +219,7 @@ const QuizManagement = () => {
 
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Clock className="h-4 w-4" />
-                          <span>{quiz?.timeLimit} min</span>
+                          <span>{quiz?.estimatedTime} min</span>
                         </div>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Calendar className="h-4 w-4" />
@@ -255,7 +254,7 @@ const QuizManagement = () => {
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         ))}
 
@@ -269,7 +268,7 @@ const QuizManagement = () => {
               Get started by creating your first quiz
             </p>
             <Link to="/dashboard/create-quiz">
-              <Button className="mx-auto cursor-pointer">
+              <Button className="mx-auto cursor-pointer ">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Quiz
               </Button>

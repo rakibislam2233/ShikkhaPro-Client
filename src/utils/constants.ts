@@ -86,13 +86,7 @@ export const QUESTION_TYPES: { value: QuestionType; label: string; description: 
     label: 'Multiple Select',
     description: 'Choose all correct answers',
     icon: '☑️',
-  },
-  {
-    value: 'mixed',
-    label: 'Mixed Types',
-    description: 'Combination of all question types',
-    icon: '🎯',
-  },
+  }
 ];
 
 export const DIFFICULTY_LEVELS: { value: Difficulty; label: string; description: string; color: string }[] = [

@@ -64,7 +64,6 @@ export type QuestionType =
   | "short-answer"
   | "true-false"
   | "multiple-select"
-  | "mixed";
 
 export type QuizDifficulty = "easy" | "medium" | "hard";
 export type Difficulty = QuizDifficulty;

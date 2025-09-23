@@ -108,13 +108,27 @@ const QuizCreator: React.FC = () => {
 
     // List of common English subjects
     const englishSubjects = [
-      'english', 'english literature', 'literature', 'grammar', 'vocabulary',
-      'ielts', 'toefl', 'sat', 'gre', 'speaking', 'writing', 'reading', 'listening'
+      "english",
+      "english literature",
+      "literature",
+      "grammar",
+      "vocabulary",
+      "ielts",
+      "toefl",
+      "sat",
+      "gre",
+      "speaking",
+      "writing",
+      "reading",
+      "listening",
     ];
 
     // If user selects an English subject, keep language as English and don't auto-select Bengali
-    if (currentSubject && englishSubjects.some(subject => currentSubject.includes(subject))) {
-      if (watchedValues.language !== 'english') {
+    if (
+      currentSubject &&
+      englishSubjects.some((subject) => currentSubject.includes(subject))
+    ) {
+      if (watchedValues.language !== "english") {
         setValue("language", "english");
       }
     }
@@ -162,41 +176,76 @@ const QuizCreator: React.FC = () => {
       case 1:
         return (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="space-y-8"
           >
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">Select Your Academic Level</h2>
-              <p className="text-muted-foreground">
-                Choose the education level that matches your current studies
-              </p>
+            <div className="text-center space-y-4">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="mx-auto w-16 h-16 bg-primary  rounded-2xl flex items-center justify-center shadow-lg"
+              >
+                <BookOpen className="w-8 h-8 text-white" />
+              </motion.div>
+              <div>
+                <h2 className="text-3xl font-bold text-primary">
+                  Select Your Academic Level
+                </h2>
+                <p className="text-muted-foreground mt-2 text-lg">
+                  Choose the education level that matches your current studies
+                </p>
+              </div>
             </div>
 
             {/* Academic Level Groups */}
-            <div className="space-y-6">
+            <div className="space-y-8">
               {/* Pre-Primary & Primary */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">🎈</span>
-                  Pre-Primary & Primary (Ages 3-11)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['playgroup', 'nursery', 'kg', 'class-1', 'class-2', 'class-3', 'class-4', 'class-5'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 border border-gray-300 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">🎈</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Pre-Primary & Primary
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Ages 3-11</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "playgroup",
+                      "nursery",
+                      "kg",
+                      "class-1",
+                      "class-2",
+                      "class-3",
+                      "class-4",
+                      "class-5",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.05, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer transition-all duration-300",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -204,39 +253,73 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Secondary */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">📚</span>
-                  Secondary Education (Ages 11-16)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['class-6', 'class-7', 'class-8', 'jsc', 'class-9', 'class-10', 'ssc'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 border bg-cya border-gray-300 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">🎉</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Secondary Education
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Ages 11-16</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "class-6",
+                      "class-7",
+                      "class-8",
+                      "jsc",
+                      "class-9",
+                      "class-10",
+                      "ssc",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 + index * 0.05, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -244,39 +327,65 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Higher Secondary */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">🎓</span>
-                  Higher Secondary (Ages 17-18)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['class-11', 'class-12', 'hsc'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span className="text-xl">🎓</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Higher Secondary
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Ages 17-18</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    ["class-11", "class-12", "hsc"].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 + index * 0.1, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -284,39 +393,73 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Undergraduate */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">🎯</span>
-                  Undergraduate (Ages 18-22)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['bachelor', 'bsc', 'ba', 'bcom', 'bba', 'btech', 'beng'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.9, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span className="text-xl">🎯</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Undergraduate
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Ages 18-22</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "bachelor",
+                      "bsc",
+                      "ba",
+                      "bcom",
+                      "bba",
+                      "btech",
+                      "beng",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.0 + index * 0.05, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -324,39 +467,73 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Postgraduate */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">🏆</span>
-                  Postgraduate (Ages 22+)
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['master', 'msc', 'ma', 'mcom', 'mba', 'mtech', 'meng'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.1, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span className="text-xl">🏆</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Postgraduate
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Ages 22+</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "master",
+                      "msc",
+                      "ma",
+                      "mcom",
+                      "mba",
+                      "mtech",
+                      "meng",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.2 + index * 0.05, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -364,39 +541,75 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Professional & Competitive */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">💼</span>
-                  Professional & Competitive Exams
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['bcs', 'bank-job', 'medical', 'engineering', 'university', 'ielts', 'toefl', 'gre', 'sat'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.3, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span className="text-xl">💼</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Professional & Competitive Exams
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Career focused</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "bcs",
+                      "bank-job",
+                      "medical",
+                      "engineering",
+                      "university",
+                      "ielts",
+                      "toefl",
+                      "gre",
+                      "sat",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.4 + index * 0.05, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -404,39 +617,71 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Professional Development */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground flex items-center">
-                  <span className="text-lg mr-2">🛠️</span>
-                  Professional Development
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {ACADEMIC_LEVELS.filter(level =>
-                    ['professional', 'skill-development', 'certification', 'adult-learning', 'general'].includes(level.value)
-                  ).map((level) => (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.5, duration: 0.5 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
+                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span className="text-xl">🛠️</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Professional Development
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Skill enhancement</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {ACADEMIC_LEVELS.filter((level) =>
+                    [
+                      "professional",
+                      "skill-development",
+                      "certification",
+                      "adult-learning",
+                      "general",
+                    ].includes(level.value)
+                  ).map((level, index) => (
                     <motion.div
                       key={level.value}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6 + index * 0.1, duration: 0.4 }}
                     >
                       <label
                         className={cn(
-                          "flex flex-col items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/5",
+                          "group relative flex flex-col items-center p-4 border rounded-xl cursor-pointer",
                           watchedValues.academicLevel === level.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
+                            : "border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm"
                         )}
                       >
                         <input
@@ -444,23 +689,42 @@ const QuizCreator: React.FC = () => {
                           className="sr-only"
                           value={level.value}
                           checked={watchedValues.academicLevel === level.value}
-                          onChange={() => setValue("academicLevel", level.value)}
+                          onChange={() =>
+                            setValue("academicLevel", level.value)
+                          }
                         />
-                        <span className="text-sm font-medium">{level.label}</span>
-                        <span className="text-xs text-center text-muted-foreground mt-1 line-clamp-2">
+                        {watchedValues.academicLevel === level.value && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        <span className="text-sm font-semibold text-center">
+                          {level.label}
+                        </span>
+                        <span className="text-xs text-center text-muted-foreground mt-2 line-clamp-2 group-hover:text-foreground/70">
                           {level.description}
                         </span>
                       </label>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {errors.academicLevel && (
-              <p className="text-destructive text-sm text-center">
-                {errors.academicLevel.message}
-              </p>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center"
+              >
+                <p className="text-destructive text-sm font-medium">
+                  {errors.academicLevel.message}
+                </p>
+              </motion.div>
             )}
           </motion.div>
         );
@@ -571,7 +835,7 @@ const QuizCreator: React.FC = () => {
                   {LANGUAGES.map((lang) => (
                     <div
                       key={lang.value}
-                      className="flex items-center space-x-2"
+                      className="flex items-center cursor-pointer space-x-2"
                     >
                       <RadioGroupItem value={lang.value} id={lang.value} />
                       <Label
@@ -821,7 +1085,6 @@ const QuizCreator: React.FC = () => {
       <div className="mb-4 lg:mb-8 hidden sm:block">
         <div className="flex items-center space-x-2 text-sm text-gray-600">
           <PlusCircle className="w-4 h-4" />
-          <span>/</span>
           <span className="font-medium text-gray-900 capitalize">
             Create Quiz
           </span>

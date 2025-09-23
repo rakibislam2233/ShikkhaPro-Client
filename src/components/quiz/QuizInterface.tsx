@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Clock,
-  AlertCircle,
-  Play,
-  CheckCircle,
-  X,
-  Send,
-} from "lucide-react";
+import { Clock, AlertCircle, Play, CheckCircle, X, Send } from "lucide-react";
 import { Button } from "../ui/Button";
 import QuestionCard from "./QuestionCard";
 import ProgressBar from "./ProgressBar";
@@ -221,17 +214,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   // Show countdown screen
   if (showCountdown) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-secondary/3 rounded-full blur-3xl animate-spin"
-            style={{ animationDuration: "20s" }}
-          ></div>
-        </div>
-
+      <div className="min-h-screen  flex items-center justify-center relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -293,6 +276,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   if (!isQuizStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary/10 relative overflow-hidden">
+        {/* Animated Background Elements */}
+
         <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -300,37 +285,73 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
             transition={{ duration: 0.8 }}
             className="w-full max-w-5xl"
           >
-            <div className="p-10 space-y-10">
+            <div className="text-center space-y-12">
+              {/* Quiz Title and Info */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-4"
+              >
+                <h1 className="text-4xl md:text-5xl font-bold text-primary">
+                  {currentQuiz.title}
+                </h1>
+                <div className="flex items-center justify-center gap-4 text-muted-foreground">
+                  <span className="px-3 py-1 bg-secondary rounded-full text-sm">
+                    {currentQuiz.subject}
+                  </span>
+                  <span className="px-3 py-1 bg-secondary rounded-full text-sm">
+                    {currentQuiz.academicLevel}
+                  </span>
+                  <span className="px-3 py-1 bg-secondary rounded-full text-sm">
+                    {currentQuiz.questions.length} Questions
+                  </span>
+                </div>
+              </motion.div>
+
               {/* Enhanced Start Button */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-                className="text-center pt-6"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
+                className="flex justify-center"
               >
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
+                <div className="relative group">
+                  {/* Pulse Rings */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-20 animate-ping"></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-10 animate-ping animation-delay-200"></div>
+
+                  {/* Main Button */}
+                  <motion.button
                     onClick={handleStartQuiz}
                     disabled={isStartingQuiz}
-                    size="lg"
-                    className="bg-primary hover:from-primary/90 hover:via-primary/90 hover:to-secondary/90 text-white size-28  rounded-full text-xl font-bold  cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative w-40 flex flex-col cursor-pointer justify-center items-center h-40 md:w-48 md:h-48 bg-gradient-to-br from-primary via-primary to-secondary text-white rounded-full "
                   >
-                    {isStartingQuiz ? (
-                      <div className="relative z-10">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-3 border-white"></div>
-                        <span>Preparing Quiz...</span>
-                      </div>
-                    ) : (
-                      <div className="relative z-10">
-                        <Play className="size-10 md:size-16 mx-auto" />
-                        <span>Start</span>
-                      </div>
-                    )}
-                  </Button>
-                </motion.div>
+                    <Play className="w-12 h-12 md:w-16 md:h-16 mb-2 fill-white" />
+                    <h1 className="text-sm md:text-lg font-semibold">Start</h1>
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              {/* Additional Info */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+                className="flex items-center justify-center gap-8 text-muted-foreground"
+              >
+                {currentQuiz.estimatedTime && (
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    <span>{currentQuiz.estimatedTime} minutes</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Good Luck!</span>
+                </div>
               </motion.div>
             </div>
           </motion.div>
@@ -571,7 +592,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                   </div>
                 </div>
-
               </div>
 
               {/* Enhanced Action Buttons */}

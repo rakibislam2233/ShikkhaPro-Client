@@ -122,3 +122,37 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes shine {
+  to {
+    transform: translateX(100%) skewX(12deg);
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+.animate-shine {
+  animation: shine 1s ease-in-out;
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.shadow-3xl {
+  box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+}

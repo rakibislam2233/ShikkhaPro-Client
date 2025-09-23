@@ -7,37 +7,113 @@ import {
   TrendingUp,
   Clock,
   Star,
-  Activity
+  Activity,
+  Timer,
+  Calendar,
+  Eye,
+  BookOpen,
 } from "lucide-react";
-import { Button } from '../ui/Button';
-import { Card } from "../ui/Card";
+import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import {
   useGetDashboardSummaryQuery,
-  useGetRecentActivityQuery
+  useGetQuizAttemptsQuery,
 } from "@/redux/features/dashboard/dashboardApi";
 const DashboardOverview = () => {
   const { user } = useAuth();
-
-  // Redux hooks for API calls
   const {
     data: summaryData,
     isLoading: summaryLoading,
-    error: summaryError
+    error: summaryError,
   } = useGetDashboardSummaryQuery();
 
+  // Redux hooks for API calls
   const {
-    data: activityData,
-    isLoading: activityLoading,
-    error: activityError
-  } = useGetRecentActivityQuery();
+    data: attemptsResponse,
+    isLoading: attemptsLoading,
+    error: attemptsError,
+  } = useGetQuizAttemptsQuery({
+    page: 1,
+    limit: 10,
+  });
+
+  const attemptsData = attemptsResponse?.data;
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      completed: {
+        className: "bg-green-100 text-green-800",
+        text: "Completed",
+      },
+      "in-progress": {
+        className: "bg-yellow-100 text-yellow-800",
+        text: "In Progress",
+      },
+      abandoned: {
+        className: "bg-red-100 text-red-800",
+        text: "Abandoned",
+      },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] ||
+      statusConfig.completed;
+
+    return (
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-full ${config.className}`}
+      >
+        {config.text}
+      </span>
+    );
+  };
+
+  const getDifficultyBadge = (difficulty: string) => {
+    const difficultyConfig = {
+      easy: "bg-green-100 text-green-800",
+      medium: "bg-yellow-100 text-yellow-800",
+      hard: "bg-red-100 text-red-800",
+    };
+
+    return (
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-full ${
+          difficultyConfig[difficulty as keyof typeof difficultyConfig]
+        }`}
+      >
+        {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+      </span>
+    );
+  };
+
+  const getGradeColor = (grade: string) => {
+    if (grade === "A+" || grade === "A") return "text-green-600";
+    if (grade === "B+" || grade === "B") return "text-blue-600";
+    if (grade === "C+" || grade === "C") return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const formatTime = (seconds: number): string => {
+    if (!seconds || seconds === 0) return "0s";
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${remainingSeconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${remainingSeconds}s`;
+    } else {
+      return `${remainingSeconds}s`;
+    }
+  };
 
   const dashboardData = summaryData?.data;
-  const recentActivity = activityData?.data || [];
-  const isLoading = summaryLoading || activityLoading;
-  const error = summaryError || activityError;
+  const isLoading = summaryLoading || attemptsLoading;
+  const error = summaryError || attemptsError;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -59,7 +135,9 @@ const DashboardOverview = () => {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <LoadingSpinner />
-          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+          <p className="mt-4 text-muted-foreground">
+            Loading your dashboard...
+          </p>
         </div>
       </div>
     );
@@ -87,7 +165,8 @@ const DashboardOverview = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Welcome back, {user?.profile?.fullName || user?.email?.split('@')[0]}!
+              Welcome back,{" "}
+              {user?.profile?.fullName || user?.email?.split("@")[0]}!
             </h1>
             <p className="text-muted-foreground mt-1">
               Here's what's happening with your quizzes today.
@@ -95,8 +174,8 @@ const DashboardOverview = () => {
           </div>
           <div className="mt-4 sm:mt-0">
             <Link to="/dashboard/create-quiz">
-              <Button className="flex items-center space-x-2 cursor-pointer">
-                <Plus className="h-4 w-4" />
+              <Button className="flex items-center space-x-2 h-12 cursor-pointer">
+                <Plus className="size-8" />
                 <span>Create New Quiz</span>
               </Button>
             </Link>
@@ -107,7 +186,7 @@ const DashboardOverview = () => {
       {/* Stats Cards */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -121,9 +200,9 @@ const DashboardOverview = () => {
                 <FileText className="h-6 w-6 text-blue-600" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -137,9 +216,9 @@ const DashboardOverview = () => {
                 <Target className="h-6 w-6 text-green-600" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -153,9 +232,9 @@ const DashboardOverview = () => {
                 <TrendingUp className="h-6 w-6 text-yellow-600" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -169,14 +248,14 @@ const DashboardOverview = () => {
                 <Trophy className="h-6 w-6 text-purple-600" />
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </motion.div>
 
       {/* Additional Stats */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -190,9 +269,9 @@ const DashboardOverview = () => {
                 <Star className="h-6 w-6 text-emerald-600" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -206,9 +285,9 @@ const DashboardOverview = () => {
                 <Activity className="h-6 w-6 text-orange-600" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
+          <div className="border bg-white rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -216,108 +295,154 @@ const DashboardOverview = () => {
                 </p>
                 <p className="text-lg font-semibold text-foreground">
                   {dashboardData?.lastActivityAt
-                    ? new Date(dashboardData.lastActivityAt).toLocaleDateString()
-                    : 'N/A'
-                  }
+                    ? new Date(
+                        dashboardData.lastActivityAt
+                      ).toLocaleDateString()
+                    : "N/A"}
                 </p>
               </div>
               <div className="h-12 w-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                 <Clock className="h-6 w-6 text-indigo-600" />
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </motion.div>
 
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center justify-between mt-8">
+          <h2 className="text-2xl font-bold text-foreground">
+            Recent Activity
+          </h2>
+          <Link to="/dashboard/quiz-attempts">
+            <Button className="cursor-pointer px-8 h-10">View All</Button>
+          </Link>
+        </div>
+      </motion.div>
       {/* Recent Activity */}
       <motion.div variants={itemVariants}>
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-foreground">Recent Activity</h3>
-            <Link to="/dashboard/quiz-attempts">
-              <Button variant="outline" size="sm" className="cursor-pointer">
-                View All
-              </Button>
-            </Link>
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50  border-b">
+                <tr>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Quiz Details
+                  </th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Score & Grade
+                  </th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Time & Date
+                  </th>
+                  <th className="px-6 py-5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {attemptsData?.attempts.map((attempt) => (
+                  <tr key={attempt.attemptId} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-5 w-5 text-primary" />
+                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {attempt.quizTitle}
+                          </p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-gray-500">
+                              {attempt.subject} • {attempt.topic}
+                            </span>
+                            {getDifficultyBadge(attempt.difficulty)}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {attempt.questionCount} questions
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-gray-900">
+                            {attempt.score}/{attempt.totalScore}
+                          </span>
+                          <span className="text-gray-500">
+                            ({attempt.percentage}%)
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span
+                            className={`font-medium ${getGradeColor(
+                              attempt.grade
+                            )}`}
+                          >
+                            {attempt.grade}
+                          </span>
+                          <span className="text-gray-500">
+                            GPA: {attempt.gpa}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {getStatusBadge(attempt.status)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <div className="flex items-center space-x-1 text-gray-900">
+                          <Timer className="h-4 w-4" />
+                          <span>{formatTime(attempt.timeSpent)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-gray-500 mt-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {new Date(attempt.startedAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {attempt.status === "completed" ? (
+                        <Link
+                          to={`/dashboard/quiz-result/${attempt.attemptId}`}
+                        >
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="cursor-pointer"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled
+                          className="cursor-not-allowed opacity-50"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          <div className="space-y-4">
-            {recentActivity.length > 0 ? (
-              recentActivity.slice(0, 5).map((activity) => (
-                <div
-                  key={activity.attemptId}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-primary" />
-                      </div>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {activity.quizTitle}
-                      </p>
-                      <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <span>{activity.subject} • {activity.topic}</span>
-                        <span className={`px-2 py-1 rounded-full ${
-                          activity.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                          activity.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {activity.difficulty}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          {activity.score}/{activity.totalScore}
-                        </span>
-                        <span className="text-xs text-gray-500">({activity.percentage}%)</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-sm font-medium ${
-                          activity.grade === 'A+' || activity.grade === 'A' ? 'text-green-600' :
-                          activity.grade === 'B+' || activity.grade === 'B' ? 'text-blue-600' :
-                          activity.grade === 'C+' || activity.grade === 'C' ? 'text-yellow-600' :
-                          'text-red-600'
-                        }`}>
-                          {activity.grade}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {new Date(activity.completedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      activity.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      activity.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {activity.status === 'completed' ? 'Completed' :
-                       activity.status === 'in-progress' ? 'In Progress' : 'Abandoned'}
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No recent activity</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Start taking quizzes to see your activity here
-                </p>
-              </div>
-            )}
-          </div>
-        </Card>
+        </div>
       </motion.div>
-
     </motion.div>
   );
 };

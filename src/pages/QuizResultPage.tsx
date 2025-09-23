@@ -40,6 +40,23 @@ const QuizResultPage: React.FC = () => {
 
   const result = resultData?.data as QuizResultResponse;
 
+  // Format time from seconds to readable format
+  const formatTime = (seconds: number): string => {
+    if (!seconds || seconds === 0) return "0s";
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${remainingSeconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${remainingSeconds}s`;
+    } else {
+      return `${remainingSeconds}s`;
+    }
+  };
+
   const getGradeColor = (percentage: number) => {
     // Bangladesh Grade System Colors
     if (percentage >= 80) return "text-emerald-600 bg-emerald-50 border-emerald-200"; // A+ (Golden)
@@ -447,7 +464,7 @@ const QuizResultPage: React.FC = () => {
                   <Clock className="h-8 w-8 text-blue-500" />
                   <div>
                     <p className="text-2xl font-bold">
-                      {performance?.timeSpent || 0} m
+                      {formatTime(performance?.timeSpent || 0)}
                     </p>
                     <p className="text-sm text-muted-foreground">Time Taken</p>
                   </div>

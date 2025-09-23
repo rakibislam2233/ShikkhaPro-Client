@@ -167,7 +167,7 @@ export const quizConfigSchema = z.object({
     message: "Language is required",
   }),
   questionType: z.enum(
-    ["mcq", "short-answer", "true-false", "multiple-select", "mixed"],
+    ["mcq", "short-answer", "true-false", "multiple-select"],
     {
       message: "Question type is required",
     }
