@@ -16,6 +16,7 @@ import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import QuizResultPage from "@/pages/QuizResultPage";
 import QuizAttemptsPage from "@/pages/QuizAttemptsPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "@/layout/MainLayout";
 
@@ -99,6 +100,11 @@ const router = createBrowserRouter([
         element: <QuizResultPage />,
       },
     ],
+  },
+  // Catch-all route for 404 pages
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 export default router;

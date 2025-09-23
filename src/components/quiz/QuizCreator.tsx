@@ -211,7 +211,7 @@ const QuizCreator: React.FC = () => {
                 className="space-y-4"
               >
                 <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
-                  <div className="w-10 h-10 border border-gray-300 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center">
                     <span className="text-xl">🎈</span>
                   </div>
                   <div>
@@ -286,7 +286,7 @@ const QuizCreator: React.FC = () => {
                 className="space-y-4"
               >
                 <div className="flex items-center space-x-3 pb-2 border-b border-border/50">
-                  <div className="w-10 h-10 border bg-cya border-gray-300 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-teal-600 rounded-xl flex items-center justify-center">
                     <span className="text-xl">🎉</span>
                   </div>
                   <div>
