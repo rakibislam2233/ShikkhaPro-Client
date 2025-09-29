@@ -12,7 +12,10 @@
       "Bash(git checkout:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
