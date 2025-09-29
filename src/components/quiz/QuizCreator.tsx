@@ -30,7 +30,7 @@ import {
   QUESTION_COUNT_OPTIONS,
   SUBJECT_SUGGESTIONS,
 } from "../../utils/constants";
-import { quizConfigSchema } from "../../utils/validation.utils";
+import { quizConfigSchema, type QuizConfigFormData } from "../../utils/validation.utils";
 import { cn } from "@/lib/utils";
 import type {
   QuestionType,
@@ -84,7 +84,7 @@ const QuizCreator: React.FC = () => {
     setValue,
     formState: { errors },
     trigger,
-  } = useForm<QuizConfig>({
+  } = useForm<QuizConfigFormData>({
     resolver: zodResolver(quizConfigSchema),
     mode: "onChange",
     shouldFocusError: false,
@@ -155,7 +155,7 @@ const QuizCreator: React.FC = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const onSubmit = async (data: QuizConfig) => {
+  const onSubmit = async (data: QuizConfigFormData) => {
     setIsGenerating(true);
     try {
       const res = await generateQuiz(data).unwrap();

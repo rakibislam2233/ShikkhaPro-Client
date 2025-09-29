@@ -104,10 +104,7 @@ export const quizConfigSchema = z.object({
       // Secondary Education (Ages 11-16)
       "class-6",
       "class-7",
-      "class-8",
       "jsc",
-      "class-9",
-      "class-10",
       "ssc",
 
       // Higher Secondary Education (Ages 17-18)
