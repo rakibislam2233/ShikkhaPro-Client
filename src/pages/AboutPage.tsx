@@ -1,7 +1,7 @@
+import { motion } from 'framer-motion';
+import { BookOpen, Heart, Lightbulb, Target, Users } from 'lucide-react';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
-import { BookOpen, Users, Target, Heart, Lightbulb } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutPage: React.FC = () => {
@@ -72,7 +72,7 @@ const AboutPage: React.FC = () => {
               className="inline-flex items-center space-x-3 bg-primary/10 px-6 py-3 rounded-full"
             >
               <BookOpen className="w-6 h-6 text-primary" />
-              <span className="font-medium text-primary">Empowering Education Since 2024</span>
+              <span className="font-medium text-primary">Empowering Education Since 2025</span>
             </motion.div>
           </div>
         </section>

@@ -4,6 +4,7 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import VerifyOtpForm from "@/components/auth/VerifyOtpForm";
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import DashboardLayout from "@/layout/DashboardLayout";
+import AuthGuard from "@/components/auth/AuthGuard";
 import DashboardPage from "@/pages/DashboardPage";
 import HomePage from "@/pages/HomePage";
 import QuizGeneratorPage from "@/pages/QuizGeneratorPage";
@@ -65,7 +66,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <AuthGuard>
+        <DashboardLayout />
+      </AuthGuard>
+    ),
     children: [
       {
         index: true,

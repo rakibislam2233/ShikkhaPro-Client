@@ -116,10 +116,7 @@ const QuizResultPage: React.FC = () => {
       // Secondary (Ages 11-16)
       'class-6': { icon: '📐', title: 'Class 6 Test', passPercentage: 33 },
       'class-7': { icon: '🧮', title: 'Class 7 Examination', passPercentage: 33 },
-      'class-8': { icon: '🔬', title: 'Class 8 Assessment', passPercentage: 33 },
       'jsc': { icon: '🏆', title: 'JSC Preparation', passPercentage: 33 },
-      'class-9': { icon: '📊', title: 'Class 9 Exam', passPercentage: 33 },
-      'class-10': { icon: '🎓', title: 'Class 10 Test', passPercentage: 33 },
       'ssc': { icon: '🏅', title: 'SSC Preparation', passPercentage: 33 },
 
       // Higher Secondary (Ages 17-18)

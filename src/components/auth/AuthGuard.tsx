@@ -18,8 +18,6 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  console.log("IS AUTHENTICATED", isAuthenticated);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

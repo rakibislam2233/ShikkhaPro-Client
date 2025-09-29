@@ -33,6 +33,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [showCountdown, setShowCountdown] = useState(false);
   const [countdownTime, setCountdownTime] = useState(3);
+  const [showQuizNotFound, setShowQuizNotFound] = useState(false);
 
   const { data: responseData, isLoading: quizLoading } = useGetQuizByIdQuery(
     quizId,
@@ -51,6 +52,17 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
       setCurrentQuiz(responseData?.data);
     }
   }, [responseData]);
+
+  // Timer to show "Quiz Not Found" after 6 seconds if quiz is not found
+  useEffect(() => {
+    if (!quizLoading && !currentQuiz) {
+      const timer = setTimeout(() => {
+        setShowQuizNotFound(true);
+      }, 6000); // 6 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [quizLoading, currentQuiz]);
 
   // Handle quiz start
   const handleStartQuiz = async () => {
@@ -148,7 +160,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < (currentQuiz?.questions.length || 0) - 1) {
+    if (currentQuestionIndex < (currentQuiz?.questions?.length || 0) - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // If it's the last question, show submit dialog
@@ -176,13 +188,13 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
   };
 
   const getAnsweredQuestions = () => {
-    if (!currentQuiz) return 0;
+    if (!currentQuiz?.questions) return 0;
     return currentQuiz.questions.filter((q) => userAnswers[q.id] !== undefined)
       .length;
   };
 
   const isQuizComplete = () => {
-    if (!currentQuiz) return false;
+    if (!currentQuiz?.questions) return false;
     return getAnsweredQuestions() === currentQuiz.questions.length;
   };
 
@@ -197,7 +209,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     );
   }
 
-  if (!currentQuiz) {
+  if (!currentQuiz && showQuizNotFound) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -206,6 +218,18 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
           <p className="text-muted-foreground">
             The requested quiz could not be loaded.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state if quiz is still loading or waiting for timer
+  if (!currentQuiz && !showQuizNotFound) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading quiz...</p>
         </div>
       </div>
     );
@@ -294,17 +318,17 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 className="space-y-4"
               >
                 <h1 className="text-4xl md:text-5xl font-bold text-primary">
-                  {currentQuiz.title}
+                  {currentQuiz?.title}
                 </h1>
                 <div className="flex items-center justify-center gap-4 text-muted-foreground">
                   <span className="px-3 py-1 bg-secondary rounded-full text-sm">
-                    {currentQuiz.subject}
+                    {currentQuiz?.subject}
                   </span>
                   <span className="px-3 py-1 bg-secondary rounded-full text-sm">
-                    {currentQuiz.academicLevel}
+                    {currentQuiz?.academicLevel}
                   </span>
                   <span className="px-3 py-1 bg-secondary rounded-full text-sm">
-                    {currentQuiz.questions.length} Questions
+                    {currentQuiz?.questions.length} Questions
                   </span>
                 </div>
               </motion.div>
@@ -342,10 +366,10 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 transition={{ delay: 0.9 }}
                 className="flex items-center justify-center gap-8 text-muted-foreground"
               >
-                {currentQuiz.estimatedTime && (
+                {currentQuiz?.estimatedTime && (
                   <div className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    <span>{currentQuiz.estimatedTime} minutes</span>
+                    <span>{currentQuiz?.estimatedTime} minutes</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
@@ -360,7 +384,18 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
     );
   }
 
-  const currentQuestion = currentQuiz.questions[currentQuestionIndex];
+  const currentQuestion = currentQuiz?.questions?.[currentQuestionIndex];
+
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading question...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -369,13 +404,13 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold">{currentQuiz.title}</h1>
+              <h1 className="text-xl font-bold">{currentQuiz?.title}</h1>
               <p className="text-sm text-muted-foreground">
-                {currentQuiz.subject} • {currentQuiz.academicLevel}
+                {currentQuiz?.subject} • {currentQuiz?.academicLevel}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              {currentQuiz.estimatedTime && (
+              {currentQuiz?.estimatedTime && (
                 <div
                   className={`flex items-center space-x-2 text-muted-foreground`}
                 >
@@ -397,7 +432,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
             {/* Progress */}
             <ProgressBar
               current={currentQuestionIndex + 1}
-              total={currentQuiz.questions.length}
+              total={currentQuiz?.questions?.length || 0}
               answered={getAnsweredQuestions()}
             />
 
@@ -422,7 +457,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
             {/* Navigation */}
             <NavigationControls
               currentIndex={currentQuestionIndex}
-              totalQuestions={currentQuiz.questions.length}
+              totalQuestions={currentQuiz?.questions?.length || 0}
               onPrevious={handlePreviousQuestion}
               onNext={handleNextQuestion}
               canGoNext={true}
@@ -517,7 +552,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
                     <div className="text-2xl font-bold text-blue-600">
-                      {currentQuiz.questions.length}
+                      {currentQuiz?.questions?.length || 0}
                     </div>
                     <div className="text-sm text-blue-600/80">
                       Total Questions
@@ -549,7 +584,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200">
                     <div className="text-2xl font-bold text-gray-600">
-                      {currentQuiz.questions.length - getAnsweredQuestions()}
+                      {(currentQuiz?.questions?.length || 0) - getAnsweredQuestions()}
                     </div>
                     <div className="text-sm text-gray-600/80">Remaining</div>
                   </div>
@@ -564,7 +599,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                     <span className="text-sm font-medium text-gray-600">
                       {Math.round(
                         (getAnsweredQuestions() /
-                          currentQuiz.questions.length) *
+                          (currentQuiz?.questions?.length || 1)) *
                           100
                       )}
                       % Complete
@@ -577,7 +612,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizId }) => {
                         animate={{
                           width: `${
                             (getAnsweredQuestions() /
-                              currentQuiz.questions.length) *
+                              (currentQuiz?.questions?.length || 1)) *
                             100
                           }%`,
                         }}

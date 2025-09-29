@@ -14,10 +14,7 @@ export const ACADEMIC_LEVELS: { value: AcademicLevel; label: string; description
   // Secondary Education (Ages 11-16)
   { value: 'class-6', label: 'Class 6', description: 'Middle School - Age 11-12' },
   { value: 'class-7', label: 'Class 7', description: 'Middle School - Age 12-13' },
-  { value: 'class-8', label: 'Class 8', description: 'Middle School - Age 13-14' },
   { value: 'jsc', label: 'JSC/JDC', description: 'Junior School Certificate' },
-  { value: 'class-9', label: 'Class 9', description: 'Secondary - Age 14-15' },
-  { value: 'class-10', label: 'Class 10', description: 'Secondary - Age 15-16' },
   { value: 'ssc', label: 'SSC', description: 'Secondary School Certificate' },
 
   // Higher Secondary Education (Ages 17-18)
@@ -160,10 +157,7 @@ export const SUBJECT_SUGGESTIONS: Record<AcademicLevel, string[]> = {
   // Secondary Education
   'class-6': ['Mathematics', 'English', 'Bengali', 'Science', 'Social Studies', 'Religion'],
   'class-7': ['Mathematics', 'English', 'Bengali', 'Science', 'Social Studies', 'Religion'],
-  'class-8': ['Mathematics', 'English', 'Bengali', 'Science', 'Social Studies', 'Religion'],
   'jsc': ['Mathematics', 'English', 'Bengali', 'Science', 'Social Studies', 'Religion'],
-  'class-9': ['Mathematics', 'English', 'Bengali', 'Physics', 'Chemistry', 'Biology', 'Social Studies'],
-  'class-10': ['Mathematics', 'English', 'Bengali', 'Physics', 'Chemistry', 'Biology', 'Social Studies'],
   'ssc': ['Mathematics', 'English', 'Bengali', 'Physics', 'Chemistry', 'Biology', 'Accounting', 'Economics'],
 
   // Higher Secondary Education

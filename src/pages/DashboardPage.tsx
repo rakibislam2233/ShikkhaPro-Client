@@ -7,7 +7,6 @@ import {
   Trophy,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import AuthGuard from "@/components/auth/AuthGuard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const DashboardPage: React.FC = () => {
@@ -15,14 +14,12 @@ const DashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <AuthGuard>
-        <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center">
             <LoadingSpinner />
             <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
           </div>
         </div>
-      </AuthGuard>
     );
   }
 
@@ -35,7 +32,7 @@ const DashboardPage: React.FC = () => {
   };
 
   return (
-    <AuthGuard>
+    <>
       <Helmet>
         <title>Dashboard - ShikkhaPro</title>
         <meta name="description" content="Your personal learning dashboard. Track quiz performance, view analytics, and monitor your educational progress with ShikkhaPro." />
@@ -101,7 +98,7 @@ const DashboardPage: React.FC = () => {
       {/* Main Content */}
       <DashboardOverview />
     </main>
-    </AuthGuard>
+    </>
   );
 };
 
