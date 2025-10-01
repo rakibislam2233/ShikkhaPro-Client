@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import imageBaseUrl from "@/utils/imageBaseUrl";
+import defaultAvatar from "@/assets/default-image.jpg";
+
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -123,9 +126,19 @@ const DashboardLayout = () => {
             <div className="p-4 lg:p-6">
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-primary/20">
                 <div className="flex items-center space-x-2 lg:space-x-3">
-                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm lg:text-lg shadow-lg">
-                    {getUserInitials()}
-                  </div>
+                  {user?.profile?.avatar ? (
+                    <img
+                      className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover shadow-lg"
+                      src={`${imageBaseUrl}${user.profile.avatar}`}
+                      alt="Profile"
+                    />
+                  ) : (
+                    <img
+                      className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover shadow-lg"
+                      src={defaultAvatar}
+                      alt="Default Profile"
+                    />
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">
                       {getUserDisplayName()}

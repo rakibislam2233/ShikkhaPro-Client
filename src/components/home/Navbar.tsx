@@ -9,6 +9,7 @@ import { removeAuthTokens } from "@/utils/cookies";
 import { toast } from "sonner";
 import type { TError } from "@/types/erro";
 import imageBaseUrl from "@/utils/imageBaseUrl";
+import defaultAvatar from "@/assets/default-image.jpg";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -171,14 +172,16 @@ const Navbar: React.FC = () => {
                  {
                   user?.profile?.avatar ? (
                     <img
-                      className="size-10 md:size-12 rounded-full"
+                      className="size-10 md:size-12 rounded-full object-cover"
                       src={`${imageBaseUrl}${user.profile.avatar}`}
                       alt="Profile"
                     />
                   ) : (
-                     <div className="size-10 md:size-12 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-semibold">
-                    {getUserInitials()}
-                  </div>
+                    <img
+                      className="size-10 md:size-12 rounded-full object-cover"
+                      src={defaultAvatar}
+                      alt="Default Profile"
+                    />
                   )
                  }
                 </button>
