@@ -21,19 +21,6 @@ const DashboardLayout = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  // Get user initials for avatar
-  const getUserInitials = () => {
-    if (user?.profile?.fullName) {
-      return user.profile.fullName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return user?.email?.charAt(0).toUpperCase() || "U";
-  };
-
   const getUserDisplayName = () => {
     return user?.profile?.fullName || user?.email?.split("@")[0] || "User";
   };
