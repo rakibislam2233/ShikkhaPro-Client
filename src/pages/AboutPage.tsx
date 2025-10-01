@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Heart, Lightbulb, Target, Users } from 'lucide-react';
+import { BookOpen, Users, Target, Eye, Award } from 'lucide-react';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -14,18 +14,18 @@ const AboutPage: React.FC = () => {
       bgColor: "bg-blue-100"
     },
     {
-      icon: Lightbulb,
+      icon: Eye,
       title: "Our Vision",
       description: "A world where every student can achieve their full potential through intelligent, adaptive learning experiences.",
       color: "text-green-600",
       bgColor: "bg-green-100"
     },
     {
-      icon: Heart,
+      icon: Award,
       title: "Our Values",
       description: "Innovation, accessibility, quality education, and empowering students to succeed in their academic journey.",
-      color: "text-red-600",
-      bgColor: "bg-red-100"
+      color: "text-purple-600",
+      bgColor: "bg-purple-100"
     }
   ];
 

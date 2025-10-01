@@ -6,26 +6,26 @@ import { Link } from 'react-router-dom';
 const Footer: React.FC = () => {
   const footerSections = [
     {
-      title: 'Product',
+      title: 'Quick Links',
       links: [
+        { label: 'Home', href: '/' },
         { label: 'Features', href: '/#features' },
         { label: 'How it Works', href: '/#how-it-works' },
-        { label: 'Create Quiz', href: '/dashboard/create-quiz' },
-        { label: 'Dashboard', href: '/dashboard' },
-      ],
-    },
-    {
-      title: 'Support',
-      links: [
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Analytics', href: '/dashboard/analytics' },
-        { label: 'Quiz Generator', href: '/dashboard/create-quiz' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
         { label: 'About Us', href: '/about' },
+      ],
+    },
+    {
+      title: 'Dashboard',
+      links: [
+        { label: 'Overview', href: '/dashboard' },
+        { label: 'Create Quiz', href: '/dashboard/create-quiz' },
+        { label: 'My Quizzes', href: '/dashboard/my-quizzes' },
+        { label: 'Quiz Attempts', href: '/dashboard/quiz-attempts' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
         { label: 'Privacy Policy', href: '/privacy' },
         { label: 'Terms of Service', href: '/terms' },
       ],
