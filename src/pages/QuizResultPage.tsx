@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../components/seo/SEO";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -309,8 +310,15 @@ const QuizResultPage: React.FC = () => {
   const customMessage = getCustomMessage(academicLevel, percentage);
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+      <>
+        <SEO
+          title="Quiz Results"
+          description="View your quiz results, performance analysis, and personalized recommendations for improvement."
+          keywords="quiz results, quiz score, performance analysis, quiz feedback"
+          noIndex={true}
+        />
+        <div className="min-h-screen bg-background">
+          <div className="max-w-6xl mx-auto px-4 py-8">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -911,6 +919,7 @@ const QuizResultPage: React.FC = () => {
           </motion.div>
         </div>
       </div>
+      </>
     </AuthGuard>
   );
 };

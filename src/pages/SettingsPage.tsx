@@ -1,17 +1,18 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import SettingsPanel from '@/components/dashboard/SettingsPanel';
 import { Home } from 'lucide-react';
 
 const SettingsPage: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <title>Settings - ShikkhaPro</title>
-        <meta name="description" content="Customize your ShikkhaPro experience. Manage account settings, preferences, and notification options." />
-        <meta name="keywords" content="settings, account preferences, notifications, ShikkhaPro configuration" />
-      </Helmet>
-      
+      <SEO
+        title="Settings"
+        description="Customize your ShikkhaPro experience. Manage account settings, preferences, and notification options."
+        keywords="settings, account preferences, notifications, ShikkhaPro configuration"
+        noIndex={true}
+      />
+
       <main className="flex-1 p-3 sm:p-4 lg:p-8">
         {/* Breadcrumb */}
         <div className="mb-4 lg:mb-8 hidden sm:block">

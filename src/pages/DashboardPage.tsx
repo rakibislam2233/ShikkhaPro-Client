@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import {
   Home,
@@ -33,12 +33,13 @@ const DashboardPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Dashboard - ShikkhaPro</title>
-        <meta name="description" content="Your personal learning dashboard. Track quiz performance, view analytics, and monitor your educational progress with ShikkhaPro." />
-        <meta name="keywords" content="learning dashboard, quiz performance, student analytics, progress tracking, ShikkhaPro" />
-      </Helmet>
-      
+      <SEO
+        title="Dashboard"
+        description="Your personal learning dashboard. Track quiz performance, view analytics, and monitor your educational progress with ShikkhaPro."
+        keywords="learning dashboard, quiz performance, student analytics, progress tracking, ShikkhaPro"
+        noIndex={true}
+      />
+
       <main className="flex-1 p-3 sm:p-4 lg:p-8">
       {/* Breadcrumb - Hidden on mobile */}
       <div className="mb-4 lg:mb-8 hidden sm:block">

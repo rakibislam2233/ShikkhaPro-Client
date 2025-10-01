@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { BookOpen, Users, Target, Eye, Award } from 'lucide-react';
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import SEO from '../components/seo/SEO';
 
 const AboutPage: React.FC = () => {
   const teamValues = [
@@ -40,11 +40,11 @@ const AboutPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>About Us - ShikkhaPro | AI-Powered Learning Platform</title>
-        <meta name="description" content="Learn about ShikkhaPro's mission to transform education through AI-powered quiz generation and personalized learning experiences for students worldwide." />
-        <meta name="keywords" content="about ShikkhaPro, AI education, learning platform, EdTech company, educational technology" />
-      </Helmet>
+      <SEO
+        title="About Us - ShikkhaPro | AI-Powered Learning Platform"
+        description="Learn about ShikkhaPro's mission to transform education through AI-powered quiz generation and personalized learning experiences for students worldwide."
+        keywords="about ShikkhaPro, AI education, learning platform, EdTech company, educational technology"
+      />
 
       <div className="w-full pt-24 md:pt-28 lg:pt-32 xl:pt-40 min-h-screen bg-background">
         {/* Hero Section */}

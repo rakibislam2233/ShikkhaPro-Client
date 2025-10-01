@@ -1,17 +1,18 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import AnalyticsDashboard from '@/components/dashboard/AnalyticsDashboard';
 import { Home } from 'lucide-react';
 
 const AnalyticsPage: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <title>Analytics - ShikkhaPro</title>
-        <meta name="description" content="Comprehensive analytics and insights for your quiz performance. Track progress, identify trends, and optimize learning outcomes." />
-        <meta name="keywords" content="quiz analytics, performance insights, learning analytics, ShikkhaPro dashboard" />
-      </Helmet>
-      
+      <SEO
+        title="Analytics"
+        description="Comprehensive analytics and insights for your quiz performance. Track progress, identify trends, and optimize learning outcomes."
+        keywords="quiz analytics, performance insights, learning analytics, ShikkhaPro dashboard"
+        noIndex={true}
+      />
+
       <main className="flex-1 p-3 sm:p-4 lg:p-8">
         {/* Breadcrumb */}
         <div className="mb-4 lg:mb-8 hidden sm:block">

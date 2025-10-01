@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Helmet } from "react-helmet-async";
+import SEO from "../components/seo/SEO";
 import {
   Clock,
   Target,
@@ -164,13 +164,12 @@ const QuizAttemptsPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Quiz Attempts - ShikkhaPro Dashboard</title>
-        <meta
-          name="description"
-          content="View and track all your quiz attempts and performance analytics."
-        />
-      </Helmet>
+      <SEO
+        title="Quiz Attempts"
+        description="View and track all your quiz attempts and performance analytics."
+        keywords="quiz attempts, quiz history, performance tracking, ShikkhaPro dashboard"
+        noIndex={true}
+      />
 
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
         <div className="w-full mx-auto">

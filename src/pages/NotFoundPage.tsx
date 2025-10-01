@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../components/seo/SEO";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,6 +21,13 @@ const NotFoundPage: React.FC = () => {
     navigate(-1);
   };
   return (
+    <>
+      <SEO
+        title="404 - Page Not Found"
+        description="The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+        keywords="404, page not found, error"
+        noIndex={true}
+      />
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-8 relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Main 404 Section */}
@@ -135,6 +143,7 @@ const NotFoundPage: React.FC = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 

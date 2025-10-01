@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import { motion } from 'framer-motion';
 import { FileText, Users, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
@@ -82,11 +82,11 @@ const TermsOfServicePage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Terms of Service - ShikkhaPro | User Agreement & Guidelines</title>
-        <meta name="description" content="ShikkhaPro's Terms of Service outline the rules and guidelines for using our AI-powered educational platform. Learn about user responsibilities and platform policies." />
-        <meta name="keywords" content="terms of service, user agreement, platform rules, ShikkhaPro terms, educational platform guidelines" />
-      </Helmet>
+      <SEO
+        title="Terms of Service - ShikkhaPro | User Agreement & Guidelines"
+        description="ShikkhaPro's Terms of Service outline the rules and guidelines for using our AI-powered educational platform. Learn about user responsibilities and platform policies."
+        keywords="terms of service, user agreement, platform rules, ShikkhaPro terms, educational platform guidelines"
+      />
 
       <div className="w-full pt-24 md:pt-28 lg:pt-32 xl:pt-40 pb-16">
         <div className="max-w-4xl mx-auto">

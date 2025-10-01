@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, Database, FileCheck } from 'lucide-react';
 
@@ -63,11 +63,11 @@ const PrivacyPolicyPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Privacy Policy - ShikkhaPro | Data Protection & Privacy</title>
-        <meta name="description" content="ShikkhaPro's Privacy Policy outlines how we collect, use, and protect your personal information. Learn about your rights and our commitment to data security." />
-        <meta name="keywords" content="privacy policy, data protection, user privacy, ShikkhaPro privacy, educational data security" />
-      </Helmet>
+      <SEO
+        title="Privacy Policy - ShikkhaPro | Data Protection & Privacy"
+        description="ShikkhaPro's Privacy Policy outlines how we collect, use, and protect your personal information. Learn about your rights and our commitment to data security."
+        keywords="privacy policy, data protection, user privacy, ShikkhaPro privacy, educational data security"
+      />
 
       <div className="min-h-screen bg-background pt-24 md:pt-28 lg:pt-32 xl:pt-40 pb-16">
         <div className="max-w-4xl mx-auto">

@@ -1,17 +1,18 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/seo/SEO';
 import QuizManagement from '@/components/dashboard/QuizManagement';
 import { Home } from 'lucide-react';
 
 const MyQuizzesPage: React.FC = () => {
   return (
     <>
-      <Helmet>
-        <title>My Quizzes - ShikkhaPro</title>
-        <meta name="description" content="Manage and view all your created quizzes. Track performance, edit questions, and analyze student engagement." />
-        <meta name="keywords" content="quiz management, my quizzes, quiz analytics, ShikkhaPro dashboard" />
-      </Helmet>
-      
+      <SEO
+        title="My Quizzes"
+        description="Manage and view all your created quizzes. Track performance, edit questions, and analyze student engagement."
+        keywords="quiz management, my quizzes, quiz analytics, ShikkhaPro dashboard"
+        noIndex={true}
+      />
+
       <main className="flex-1 p-3 sm:p-4 lg:p-8">
         {/* Breadcrumb */}
         <div className="mb-4 lg:mb-8 hidden sm:block">
