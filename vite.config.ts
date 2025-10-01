@@ -15,5 +15,14 @@ export default defineConfig({
     host: '0.0.0.0',
     port: Number(process.env.PORT) || 4173,
     strictPort: true,
+    allowedHosts: [
+      'shikkhapro.onrender.com',
+      'shikkhapro.netlify.app',
+      'shikkha-pro-client.vercel.app',
+      'localhost',
+      '.onrender.com',
+      '.netlify.app',
+      '.vercel.app',
+    ],
   },
 })
